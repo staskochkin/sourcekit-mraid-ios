@@ -8,13 +8,13 @@
 
 #import "InterstitialViewController.h"
 
-#import "MRAIDServiceDelegate.h"
-#import "MRAIDInterstitial.h"
+#import "SKMRAIDServiceDelegate.h"
+#import "SKMRAIDInterstitial.h"
 #import <AudioToolbox/AudioToolbox.h>
 
-@interface InterstitialViewController () <MRAIDInterstitialDelegate, MRAIDServiceDelegate>
+@interface InterstitialViewController () <SKMRAIDInterstitialDelegate, SKMRAIDServiceDelegate>
 {
-    MRAIDInterstitial *interstitial;
+    SKMRAIDInterstitial *interstitial;
 }
 
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -61,7 +61,7 @@
     
 
     // Initialize and load the interstitial creative
-    interstitial = [[MRAIDInterstitial alloc] initWithSupportedFeatures:@[MRAIDSupportsSMS, MRAIDSupportsTel, MRAIDSupportsCalendar, MRAIDSupportsStorePicture, MRAIDSupportsInlineVideo]
+    interstitial = [[SKMRAIDInterstitial alloc] initWithSupportedFeatures:@[MRAIDSupportsSMS, MRAIDSupportsTel, MRAIDSupportsCalendar, MRAIDSupportsStorePicture, MRAIDSupportsInlineVideo]
                                                            withHtmlData:htmlData
                                                             withBaseURL:bundleUrl
                                                                delegate:self
@@ -77,7 +77,7 @@
 
 #pragma mark - MRAIDInterstitialDelegate
 
-- (void)mraidInterstitialAdReady:(MRAIDInterstitial *)mraidInterstitial
+- (void)mraidInterstitialAdReady:(SKMRAIDInterstitial *)mraidInterstitial
 {
     NSLog(@"%@ MRAIDInterstitialDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
     [self.statusLabel setText:@"Status: Ready"];
@@ -85,17 +85,17 @@
     self.displayInterButton.enabled = YES;
 }
 
-- (void)mraidInterstitialAdFailed:(MRAIDInterstitial *)mraidInterstitial
+- (void)mraidInterstitialAdFailed:(SKMRAIDInterstitial *)mraidInterstitial
 {
     NSLog(@"%@ MRAIDInterstitialDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
 }
 
-- (void)mraidInterstitialWillShow:(MRAIDInterstitial *)mraidInterstitial
+- (void)mraidInterstitialWillShow:(SKMRAIDInterstitial *)mraidInterstitial
 {
     NSLog(@"%@ MRAIDInterstitialDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
 }
 
-- (void)mraidInterstitialDidHide:(MRAIDInterstitial *)mraidInterstitial
+- (void)mraidInterstitialDidHide:(SKMRAIDInterstitial *)mraidInterstitial
 {
     NSLog(@"%@ MRAIDInterstitialDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
     [self.statusLabel setText:@"Status: Not Ready"];
@@ -104,11 +104,6 @@
 }
 
 #pragma mark - MRAIDServiceDelegate
-
-- (void)mraidServiceCallTelWithUrlString:(NSString *)urlString
-{
-    NSLog(@"%@ MRAIDServiceDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), urlString);
-}
 
 - (void)mraidServiceCreateCalendarEventWithEventJSON:(NSString *)eventJSON
 {
@@ -126,11 +121,6 @@
     NSLog(@"%@ MRAIDServiceDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), urlString);
     NSURL *videoUrl = [NSURL URLWithString:urlString];
     [[UIApplication sharedApplication] openURL:videoUrl];
-}
-
-- (void)mraidServiceSendSmsWithUrlString:(NSString *)urlString
-{
-    NSLog(@"%@ MRAIDServiceDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), urlString);
 }
 
 - (void)mraidServiceStorePictureWithUrlString:(NSString *)urlString

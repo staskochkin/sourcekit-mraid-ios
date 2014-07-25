@@ -1,5 +1,5 @@
 //
-//  MRAIDInterstitial.h
+//  SKMRAIDInterstitial.h
 //  MRAID
 //
 //  Created by Jay Tucker on 10/18/13.
@@ -9,26 +9,27 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
-@class MRAIDInterstitial;
-@protocol MRAIDServiceDelegate;
+@class SKMRAIDInterstitial;
+@protocol SKMRAIDServiceDelegate;
 
 // A delegate for MRAIDInterstitial to handle callbacks for the interstitial lifecycle.
-@protocol MRAIDInterstitialDelegate <NSObject>
+@protocol SKMRAIDInterstitialDelegate <NSObject>
 
 @optional
 
-- (void)mraidInterstitialAdReady:(MRAIDInterstitial *)mraidInterstitial;
-- (void)mraidInterstitialAdFailed:(MRAIDInterstitial *)mraidInterstitial;
-- (void)mraidInterstitialWillShow:(MRAIDInterstitial *)mraidInterstitial;
-- (void)mraidInterstitialDidHide:(MRAIDInterstitial *)mraidInterstitial;
+- (void)mraidInterstitialAdReady:(SKMRAIDInterstitial *)mraidInterstitial;
+- (void)mraidInterstitialAdFailed:(SKMRAIDInterstitial *)mraidInterstitial;
+- (void)mraidInterstitialWillShow:(SKMRAIDInterstitial *)mraidInterstitial;
+- (void)mraidInterstitialDidHide:(SKMRAIDInterstitial *)mraidInterstitial;
+- (void)mraidInterstitialNavigate:(SKMRAIDInterstitial *)mraidInterstitial withURL:(NSURL *)url;
 
 @end
 
 // A class which handles interstitials and offers optional callbacks for its states and services (sms, tel, calendar, etc.)
-@interface MRAIDInterstitial : NSObject
+@interface SKMRAIDInterstitial : NSObject
 
-@property (nonatomic, unsafe_unretained) id<MRAIDInterstitialDelegate> delegate;
-@property (nonatomic, unsafe_unretained) id<MRAIDServiceDelegate> serviceDelegate;
+@property (nonatomic, unsafe_unretained) id<SKMRAIDInterstitialDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id<SKMRAIDServiceDelegate> serviceDelegate;
 @property (nonatomic, unsafe_unretained) UIViewController *rootViewController;
 @property (nonatomic, assign, getter = isViewable, setter = setIsViewable:) BOOL isViewable;
 
@@ -36,8 +37,8 @@
 - (id)initWithSupportedFeatures:(NSArray *)features
                    withHtmlData:(NSString*)htmlData
                     withBaseURL:(NSURL*)bsURL
-                       delegate:(id<MRAIDInterstitialDelegate>)delegate
-               serviceDelegate:(id<MRAIDServiceDelegate>)serviceDelegate
+                       delegate:(id<SKMRAIDInterstitialDelegate>)delegate
+               serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
              rootViewController:(UIViewController *)rootViewController;
 
 - (void)show;

@@ -1,24 +1,24 @@
 //
-//  MRAIDParser.m
+//  SKMRAIDParser.m
 //  MRAID
 //
 //  Created by Jay Tucker on 9/13/13.
 //  Copyright (c) 2013 Nexage, Inc. All rights reserved.
 //
 
-#import "MRAIDParser.h"
-#import "MRAIDView.h"
+#import "SKMRAIDParser.h"
+#import "SKMRAIDView.h"
 
-#import "SourceKitLogger.h"
+#import "SKLogger.h"
 
-@interface MRAIDParser ()
+@interface SKMRAIDParser ()
 
 - (BOOL)isValidCommand:(NSString *)command;
 - (BOOL)checkParamsForCommand:(NSString *)command params:(NSDictionary *)params;
 
 @end
 
-@implementation MRAIDParser
+@implementation SKMRAIDParser
 
 - (NSDictionary *)parseCommandUrl:(NSString *)commandUrl;
 {
@@ -31,7 +31,7 @@
      and then send an appropriate message back to the MRAIDView to run the command.
      */
     
-    [SourceKitLogger debug:[NSString stringWithFormat:@"%@ %@", NSStringFromSelector(_cmd), commandUrl]];
+    [SKLogger debug:@"MRAID - Parser" withMessage:[NSString stringWithFormat:@"%@ %@", NSStringFromSelector(_cmd), commandUrl]];
     
     // Remove mraid:// prefix.
     NSString *s = [commandUrl substringFromIndex:8];
@@ -58,13 +58,13 @@
     
     // Check for valid command.
     if (![self isValidCommand:command]) {
-        [SourceKitLogger warning:[NSString stringWithFormat:@"command %@ is unknown", command]];
+        [SKLogger warning:@"MRAID - Parser" withMessage:[NSString stringWithFormat:@"command %@ is unknown", command]];
         return nil;
     }
     
     // Check for valid parameters for the given command.
     if (![self checkParamsForCommand:command params:params]) {
-        [SourceKitLogger warning:[NSString stringWithFormat:@"command URL %@ is missing parameters", commandUrl]];
+        [SKLogger warning:@"MRAID - Parser" withMessage:[NSString stringWithFormat:@"command URL %@ is missing parameters", commandUrl]];
         return nil;
     }
     

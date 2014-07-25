@@ -27,10 +27,10 @@ SourceKitCommon Github repository in the same folder level as MRAID.
 
 Step 2: Import these header file(s) into your project:
 
-	#import "SourceKitLogger.h"
-	#import "MRAIDView.h"
-	#import "MRAIDInterstitial.h"
-	#import "MRAIDServiceDelegate.h"
+	#import "SKLogger.h"
+	#import "SKMRAIDView.h"
+	#import "SKMRAIDInterstitial.h"
+	#import "SKMRAIDServiceDelegate.h"
 	
 Edit Build Phases under target<br/>
 
@@ -38,11 +38,11 @@ Edit Build Phases under target<br/>
 	Link Binary with Libraries - Add libMRAID.a & libSourceKitCommon.a
 
 
-Step 3: Create an MRAIDView and add it to your container view, as in this example:
+Step 3: Create an SKMRAIDView and add it to your container view, as in this example:
 
 For a Banner:
 
-     MRAIDView *bannerView = [[MRAIDView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)
+     SKMRAIDView *bannerView = [[SKMRAIDView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)
                                      withHtmlData:htmlData
                                       withBaseURL:bundleUrl
                                 supportedFeatures:@[MRAIDSupportsSMS, MRAIDSupportsTel]
@@ -57,7 +57,7 @@ creative may be either an HTML fragment or full HTML.
 
 For an Interstitial:
 	
-		self.interstitial = [[MRAIDInterstitial alloc] 
+		self.interstitial = [[SKMRAIDInterstitial alloc]
 								initWithSupportedFeatures:@[MRAIDSupportsCalendar]
                                     		 withHtmlData:htmlData
                                               withBaseURL:bundleUrl
@@ -66,15 +66,15 @@ For an Interstitial:
                                        rootViewController:self];
 
 	
-Wait for the MRAIDInterstitialDelegate 'mraidInterstitialAdReady:' callback and do the following when the Ad is ready to be shown on screen:
+Wait for the SKMRAIDInterstitialDelegate 'mraidInterstitialAdReady:' callback and do the following when the Ad is ready to be shown on screen:
 
 	[mraidInterstitial show];
 
 Step 4: (Optional) To see logging:
 	
-	[SourceKitLogger setLogLevel:SourceKitLogLevelDebug];   // select desired log level
+	[SKLogger setLogLevel:SourceKitLogLevelDebug];   // select desired log level
 
-Step 5: (Optional) Implement the MRAIDServiceDelegate Protocol if you wish to listen for and take action on MRAID tel, calendar, sms, storePicture, inlineVideo, and open browser events.
+Step 5: (Optional) Implement the SKMRAIDServiceDelegate Protocol if you wish to listen for and take action on MRAID calendar, storePicture, inlineVideo, and open browser events.
 
 That's it! 
 

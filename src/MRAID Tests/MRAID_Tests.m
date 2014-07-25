@@ -7,8 +7,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "MRAIDParser.h"
-#import "MRAIDUtil.h"
+#import "SKMRAIDParser.h"
+#import "SKMRAIDUtil.h"
 
 @interface MRAID_Tests : XCTestCase
 
@@ -30,7 +30,7 @@
 
 - (void)testMRAIDParserParsingPositive
 {
-    MRAIDParser *parser = [[MRAIDParser alloc] init];
+    SKMRAIDParser *parser = [[SKMRAIDParser alloc] init];
     NSDictionary* dict;
     
     // Test 1
@@ -69,7 +69,7 @@
 
 - (void)testMRAIDParserParsingNegative
 {
-    MRAIDParser *parser = [[MRAIDParser alloc] init];
+    SKMRAIDParser *parser = [[SKMRAIDParser alloc] init];
     NSDictionary* dict;
     
     // Test 1 - calendar, bad JSON
@@ -100,13 +100,13 @@
 
 - (void)testMRAIDUtilProcessRawHTML
 {    
-    XCTAssertEqualObjects([[MRAIDUtil processRawHtml:@"test"] stringByReplacingOccurrencesOfString:@"\n" withString:@""], @"<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no' /><style>body { margin:0; padding:0; }*:not(input) { -webkit-touch-callout:none; -webkit-user-select:none; -webkit-text-size-adjust:none; }</style></head><body>test</body></html>", @"Error parsing html");
+    XCTAssertEqualObjects([[SKMRAIDUtil processRawHtml:@"test"] stringByReplacingOccurrencesOfString:@"\n" withString:@""], @"<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no' /><style>body { margin:0; padding:0; }*:not(input) { -webkit-touch-callout:none; -webkit-user-select:none; -webkit-text-size-adjust:none; }</style></head><body><div align='center'>test</div></body></html>", @"Error parsing html");
     
-    XCTAssertNil([MRAIDUtil processRawHtml:@"<body>test</body>"], @"Error parsing html");
+    XCTAssertNil([SKMRAIDUtil processRawHtml:@"<body>test</body>"], @"Error parsing html");
     
-    XCTAssertEqualObjects([[MRAIDUtil processRawHtml:@"<iframe src='http://test.com'>test</iframe>"] stringByReplacingOccurrencesOfString:@"\n" withString:@""], @"<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no' /><style>body { margin:0; padding:0; }*:not(input) { -webkit-touch-callout:none; -webkit-user-select:none; -webkit-text-size-adjust:none; }</style></head><body><iframe src='http://test.com'>test</iframe></body></html>", @"Error parsing html");
+    XCTAssertEqualObjects([[SKMRAIDUtil processRawHtml:@"<iframe src='http://test.com'>test</iframe>"] stringByReplacingOccurrencesOfString:@"\n" withString:@""], @"<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no' /><style>body { margin:0; padding:0; }*:not(input) { -webkit-touch-callout:none; -webkit-user-select:none; -webkit-text-size-adjust:none; }</style></head><body><div align='center'><iframe src='http://test.com'>test</iframe></div></body></html>", @"Error parsing html");
     
-    XCTAssertEqualObjects([[MRAIDUtil processRawHtml:@"<html><head><script src='mraid.js'/></head><body>test</body></html>"] stringByReplacingOccurrencesOfString:@"\n" withString:@""], @"<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no' /><style>body { margin:0; padding:0; }*:not(input) { -webkit-touch-callout:none; -webkit-user-select:none; -webkit-text-size-adjust:none; }</style><script src='mraid.js'/></head><body>test</body></html>", @"Error parsing html");
+    XCTAssertEqualObjects([[SKMRAIDUtil processRawHtml:@"<html><head><script src='mraid.js'/></head><body>test</body></html>"] stringByReplacingOccurrencesOfString:@"\n" withString:@""], @"<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no' /><style>body { margin:0; padding:0; }*:not(input) { -webkit-touch-callout:none; -webkit-user-select:none; -webkit-text-size-adjust:none; }</style><script src='mraid.js'/></head><body>test</body></html>", @"Error parsing html");
 }
 
 @end

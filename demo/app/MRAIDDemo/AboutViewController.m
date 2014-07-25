@@ -7,7 +7,7 @@
 //
 
 #import "AboutViewController.h"
-#import "MRAIDServiceDelegate.h"
+#import "MRAIDSettings.h"
 
 @implementation AboutViewController
 
@@ -25,7 +25,7 @@
     [super viewDidLoad];
 	
     // Fill version string
-    [self.versionLabel setText:[NSString stringWithFormat:@"MRAID SourceKit v%@ & Demo v%@", kKitVersion, [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]]];
+    [self.versionLabel setText:[NSString stringWithFormat:@"MRAID SourceKit v%@ & Demo v%@", kMRAIDKitVersion, [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]]];
 }
 
 - (void)didReceiveMemoryWarning

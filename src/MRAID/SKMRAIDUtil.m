@@ -1,14 +1,14 @@
 //
-//  MRAIDUtil.m
+//  SKMRAIDUtil.m
 //  MRAID
 //
 //  Created by Jay Tucker on 11/8/13.
 //  Copyright (c) 2013 Nexage. All rights reserved.
 //
 
-#import "MRAIDUtil.h"
+#import "SKMRAIDUtil.h"
 
-@implementation MRAIDUtil
+@implementation SKMRAIDUtil
 
 + (NSString *)processRawHtml:(NSString *)rawHtml
 {
@@ -52,7 +52,9 @@
                          "<head>\n"
                          "</head>\n"
                          "<body>\n"
+                         "<div align='center'>\n"
                          "%@"
+                         "</div>\n"
                          "</body>\n"
                          "</html>",
                          processedHtml

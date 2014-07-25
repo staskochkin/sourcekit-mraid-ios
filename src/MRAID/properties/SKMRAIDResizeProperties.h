@@ -1,5 +1,5 @@
 //
-//  MRAIDResizeProperties.h
+//  SKMRAIDResizeProperties.h
 //  MRAID
 //
 //  Created by Jay Tucker on 9/16/13.
@@ -16,17 +16,17 @@ typedef enum {
     MRAIDCustomClosePositionBottomLeft,
     MRAIDCustomClosePositionBottomCenter,
     MRAIDCustomClosePositionBottomRight
-} MRAIDCustomClosePosition;
+} SKMRAIDCustomClosePosition;
 
-@interface MRAIDResizeProperties : NSObject
+@interface SKMRAIDResizeProperties : NSObject
 
 @property (nonatomic, assign) int width;
 @property (nonatomic, assign) int height;
 @property (nonatomic, assign) int offsetX;
 @property (nonatomic, assign) int offsetY;
-@property (nonatomic, assign) MRAIDCustomClosePosition customClosePosition;
+@property (nonatomic, assign) SKMRAIDCustomClosePosition customClosePosition;
 @property (nonatomic, assign) BOOL allowOffscreen;
 
-+ (MRAIDCustomClosePosition)MRAIDCustomClosePositionFromString:(NSString *)s;
++ (SKMRAIDCustomClosePosition)MRAIDCustomClosePositionFromString:(NSString *)s;
 
 @end

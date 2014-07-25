@@ -1,14 +1,14 @@
 //
-//  MRAIDResizeProperties.m
+//  SKMRAIDResizeProperties.m
 //  MRAID
 //
 //  Created by Jay Tucker on 9/16/13.
 //  Copyright (c) 2013 Nexage, Inc. All rights reserved.
 //
 
-#import "MRAIDResizeProperties.h"
+#import "SKMRAIDResizeProperties.h"
 
-@implementation MRAIDResizeProperties
+@implementation SKMRAIDResizeProperties
 
 - (id)init
 {
@@ -24,7 +24,7 @@
     return self;
 }
 
-+ (MRAIDCustomClosePosition)MRAIDCustomClosePositionFromString:(NSString *)s
++ (SKMRAIDCustomClosePosition)MRAIDCustomClosePositionFromString:(NSString *)s
 {
     NSArray *names = @[
                        @"top-left",
@@ -37,7 +37,7 @@
                        ];
     NSUInteger i = [names indexOfObject:s];
     if (i != NSNotFound) {
-        return (MRAIDCustomClosePosition)i;
+        return (SKMRAIDCustomClosePosition)i;
     }
     // Use top-right for the default value
     return MRAIDCustomClosePositionTopRight;;

@@ -13,11 +13,13 @@
 
 var console = {};
 console.log = function(msg) {
+ if (typeof enableLog != 'undefined') {
     var iframe = document.createElement("IFRAME");
     iframe.setAttribute("src", "console-log://" + msg);
     document.documentElement.appendChild(iframe);
     iframe.parentNode.removeChild(iframe);
     iframe = null;
+ }
 };
 
 LogLevelEnum = {
@@ -119,6 +121,7 @@ var state = STATES.LOADING;
 var placementType = PLACEMENT_TYPES.INLINE;
 var supportedFeatures = {};
 var isViewable = false;
+var isResizeReady = false;
 
 var expandProperties = {
     "width" : 0,
@@ -340,9 +343,7 @@ mraid.resize = function() {
     // The only time it is valid to call resize is when the ad is
     // a banner currently in either default or resized state.
     // Trigger an error if the current state is expanded.
-    if (placementType === PLACEMENT_TYPES.INTERSTITIAL ||
-        state === STATES.LOADING ||
-        state === STATES.HIDDEN) {
+    if (placementType === PLACEMENT_TYPES.INTERSTITIAL || state === STATES.LOADING || state === STATES.HIDDEN) {
         // do nothing
         return;
     }
@@ -350,12 +351,8 @@ mraid.resize = function() {
         mraid.fireErrorEvent("mraid.resize called when ad is in expanded state", "mraid.resize");
         return;
     }
-    if (resizeProperties.width === 0 && resizeProperties.height === 0) {
-        mraid.fireErrorEvent("mraid.resize called before mraid.setResizeProperties", "mraid.resize");
-        return;
-    }
-    if (resizeProperties.width > maxSize.width || resizeProperties.height > maxSize.height) {
-        mraid.fireErrorEvent("resize width or height is greater than the maxSize width or height", "mraid.resize");
+    if (!isResizeReady) {
+        mraid.fireErrorEvent("mraid.resize is not ready to be called", "mraid.resize");
         return;
     }
     callNative("resize");
@@ -428,35 +425,67 @@ mraid.setOrientationProperties = function(properties) {
     
     callNative("setOrientationProperties?" + params);
 };
-
+ 
 mraid.setResizeProperties = function(properties) {
     log.i("mraid.setResizeProperties");
-    
-    if (!validate(properties, "setResizeProperties")) {
-        log.e("failed validation");
-        return;
-	}
-    
+ 
+    isResizeReady = false;
+ 
     // resizeProperties contains 6 read-write properties:
-    // width, height, customClosePosition, offsetX, offsetY, allowOffscreen
-    var rwProps = [ "width", "height", "customClosePosition", "offsetX", "offsetY", "allowOffscreen" ];
+    // width, height, offsetX, offsetY, customClosePosition, allowOffscreen
+ 
+    // The properties object passed into this function must contain width, height, offsetX, offsetY.
+    // The remaining two properties are optional.
+    var requiredProps = [ "width", "height", "offsetX", "offsetY" ];
+    for (var i = 0; i < requiredProps.length; i++) {
+        var propname = requiredProps[i];
+        if (!properties.hasOwnProperty(propname)) {
+            mraid.fireErrorEvent(
+                      "required property " + propname + " is missing",
+                      "mraid.setResizeProperties");
+            return;
+        }
+    }
+ 
+    if (!validate(properties, "setResizeProperties")) {
+        mraid.fireErrorEvent("failed validation", "mraid.setResizeProperties");
+        return;
+    }
+ 
+    var adjustments = { "x": 0, "y": 0 };
+ 
+    var allowOffscreen = properties.hasOwnProperty("allowOffscreen") ? properties.allowOffscreen : resizeProperties.allowOffscreen;
+    if (!allowOffscreen) {
+        if (properties.width > maxSize.width || properties.height > maxSize.height) {
+            mraid.fireErrorEvent("resize width or height is greater than the maxSize width or height", "mraid.setResizeProperties");
+            return;
+        }
+        adjustments = fitResizeViewOnScreen(properties);
+    } else if (!isCloseRegionOnScreen(properties)) {
+        mraid.fireErrorEvent("close event region will not appear entirely onscreen", "mraid.setResizeProperties");
+        return;
+    }
+ 
+    var rwProps = [ "width", "height", "offsetX", "offsetY", "customClosePosition", "allowOffscreen" ];
     for (var i = 0; i < rwProps.length; i++) {
         var propname = rwProps[i];
         if (properties.hasOwnProperty(propname)) {
             resizeProperties[propname] = properties[propname];
         }
     }
-    
+ 
     var params =
     "width=" + resizeProperties.width +
     "&height=" + resizeProperties.height +
-    "&offsetX=" + resizeProperties.offsetX +
-    "&offsetY=" + resizeProperties.offsetY +
+    "&offsetX=" + (resizeProperties.offsetX + adjustments.x) +
+    "&offsetY=" + (resizeProperties.offsetY + adjustments.y) +
     "&customClosePosition=" + resizeProperties.customClosePosition +
     "&allowOffscreen=" + resizeProperties.allowOffscreen;
-    
+ 
     callNative("setResizeProperties?" + params);
-};
+ 
+    isResizeReady = true;
+ };
 
 mraid.storePicture = function(url) {
     log.i("mraid.storePicture " + url);
@@ -674,6 +703,108 @@ var allValidators = {
     }
 };
 
+function isCloseRegionOnScreen(properties) {
+    log.d("isCloseRegionOnScreen");
+    log.d("defaultPosition " + defaultPosition.x + " " + defaultPosition.y);
+    log.d("offset " + properties.offsetX + " " + properties.offsetY);
+ 
+    var resizeRect = {};
+    resizeRect.x = defaultPosition.x + properties.offsetX;
+    resizeRect.y = defaultPosition.y + properties.offsetY;
+    resizeRect.width = properties.width;
+    resizeRect.height = properties.height;
+    printRect("resizeRect", resizeRect);
+ 
+    var customClosePosition = properties.hasOwnProperty("customClosePosition") ?
+    properties.customClosePosition : resizeProperties.customClosePosition;
+    log.d("customClosePosition " + customClosePosition);
+ 
+    var closeRect = { "width": 50, "height": 50 };
+ 
+    if (customClosePosition.search("left") !== -1) {
+        closeRect.x = resizeRect.x;
+    } else if (customClosePosition.search("center") !== -1) {
+        closeRect.x = resizeRect.x + (resizeRect.width / 2) - 25;
+    } else if (customClosePosition.search("right") !== -1) {
+        closeRect.x = resizeRect.x + resizeRect.width - 50;
+    }
+ 
+    if (customClosePosition.search("top") !== -1) {
+        closeRect.y = resizeRect.y;
+    } else if (customClosePosition === "center") {
+        closeRect.y = resizeRect.y + (resizeRect.height / 2) - 25;
+    } else if (customClosePosition.search("bottom") !== -1) {
+        closeRect.y = resizeRect.y + resizeRect.height - 50;
+    }
+ 
+    var maxRect = { "x": 0, "y": 0 };
+    maxRect.width = maxSize.width;
+    maxRect.height = maxSize.height;
+ 
+    return isRectContained(maxRect, closeRect);
+}
+ 
+function fitResizeViewOnScreen(properties) {
+    log.d("fitResizeViewOnScreen");
+    log.d("defaultPosition " + defaultPosition.x + " " + defaultPosition.y);
+    log.d("offset " + properties.offsetX + " " + properties.offsetY);
+ 
+    var resizeRect = {};
+    resizeRect.x = defaultPosition.x + properties.offsetX;
+    resizeRect.y = defaultPosition.y + properties.offsetY;
+    resizeRect.width = properties.width;
+    resizeRect.height = properties.height;
+    printRect("resizeRect", resizeRect);
+ 
+    var maxRect = { "x": 0, "y": 0 };
+    maxRect.width = maxSize.width;
+    maxRect.height = maxSize.height;
+ 
+    var adjustments = { "x": 0, "y": 0 };
+ 
+    if (isRectContained(maxRect, resizeRect)) {
+        log.d("no adjustment necessary");
+        return adjustments;
+    }
+ 
+    if (resizeRect.x < maxRect.x) {
+        adjustments.x = maxRect.x - resizeRect.x;
+    } else if ((resizeRect.x + resizeRect.width) > (maxRect.x + maxRect.width)) {
+        adjustments.x = (maxRect.x + maxRect.width) - (resizeRect.x + resizeRect.width);
+    }
+    log.d("adjustments.x " + adjustments.x);
+ 
+    if (resizeRect.y < maxRect.y) {
+        adjustments.y = maxRect.y - resizeRect.y;
+    } else if ((resizeRect.y + resizeRect.height) > (maxRect.y + maxRect.height)) {
+        adjustments.y = (maxRect.y + maxRect.height) - (resizeRect.y + resizeRect.height);
+    }
+    log.d("adjustments.y " + adjustments.y);
+ 
+    resizeRect.x = defaultPosition.x + properties.offsetX + adjustments.x;
+    resizeRect.y = defaultPosition.y + properties.offsetY + adjustments.y;
+    printRect("adjusted resizeRect", resizeRect);
+ 
+    return adjustments;
+}
+ 
+function isRectContained(containingRect, containedRect) {
+    log.d("isRectContained");
+    printRect("containingRect", containingRect);
+    printRect("containedRect", containedRect);
+    return (containedRect.x >= containingRect.x &&
+        (containedRect.x + containedRect.width) <= (containingRect.x + containingRect.width) &&
+        containedRect.y >= containingRect.y &&
+        (containedRect.y + containedRect.height) <= (containingRect.y + containingRect.height));
+}
+ 
+function printRect(label, rect) {
+    log.d(label +
+          " [" + rect.x + "," + rect.y + "]" +
+          ",[" + (rect.x + rect.width) + "," + (rect.y + rect.height) + "]" +
+          " (" + rect.width + "x" + rect.height + ")");
+}
+ 
 mraid.dumpListeners = function() {
     var nEvents = Object.keys(listeners).length
     log.i("dumping listeners (" + nEvents + " events)");

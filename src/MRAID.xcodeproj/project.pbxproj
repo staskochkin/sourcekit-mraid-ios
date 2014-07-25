@@ -22,20 +22,22 @@
 
 /* Begin PBXBuildFile section */
 		27296B9317F280CE004C268F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27296B9217F280CE004C268F /* Foundation.framework */; };
-		275E1E0318342C0C00023552 /* MRAIDInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1DF818342C0C00023552 /* MRAIDInterstitial.m */; };
-		275E1E0418342C0C00023552 /* MRAIDInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1DF818342C0C00023552 /* MRAIDInterstitial.m */; };
-		275E1E0518342C0C00023552 /* MRAIDModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1DFA18342C0C00023552 /* MRAIDModalViewController.m */; };
-		275E1E0618342C0C00023552 /* MRAIDModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1DFA18342C0C00023552 /* MRAIDModalViewController.m */; };
-		275E1E0718342C0C00023552 /* MRAIDParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1DFC18342C0C00023552 /* MRAIDParser.m */; };
-		275E1E0818342C0C00023552 /* MRAIDParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1DFC18342C0C00023552 /* MRAIDParser.m */; };
-		275E1E0918342C0C00023552 /* MRAIDUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1DFF18342C0C00023552 /* MRAIDUtil.m */; };
-		275E1E0A18342C0C00023552 /* MRAIDUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1DFF18342C0C00023552 /* MRAIDUtil.m */; };
-		275E1E0B18342C0C00023552 /* MRAIDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1E0118342C0C00023552 /* MRAIDView.m */; };
-		275E1E0C18342C0C00023552 /* MRAIDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1E0118342C0C00023552 /* MRAIDView.m */; };
-		275E1E1218342C3D00023552 /* MRAIDOrientationProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1E0F18342C3D00023552 /* MRAIDOrientationProperties.m */; };
-		275E1E1318342C3D00023552 /* MRAIDOrientationProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1E0F18342C3D00023552 /* MRAIDOrientationProperties.m */; };
-		275E1E1418342C3D00023552 /* MRAIDResizeProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1E1118342C3D00023552 /* MRAIDResizeProperties.m */; };
-		275E1E1518342C3D00023552 /* MRAIDResizeProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 275E1E1118342C3D00023552 /* MRAIDResizeProperties.m */; };
+		2738BDEB19815D9100A968BF /* MRAIDSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDD719815D9100A968BF /* MRAIDSettings.m */; };
+		2738BDEC19815D9100A968BF /* MRAIDSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDD719815D9100A968BF /* MRAIDSettings.m */; };
+		2738BDED19815D9100A968BF /* SKMRAIDOrientationProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDDA19815D9100A968BF /* SKMRAIDOrientationProperties.m */; };
+		2738BDEE19815D9100A968BF /* SKMRAIDOrientationProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDDA19815D9100A968BF /* SKMRAIDOrientationProperties.m */; };
+		2738BDEF19815D9100A968BF /* SKMRAIDResizeProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDDC19815D9100A968BF /* SKMRAIDResizeProperties.m */; };
+		2738BDF019815D9100A968BF /* SKMRAIDResizeProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDDC19815D9100A968BF /* SKMRAIDResizeProperties.m */; };
+		2738BDF119815D9100A968BF /* SKMRAIDInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDDE19815D9100A968BF /* SKMRAIDInterstitial.m */; };
+		2738BDF219815D9100A968BF /* SKMRAIDInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDDE19815D9100A968BF /* SKMRAIDInterstitial.m */; };
+		2738BDF319815D9100A968BF /* SKMRAIDModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDE019815D9100A968BF /* SKMRAIDModalViewController.m */; };
+		2738BDF419815D9100A968BF /* SKMRAIDModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDE019815D9100A968BF /* SKMRAIDModalViewController.m */; };
+		2738BDF519815D9100A968BF /* SKMRAIDParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDE219815D9100A968BF /* SKMRAIDParser.m */; };
+		2738BDF619815D9100A968BF /* SKMRAIDParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDE219815D9100A968BF /* SKMRAIDParser.m */; };
+		2738BDF719815D9100A968BF /* SKMRAIDUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDE519815D9100A968BF /* SKMRAIDUtil.m */; };
+		2738BDF819815D9100A968BF /* SKMRAIDUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDE519815D9100A968BF /* SKMRAIDUtil.m */; };
+		2738BDF919815D9100A968BF /* SKMRAIDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDE719815D9100A968BF /* SKMRAIDView.m */; };
+		2738BDFA19815D9100A968BF /* SKMRAIDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2738BDE719815D9100A968BF /* SKMRAIDView.m */; };
 		27B9578D18343A400076286F /* libSourceKitCommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27B9578C18343A400076286F /* libSourceKitCommon.a */; };
 		27BBC1651833E99900074066 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27296B9217F280CE004C268F /* Foundation.framework */; };
 		27BBC1661833E99900074066 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27EBFE7417F2837900FCB7DD /* UIKit.framework */; };
@@ -76,32 +78,33 @@
 /* Begin PBXFileReference section */
 		27296B8F17F280CE004C268F /* libMRAID.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMRAID.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		27296B9217F280CE004C268F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		275E1DF718342C0C00023552 /* MRAIDInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRAIDInterstitial.h; path = "sourcekit-mraid-ios/MRAIDInterstitial.h"; sourceTree = SOURCE_ROOT; };
-		275E1DF818342C0C00023552 /* MRAIDInterstitial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRAIDInterstitial.m; path = "sourcekit-mraid-ios/MRAIDInterstitial.m"; sourceTree = SOURCE_ROOT; };
-		275E1DF918342C0C00023552 /* MRAIDModalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRAIDModalViewController.h; path = "sourcekit-mraid-ios/MRAIDModalViewController.h"; sourceTree = SOURCE_ROOT; };
-		275E1DFA18342C0C00023552 /* MRAIDModalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRAIDModalViewController.m; path = "sourcekit-mraid-ios/MRAIDModalViewController.m"; sourceTree = SOURCE_ROOT; };
-		275E1DFB18342C0C00023552 /* MRAIDParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRAIDParser.h; path = "sourcekit-mraid-ios/MRAIDParser.h"; sourceTree = SOURCE_ROOT; };
-		275E1DFC18342C0C00023552 /* MRAIDParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRAIDParser.m; path = "sourcekit-mraid-ios/MRAIDParser.m"; sourceTree = SOURCE_ROOT; };
-		275E1DFD18342C0C00023552 /* MRAIDServiceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRAIDServiceDelegate.h; path = "sourcekit-mraid-ios/MRAIDServiceDelegate.h"; sourceTree = SOURCE_ROOT; };
-		275E1DFE18342C0C00023552 /* MRAIDUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRAIDUtil.h; path = "sourcekit-mraid-ios/MRAIDUtil.h"; sourceTree = SOURCE_ROOT; };
-		275E1DFF18342C0C00023552 /* MRAIDUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRAIDUtil.m; path = "sourcekit-mraid-ios/MRAIDUtil.m"; sourceTree = SOURCE_ROOT; };
-		275E1E0018342C0C00023552 /* MRAIDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRAIDView.h; path = "sourcekit-mraid-ios/MRAIDView.h"; sourceTree = SOURCE_ROOT; };
-		275E1E0118342C0C00023552 /* MRAIDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRAIDView.m; path = "sourcekit-mraid-ios/MRAIDView.m"; sourceTree = SOURCE_ROOT; };
-		275E1E0218342C0C00023552 /* SourceKitLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SourceKitLogger.h; path = "sourcekit-mraid-ios/SourceKitLogger.h"; sourceTree = SOURCE_ROOT; };
-		275E1E0E18342C3D00023552 /* MRAIDOrientationProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRAIDOrientationProperties.h; sourceTree = "<group>"; };
-		275E1E0F18342C3D00023552 /* MRAIDOrientationProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRAIDOrientationProperties.m; sourceTree = "<group>"; };
-		275E1E1018342C3D00023552 /* MRAIDResizeProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRAIDResizeProperties.h; sourceTree = "<group>"; };
-		275E1E1118342C3D00023552 /* MRAIDResizeProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRAIDResizeProperties.m; sourceTree = "<group>"; };
-		275E1E1618342C4C00023552 /* CloseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CloseButton.h; path = "sourcekit-mraid-ios/CloseButton.h"; sourceTree = SOURCE_ROOT; };
-		275E1E1718342C4C00023552 /* CloseButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = CloseButton.png; path = "sourcekit-mraid-ios/CloseButton.png"; sourceTree = SOURCE_ROOT; };
-		275E1E1818342C4C00023552 /* mraid.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = mraid.js; path = "sourcekit-mraid-ios/mraid.js"; sourceTree = SOURCE_ROOT; };
-		275E1E1918342C4C00023552 /* mraidjs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mraidjs.h; path = "sourcekit-mraid-ios/mraidjs.h"; sourceTree = SOURCE_ROOT; };
+		2738BDD319815D9100A968BF /* CloseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloseButton.h; sourceTree = "<group>"; };
+		2738BDD419815D9100A968BF /* mraid.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = mraid.js; sourceTree = "<group>"; };
+		2738BDD519815D9100A968BF /* mraidjs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mraidjs.h; sourceTree = "<group>"; };
+		2738BDD619815D9100A968BF /* MRAIDSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRAIDSettings.h; sourceTree = "<group>"; };
+		2738BDD719815D9100A968BF /* MRAIDSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRAIDSettings.m; sourceTree = "<group>"; };
+		2738BDD919815D9100A968BF /* SKMRAIDOrientationProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKMRAIDOrientationProperties.h; sourceTree = "<group>"; };
+		2738BDDA19815D9100A968BF /* SKMRAIDOrientationProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKMRAIDOrientationProperties.m; sourceTree = "<group>"; };
+		2738BDDB19815D9100A968BF /* SKMRAIDResizeProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKMRAIDResizeProperties.h; sourceTree = "<group>"; };
+		2738BDDC19815D9100A968BF /* SKMRAIDResizeProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKMRAIDResizeProperties.m; sourceTree = "<group>"; };
+		2738BDDD19815D9100A968BF /* SKMRAIDInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKMRAIDInterstitial.h; sourceTree = "<group>"; };
+		2738BDDE19815D9100A968BF /* SKMRAIDInterstitial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKMRAIDInterstitial.m; sourceTree = "<group>"; };
+		2738BDDF19815D9100A968BF /* SKMRAIDModalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKMRAIDModalViewController.h; sourceTree = "<group>"; };
+		2738BDE019815D9100A968BF /* SKMRAIDModalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKMRAIDModalViewController.m; sourceTree = "<group>"; };
+		2738BDE119815D9100A968BF /* SKMRAIDParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKMRAIDParser.h; sourceTree = "<group>"; };
+		2738BDE219815D9100A968BF /* SKMRAIDParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKMRAIDParser.m; sourceTree = "<group>"; };
+		2738BDE319815D9100A968BF /* SKMRAIDServiceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKMRAIDServiceDelegate.h; sourceTree = "<group>"; };
+		2738BDE419815D9100A968BF /* SKMRAIDUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKMRAIDUtil.h; sourceTree = "<group>"; };
+		2738BDE519815D9100A968BF /* SKMRAIDUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKMRAIDUtil.m; sourceTree = "<group>"; };
+		2738BDE619815D9100A968BF /* SKMRAIDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKMRAIDView.h; sourceTree = "<group>"; };
+		2738BDE719815D9100A968BF /* SKMRAIDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKMRAIDView.m; sourceTree = "<group>"; };
 		27B9578C18343A400076286F /* libSourceKitCommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSourceKitCommon.a; path = "../../../../../../../Library/Developer/Xcode/DerivedData/SourceKit_MRAID_Demo-chkqdkneesfnscddcsglkymwqnat/Build/Products/Debug-iphoneos/libSourceKitCommon.a"; sourceTree = "<group>"; };
 		27BBC1621833E99900074066 /* MRAID Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MRAID Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		27BBC1691833E99900074066 /* MRAID Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MRAID Tests-Info.plist"; sourceTree = "<group>"; };
 		27BBC16D1833E99900074066 /* MRAID_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MRAID_Tests.m; sourceTree = "<group>"; };
 		27BBC16F1833E99900074066 /* MRAID Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MRAID Tests-Prefix.pch"; sourceTree = "<group>"; };
 		27BBC17A1833EA0500074066 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		27BE492319818A2F004EE6D5 /* SKLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKLogger.h; sourceTree = "<group>"; };
 		27EBFE7417F2837900FCB7DD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -129,10 +132,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		27218E6D194BBDB5002CB908 /* MRAID */ = {
+			isa = PBXGroup;
+			children = (
+				27BE492319818A2F004EE6D5 /* SKLogger.h */,
+				2738BDD319815D9100A968BF /* CloseButton.h */,
+				2738BDD419815D9100A968BF /* mraid.js */,
+				2738BDD519815D9100A968BF /* mraidjs.h */,
+				2738BDD619815D9100A968BF /* MRAIDSettings.h */,
+				2738BDD719815D9100A968BF /* MRAIDSettings.m */,
+				2738BDD819815D9100A968BF /* properties */,
+				2738BDDD19815D9100A968BF /* SKMRAIDInterstitial.h */,
+				2738BDDE19815D9100A968BF /* SKMRAIDInterstitial.m */,
+				2738BDDF19815D9100A968BF /* SKMRAIDModalViewController.h */,
+				2738BDE019815D9100A968BF /* SKMRAIDModalViewController.m */,
+				2738BDE119815D9100A968BF /* SKMRAIDParser.h */,
+				2738BDE219815D9100A968BF /* SKMRAIDParser.m */,
+				2738BDE319815D9100A968BF /* SKMRAIDServiceDelegate.h */,
+				2738BDE419815D9100A968BF /* SKMRAIDUtil.h */,
+				2738BDE519815D9100A968BF /* SKMRAIDUtil.m */,
+				2738BDE619815D9100A968BF /* SKMRAIDView.h */,
+				2738BDE719815D9100A968BF /* SKMRAIDView.m */,
+			);
+			path = MRAID;
+			sourceTree = "<group>";
+		};
 		27296B8617F280CE004C268F = {
 			isa = PBXGroup;
 			children = (
-				27296B9417F280CE004C268F /* sourcekit-mraid-ios */,
+				27218E6D194BBDB5002CB908 /* MRAID */,
 				27BBC1671833E99900074066 /* MRAID Tests */,
 				27296B9117F280CE004C268F /* Frameworks */,
 				27296B9017F280CE004C268F /* Products */,
@@ -159,39 +187,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		27296B9417F280CE004C268F /* sourcekit-mraid-ios */ = {
+		2738BDD819815D9100A968BF /* properties */ = {
 			isa = PBXGroup;
 			children = (
-				275E1E0218342C0C00023552 /* SourceKitLogger.h */,
-				275E1E0018342C0C00023552 /* MRAIDView.h */,
-				275E1E0118342C0C00023552 /* MRAIDView.m */,
-				275E1DF718342C0C00023552 /* MRAIDInterstitial.h */,
-				275E1DF818342C0C00023552 /* MRAIDInterstitial.m */,
-				275E1DFD18342C0C00023552 /* MRAIDServiceDelegate.h */,
-				275E1DF918342C0C00023552 /* MRAIDModalViewController.h */,
-				275E1DFA18342C0C00023552 /* MRAIDModalViewController.m */,
-				275E1DFB18342C0C00023552 /* MRAIDParser.h */,
-				275E1DFC18342C0C00023552 /* MRAIDParser.m */,
-				275E1DFE18342C0C00023552 /* MRAIDUtil.h */,
-				275E1DFF18342C0C00023552 /* MRAIDUtil.m */,
-				275E1E0D18342C3D00023552 /* properties */,
-				27EBFE7917F2849200FCB7DD /* resources */,
+				2738BDD919815D9100A968BF /* SKMRAIDOrientationProperties.h */,
+				2738BDDA19815D9100A968BF /* SKMRAIDOrientationProperties.m */,
+				2738BDDB19815D9100A968BF /* SKMRAIDResizeProperties.h */,
+				2738BDDC19815D9100A968BF /* SKMRAIDResizeProperties.m */,
 			);
-			name = "sourcekit-mraid-ios";
-			path = "mraid-kit-ios";
+			path = properties;
 			sourceTree = "<group>";
-		};
-		275E1E0D18342C3D00023552 /* properties */ = {
-			isa = PBXGroup;
-			children = (
-				275E1E0E18342C3D00023552 /* MRAIDOrientationProperties.h */,
-				275E1E0F18342C3D00023552 /* MRAIDOrientationProperties.m */,
-				275E1E1018342C3D00023552 /* MRAIDResizeProperties.h */,
-				275E1E1118342C3D00023552 /* MRAIDResizeProperties.m */,
-			);
-			name = properties;
-			path = "sourcekit-mraid-ios/properties";
-			sourceTree = SOURCE_ROOT;
 		};
 		27BBC1671833E99900074066 /* MRAID Tests */ = {
 			isa = PBXGroup;
@@ -209,17 +214,6 @@
 				27BBC16F1833E99900074066 /* MRAID Tests-Prefix.pch */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		27EBFE7917F2849200FCB7DD /* resources */ = {
-			isa = PBXGroup;
-			children = (
-				275E1E1618342C4C00023552 /* CloseButton.h */,
-				275E1E1718342C4C00023552 /* CloseButton.png */,
-				275E1E1818342C4C00023552 /* mraid.js */,
-				275E1E1918342C4C00023552 /* mraidjs.h */,
-			);
-			name = resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -305,7 +299,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# create the hex mraidjs header file\ntouch -c ./sourcekit-mraid-ios/MRAIDView.m\nxxd -i ./sourcekit-mraid-ios/mraid.js ./sourcekit-mraid-ios/mraidjs.h\nxxd -i ./sourcekit-mraid-ios/CloseButton.png ./sourcekit-mraid-ios/CloseButton.h";
+			shellScript = "# create the hex mraidjs header file\ntouch -c ./MRAID/SKMRAIDView.m\nxxd -i ./MRAID/mraid.js ./MRAID/mraidjs.h\nxxd -i ./MRAID/CloseButton.png ./MRAID/CloseButton.h";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -315,13 +309,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				275E1E0B18342C0C00023552 /* MRAIDView.m in Sources */,
-				275E1E1418342C3D00023552 /* MRAIDResizeProperties.m in Sources */,
-				275E1E1218342C3D00023552 /* MRAIDOrientationProperties.m in Sources */,
-				275E1E0918342C0C00023552 /* MRAIDUtil.m in Sources */,
-				275E1E0318342C0C00023552 /* MRAIDInterstitial.m in Sources */,
-				275E1E0718342C0C00023552 /* MRAIDParser.m in Sources */,
-				275E1E0518342C0C00023552 /* MRAIDModalViewController.m in Sources */,
+				2738BDF319815D9100A968BF /* SKMRAIDModalViewController.m in Sources */,
+				2738BDF719815D9100A968BF /* SKMRAIDUtil.m in Sources */,
+				2738BDED19815D9100A968BF /* SKMRAIDOrientationProperties.m in Sources */,
+				2738BDF519815D9100A968BF /* SKMRAIDParser.m in Sources */,
+				2738BDEB19815D9100A968BF /* MRAIDSettings.m in Sources */,
+				2738BDEF19815D9100A968BF /* SKMRAIDResizeProperties.m in Sources */,
+				2738BDF919815D9100A968BF /* SKMRAIDView.m in Sources */,
+				2738BDF119815D9100A968BF /* SKMRAIDInterstitial.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -329,14 +324,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2738BDF019815D9100A968BF /* SKMRAIDResizeProperties.m in Sources */,
+				2738BDF219815D9100A968BF /* SKMRAIDInterstitial.m in Sources */,
+				2738BDF619815D9100A968BF /* SKMRAIDParser.m in Sources */,
+				2738BDF819815D9100A968BF /* SKMRAIDUtil.m in Sources */,
+				2738BDF419815D9100A968BF /* SKMRAIDModalViewController.m in Sources */,
+				2738BDEE19815D9100A968BF /* SKMRAIDOrientationProperties.m in Sources */,
+				2738BDEC19815D9100A968BF /* MRAIDSettings.m in Sources */,
+				2738BDFA19815D9100A968BF /* SKMRAIDView.m in Sources */,
 				27BBC16E1833E99900074066 /* MRAID_Tests.m in Sources */,
-				275E1E0618342C0C00023552 /* MRAIDModalViewController.m in Sources */,
-				275E1E0A18342C0C00023552 /* MRAIDUtil.m in Sources */,
-				275E1E0818342C0C00023552 /* MRAIDParser.m in Sources */,
-				275E1E0C18342C0C00023552 /* MRAIDView.m in Sources */,
-				275E1E1318342C3D00023552 /* MRAIDOrientationProperties.m in Sources */,
-				275E1E1518342C3D00023552 /* MRAIDResizeProperties.m in Sources */,
-				275E1E0418342C0C00023552 /* MRAIDInterstitial.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

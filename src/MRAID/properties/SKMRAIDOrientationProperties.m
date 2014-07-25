@@ -1,14 +1,14 @@
 //
-//  MRAIDOrientationProperties.m
+//  SKMRAIDOrientationProperties.m
 //  MRAID
 //
 //  Created by Jay Tucker on 9/16/13.
 //  Copyright (c) 2013 Nexage, Inc. All rights reserved.
 //
 
-#import "MRAIDOrientationProperties.h"
+#import "SKMRAIDOrientationProperties.h"
 
-@implementation MRAIDOrientationProperties
+@implementation SKMRAIDOrientationProperties
 
 - (id)init
 {
@@ -20,12 +20,12 @@
     return self;
 }
 
-+ (MRAIDForceOrientation)MRAIDForceOrientationFromString:(NSString *)s
++ (SKMRAIDForceOrientation)MRAIDForceOrientationFromString:(NSString *)s
 {
     NSArray *names = @[ @"portrait", @"landscape", @"none" ];
     NSUInteger i = [names indexOfObject:s];
     if (i != NSNotFound) {
-        return (MRAIDForceOrientation)i;
+        return (SKMRAIDForceOrientation)i;
     }
     // Use none for the default value
     return MRAIDForceOrientationNone;

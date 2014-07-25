@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2720898D1835172800394F9D /* MRAIDView.h in Resources */ = {isa = PBXBuildFile; fileRef = 2720898A1835172800394F9D /* MRAIDView.h */; };
-		2720898E1835172800394F9D /* MRAIDInterstitial.h in Resources */ = {isa = PBXBuildFile; fileRef = 2720898B1835172800394F9D /* MRAIDInterstitial.h */; };
-		2720898F1835172800394F9D /* MRAIDServiceDelegate.h in Resources */ = {isa = PBXBuildFile; fileRef = 2720898C1835172800394F9D /* MRAIDServiceDelegate.h */; };
 		27740FEB17F2891C00EFFF39 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27740FEA17F2891C00EFFF39 /* Foundation.framework */; };
 		27740FED17F2891C00EFFF39 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27740FEC17F2891C00EFFF39 /* CoreGraphics.framework */; };
 		27740FEF17F2891C00EFFF39 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27740FEE17F2891C00EFFF39 /* UIKit.framework */; };
@@ -152,14 +149,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2720898A1835172800394F9D /* MRAIDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRAIDView.h; path = "../../../src/sourcekit-mraid-ios/MRAIDView.h"; sourceTree = "<group>"; };
-		2720898B1835172800394F9D /* MRAIDInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRAIDInterstitial.h; path = "../../../src/sourcekit-mraid-ios/MRAIDInterstitial.h"; sourceTree = "<group>"; };
-		2720898C1835172800394F9D /* MRAIDServiceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRAIDServiceDelegate.h; path = "../../../src/sourcekit-mraid-ios/MRAIDServiceDelegate.h"; sourceTree = "<group>"; };
+		2717E094194BBABA00CB110C /* SourceKitLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SourceKitLogger.h; path = "../../../../sourcekit-common-ios/src/Logger/SourceKitLogger.h"; sourceTree = "<group>"; };
+		27218EA0194BBF95002CB908 /* MRAIDSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRAIDSettings.h; path = ../../../src/MRAID/MRAIDSettings.h; sourceTree = "<group>"; };
+		2738BDFD19815FAB00A968BF /* SKMRAIDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKMRAIDView.h; path = ../../../src/MRAID/SKMRAIDView.h; sourceTree = "<group>"; };
+		2738BE0019815FB400A968BF /* SKMRAIDInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKMRAIDInterstitial.h; path = ../../../src/MRAID/SKMRAIDInterstitial.h; sourceTree = "<group>"; };
+		2738BE0119815FBB00A968BF /* SKMRAIDServiceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKMRAIDServiceDelegate.h; path = ../../../src/MRAID/SKMRAIDServiceDelegate.h; sourceTree = "<group>"; };
 		27740FE717F2891C00EFFF39 /* MRAIDDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MRAIDDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27740FEA17F2891C00EFFF39 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		27740FEC17F2891C00EFFF39 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		27740FEE17F2891C00EFFF39 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		278E62E61805AB4900A786B4 /* MRAID.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MRAID.xcodeproj; path = ../../src/MRAID.xcodeproj; sourceTree = "<group>"; };
+		2792296C195EF5C7007D661A /* SourceKitBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SourceKitBrowser.h; path = "../../../../sourcekit-common-ios/src/Browser/SourceKitBrowser.h"; sourceTree = "<group>"; };
 		27B95589183435C90076286F /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = MRAIDDemo/AppDelegate.h; sourceTree = SOURCE_ROOT; };
 		27B9558A183435C90076286F /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = MRAIDDemo/AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		27B95590183435F60076286F /* BannerAdListTVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BannerAdListTVC.h; path = MRAIDDemo/BannerAdListTVC.h; sourceTree = SOURCE_ROOT; };
@@ -265,7 +265,6 @@
 		27B9573B183437820076286F /* interstitial.viewableChange.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = interstitial.viewableChange.html; sourceTree = "<group>"; };
 		27B9573C183437820076286F /* nexage.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = nexage.gif; sourceTree = "<group>"; };
 		953FF04B183AB2E200E146D2 /* SourceKitCommon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SourceKitCommon.xcodeproj; path = "../../../sourcekit-common-ios/src/SourceKitCommon.xcodeproj"; sourceTree = "<group>"; };
-		953FF051183AB31C00E146D2 /* SourceKitLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SourceKitLogger.h; path = "../../../../sourcekit-common-ios/src/SourceKit/SourceKitLogger.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -309,7 +308,8 @@
 		275E1E2418342CA200023552 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				953FF051183AB31C00E146D2 /* SourceKitLogger.h */,
+				2792296C195EF5C7007D661A /* SourceKitBrowser.h */,
+				2717E094194BBABA00CB110C /* SourceKitLogger.h */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -317,9 +317,10 @@
 		275E1E2518342CAB00023552 /* MRAID */ = {
 			isa = PBXGroup;
 			children = (
-				2720898A1835172800394F9D /* MRAIDView.h */,
-				2720898B1835172800394F9D /* MRAIDInterstitial.h */,
-				2720898C1835172800394F9D /* MRAIDServiceDelegate.h */,
+				27218EA0194BBF95002CB908 /* MRAIDSettings.h */,
+				2738BDFD19815FAB00A968BF /* SKMRAIDView.h */,
+				2738BE0019815FB400A968BF /* SKMRAIDInterstitial.h */,
+				2738BE0119815FBB00A968BF /* SKMRAIDServiceDelegate.h */,
 			);
 			name = MRAID;
 			sourceTree = "<group>";
@@ -678,13 +679,11 @@
 				27B95757183437820076286F /* banner.playVideo.html in Resources */,
 				27B955BA183436410076286F /* icon@2x.png in Resources */,
 				27B95752183437820076286F /* banner.isViewable.html in Resources */,
-				2720898D1835172800394F9D /* MRAIDView.h in Resources */,
 				27B9574C183437820076286F /* banner.getPlacementType.html in Resources */,
 				27B955BB183436410076286F /* interstitials.png in Resources */,
 				27B955B2183436410076286F /* nexage.jpg in Resources */,
 				27B9577B183437820076286F /* interstitial.playVideo.html in Resources */,
 				27B9575E183437820076286F /* banner.setExpandProperties.html in Resources */,
-				2720898E1835172800394F9D /* MRAIDInterstitial.h in Resources */,
 				27B95763183437820076286F /* banner.sizeChange.html in Resources */,
 				27B95761183437820076286F /* banner.setResizeProperties.html in Resources */,
 				27B955B6183436410076286F /* Default-568h.png in Resources */,
@@ -693,7 +692,6 @@
 				27B95760183437820076286F /* banner.setOrientationProperties.html in Resources */,
 				27B9577F183437820076286F /* interstitial.setOrientationProperties.html in Resources */,
 				27B9573E183437820076286F /* banner.callTel.html in Resources */,
-				2720898F1835172800394F9D /* MRAIDServiceDelegate.h in Resources */,
 				27B9575B183437820076286F /* banner.resize.html in Resources */,
 				27B9574A183437820076286F /* banner.getMaxSize.html in Resources */,
 				27B9573D183437820076286F /* banner.addEventListener.html in Resources */,

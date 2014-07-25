@@ -1,5 +1,5 @@
 //
-//  MRAIDOrientationProperties.h
+//  SKMRAIDOrientationProperties.h
 //  MRAID
 //
 //  Created by Jay Tucker on 9/16/13.
@@ -12,13 +12,13 @@ typedef enum {
     MRAIDForceOrientationPortrait,
     MRAIDForceOrientationLandscape,
     MRAIDForceOrientationNone
-} MRAIDForceOrientation;
+} SKMRAIDForceOrientation;
 
-@interface MRAIDOrientationProperties : NSObject
+@interface SKMRAIDOrientationProperties : NSObject
 
 @property (nonatomic, assign) BOOL allowOrientationChange;
-@property (nonatomic, assign) MRAIDForceOrientation forceOrientation;
+@property (nonatomic, assign) SKMRAIDForceOrientation forceOrientation;
 
-+ (MRAIDForceOrientation)MRAIDForceOrientationFromString:(NSString *)s;
++ (SKMRAIDForceOrientation)MRAIDForceOrientationFromString:(NSString *)s;
 
 @end

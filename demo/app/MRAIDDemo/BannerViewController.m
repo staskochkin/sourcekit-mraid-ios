@@ -7,12 +7,13 @@
 //
 
 #import "BannerViewController.h"
-#import "MRAIDView.h"
-#import "MRAIDServiceDelegate.h"
+#import "SKMRAIDView.h"
+#import "SKMRAIDServiceDelegate.h"
+#import "SourceKitBrowser.h"
 
-@interface BannerViewController () <MRAIDViewDelegate, MRAIDServiceDelegate>
+@interface BannerViewController () <SKMRAIDViewDelegate, SKMRAIDServiceDelegate>
 
-@property (retain, nonatomic) MRAIDView *adView;
+@property (retain, nonatomic) SKMRAIDView *adView;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *creativeLabel;
 
@@ -55,7 +56,7 @@
 
  
     // Initialize and load the MRAIDView
-    self.adView = [[MRAIDView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)
+    self.adView = [[SKMRAIDView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)
                                       withHtmlData:htmlData
                                        withBaseURL:bundleUrl
                                   supportedFeatures:@[MRAIDSupportsSMS, MRAIDSupportsTel, MRAIDSupportsCalendar, MRAIDSupportsStorePicture, MRAIDSupportsInlineVideo]
@@ -84,7 +85,7 @@
 
 #pragma mark - MRAIDViewDelegate
 
-- (void)mraidViewAdReady:(MRAIDView *)mraidView
+- (void)mraidViewAdReady:(SKMRAIDView *)mraidView
 {
     NSLog(@"%@ MRAIDViewDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
     if ([self.htmlFile isEqualToString:@"banner.isViewable"]) {
@@ -92,39 +93,33 @@
     }
 }
 
-- (void)mraidViewAdFailed:(MRAIDView *)mraidView
+- (void)mraidViewAdFailed:(SKMRAIDView *)mraidView
 {
     NSLog(@"%@ MRAIDViewDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
 }
 
-- (void)mraidViewWillExpand:(MRAIDView *)mraidView
+- (void)mraidViewWillExpand:(SKMRAIDView *)mraidView
 {
     NSLog(@"%@ MRAIDViewDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
 }
 
-- (void)mraidViewDidClose:(MRAIDView *)mraidView
+- (void)mraidViewDidClose:(SKMRAIDView *)mraidView
 {
     NSLog(@"%@ MRAIDViewDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
 }
 
-- (void)mraidViewDidResize:(MRAIDView *)mraidView
-{
-    NSLog(@"%@ MRAIDViewDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
-}
-
-- (BOOL)mraidViewShouldResize:(MRAIDView *)mraidView toPosition:(CGRect)position allowOffscreen:(BOOL)allowOffscreen
+- (BOOL)mraidViewShouldResize:(SKMRAIDView *)mraidView toPosition:(CGRect)position allowOffscreen:(BOOL)allowOffscreen
 {
     NSLog(@"%@ MRAIDViewDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), NSStringFromCGRect(position));
     // Insert your code to make any needed adjustments to the resized MRAIDview or its containing view.
     return YES;
 }
 
-#pragma mark - MRAIDServiceDelegate
-
-- (void)mraidServiceCallTelWithUrlString:(NSString *)urlString
-{
-    NSLog(@"%@ MRAIDServiceDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), urlString);
+- (void)mraidViewNavigate:(SKMRAIDView *)mraidView withURL:(NSURL *)url {
+    NSLog(@"%@ MRAIDViewDelegate %@ with URL %@", [[self class] description], NSStringFromSelector(_cmd), [url absoluteString]);
 }
+
+#pragma mark - MRAIDServiceDelegate
 
 - (void)mraidServiceCreateCalendarEventWithEventJSON:(NSString *)eventJSON
 {
@@ -134,7 +129,10 @@
 - (void)mraidServiceOpenBrowserWithUrlString:(NSString *)urlString
 {
     NSLog(@"%@ MRAIDServiceDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), urlString);
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
+    SourceKitBrowser *browser = [[SourceKitBrowser alloc] initWithDelegate:nil withFeatures:@[kSourceKitBrowserFeatureSupportInlineMediaPlayback
+                                                                                              , kSourceKitBrowserFeatureDisableStatusBar
+                                                                                              , kSourceKitBrowserFeatureScalePagesToFit]];
+    [browser loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:urlString]]];
 }
 
 - (void)mraidServicePlayVideoWithUrlString:(NSString *)urlString
@@ -142,11 +140,6 @@
     NSLog(@"%@ MRAIDServiceDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), urlString);
     NSURL *videoUrl = [NSURL URLWithString:urlString];
     [[UIApplication sharedApplication] openURL:videoUrl];
-}
-
-- (void)mraidServiceSendSmsWithUrlString:(NSString *)urlString
-{
-    NSLog(@"%@ MRAIDServiceDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), urlString);
 }
 
 - (void)mraidServiceStorePictureWithUrlString:(NSString *)urlString

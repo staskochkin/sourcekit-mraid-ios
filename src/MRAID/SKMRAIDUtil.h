@@ -1,5 +1,5 @@
 //
-//  MRAIDUtil.h
+//  SKMRAIDUtil.h
 //  MRAID
 //
 //  Created by Jay Tucker on 11/8/13.
@@ -15,7 +15,7 @@
 #define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 #define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
 
-@interface MRAIDUtil : NSObject
+@interface SKMRAIDUtil : NSObject
 
 + (NSString *)processRawHtml:(NSString *)rawHtml;
 
