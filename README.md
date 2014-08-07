@@ -69,6 +69,8 @@ For an Interstitial:
 Wait for the SKMRAIDInterstitialDelegate 'mraidInterstitialAdReady:' callback and do the following when the Ad is ready to be shown on screen:
 
 	[mraidInterstitial show];
+    
+Inspect ad availabilith with [mraidInterstitial isAdReady] before you play the ad.
 
 Step 4: (Optional) To see logging:
 	

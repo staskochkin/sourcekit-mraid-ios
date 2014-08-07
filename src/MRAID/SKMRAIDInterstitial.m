@@ -36,6 +36,7 @@
 @implementation SKMRAIDInterstitial
 
 @synthesize isViewable=_isViewable;
+@synthesize rootViewController=_rootViewController;
 
 - (id)init {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
@@ -75,6 +76,11 @@
     return self;
 }
 
+- (BOOL)isAdReady
+{
+    return isReady;
+}
+
 - (void)show
 {
     if (!isReady) {
@@ -98,6 +104,12 @@
 {
     [SKLogger debug:@"MRAID - Interstitial" withMessage:[NSString stringWithFormat: @"%@ %@", [self.class description], NSStringFromSelector(_cmd)]];
     return _isViewable;
+}
+
+- (void)setRootViewController:(UIViewController *)newRootViewController
+{
+    mraidView.rootViewController = newRootViewController;
+    [SKLogger debug:@"MRAID - Interstitial" withMessage:[NSString stringWithFormat:@"setRootViewController: %@", newRootViewController]];
 }
 
 #pragma mark - MRAIDViewDelegate

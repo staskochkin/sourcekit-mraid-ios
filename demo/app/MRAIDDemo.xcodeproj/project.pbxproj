@@ -149,7 +149,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2717E094194BBABA00CB110C /* SourceKitLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SourceKitLogger.h; path = "../../../../sourcekit-common-ios/src/Logger/SourceKitLogger.h"; sourceTree = "<group>"; };
 		27218EA0194BBF95002CB908 /* MRAIDSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRAIDSettings.h; path = ../../../src/MRAID/MRAIDSettings.h; sourceTree = "<group>"; };
 		2738BDFD19815FAB00A968BF /* SKMRAIDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKMRAIDView.h; path = ../../../src/MRAID/SKMRAIDView.h; sourceTree = "<group>"; };
 		2738BE0019815FB400A968BF /* SKMRAIDInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKMRAIDInterstitial.h; path = ../../../src/MRAID/SKMRAIDInterstitial.h; sourceTree = "<group>"; };
@@ -159,7 +158,6 @@
 		27740FEC17F2891C00EFFF39 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		27740FEE17F2891C00EFFF39 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		278E62E61805AB4900A786B4 /* MRAID.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MRAID.xcodeproj; path = ../../src/MRAID.xcodeproj; sourceTree = "<group>"; };
-		2792296C195EF5C7007D661A /* SourceKitBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SourceKitBrowser.h; path = "../../../../sourcekit-common-ios/src/Browser/SourceKitBrowser.h"; sourceTree = "<group>"; };
 		27B95589183435C90076286F /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = MRAIDDemo/AppDelegate.h; sourceTree = SOURCE_ROOT; };
 		27B9558A183435C90076286F /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = MRAIDDemo/AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		27B95590183435F60076286F /* BannerAdListTVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BannerAdListTVC.h; path = MRAIDDemo/BannerAdListTVC.h; sourceTree = SOURCE_ROOT; };
@@ -265,6 +263,8 @@
 		27B9573B183437820076286F /* interstitial.viewableChange.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = interstitial.viewableChange.html; sourceTree = "<group>"; };
 		27B9573C183437820076286F /* nexage.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = nexage.gif; sourceTree = "<group>"; };
 		953FF04B183AB2E200E146D2 /* SourceKitCommon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SourceKitCommon.xcodeproj; path = "../../../sourcekit-common-ios/src/SourceKitCommon.xcodeproj"; sourceTree = "<group>"; };
+		95DB64DD198299FF00EF3446 /* SKBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKBrowser.h; path = "../../../../sourcekit-common-ios/src/Browser/SKBrowser.h"; sourceTree = "<group>"; };
+		95DB64DE198299FF00EF3446 /* SKLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKLogger.h; path = "../../../../sourcekit-common-ios/src/Logger/SKLogger.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -308,8 +308,8 @@
 		275E1E2418342CA200023552 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				2792296C195EF5C7007D661A /* SourceKitBrowser.h */,
-				2717E094194BBABA00CB110C /* SourceKitLogger.h */,
+				95DB64DD198299FF00EF3446 /* SKBrowser.h */,
+				95DB64DE198299FF00EF3446 /* SKLogger.h */,
 			);
 			name = Common;
 			sourceTree = "<group>";

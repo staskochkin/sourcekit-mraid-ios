@@ -9,7 +9,7 @@
 #import "BannerViewController.h"
 #import "SKMRAIDView.h"
 #import "SKMRAIDServiceDelegate.h"
-#import "SourceKitBrowser.h"
+#import "SKBrowser.h"
 
 @interface BannerViewController () <SKMRAIDViewDelegate, SKMRAIDServiceDelegate>
 
@@ -129,7 +129,7 @@
 - (void)mraidServiceOpenBrowserWithUrlString:(NSString *)urlString
 {
     NSLog(@"%@ MRAIDServiceDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), urlString);
-    SourceKitBrowser *browser = [[SourceKitBrowser alloc] initWithDelegate:nil withFeatures:@[kSourceKitBrowserFeatureSupportInlineMediaPlayback
+    SKBrowser *browser = [[SKBrowser alloc] initWithDelegate:nil withFeatures:@[kSourceKitBrowserFeatureSupportInlineMediaPlayback
                                                                                               , kSourceKitBrowserFeatureDisableStatusBar
                                                                                               , kSourceKitBrowserFeatureScalePagesToFit]];
     [browser loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:urlString]]];

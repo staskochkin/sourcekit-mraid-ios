@@ -30,7 +30,7 @@
 
 @property (nonatomic, unsafe_unretained) id<SKMRAIDInterstitialDelegate> delegate;
 @property (nonatomic, unsafe_unretained) id<SKMRAIDServiceDelegate> serviceDelegate;
-@property (nonatomic, unsafe_unretained) UIViewController *rootViewController;
+@property (nonatomic, unsafe_unretained, setter = setRootViewController:) UIViewController *rootViewController;
 @property (nonatomic, assign, getter = isViewable, setter = setIsViewable:) BOOL isViewable;
 
 // IMPORTANT: This is the only valid initializer for an MRAIDInterstitial; -init will throw an exception
@@ -40,7 +40,7 @@
                        delegate:(id<SKMRAIDInterstitialDelegate>)delegate
                serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
              rootViewController:(UIViewController *)rootViewController;
-
+- (BOOL)isAdReady;
 - (void)show;
 
 @end

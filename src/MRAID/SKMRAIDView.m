@@ -99,6 +99,7 @@ typedef enum {
 @implementation SKMRAIDView
 
 @synthesize isViewable=_isViewable;
+@synthesize rootViewController = _rootViewController;
 
 - (id)init {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
@@ -190,7 +191,7 @@ typedef enum {
         previousScreenSize = CGSizeZero;
         
         [self addObserver:self forKeyPath:@"self.frame" options:NSKeyValueObservingOptionOld context:NULL];
-        
+ 
         // Get mraid.js as binary data
         NSData* mraidJSData = [NSData dataWithBytesNoCopy:__MRAID_mraid_js
                                                    length:__MRAID_mraid_js_len
@@ -247,7 +248,7 @@ typedef enum {
     return YES;
 }
 
--(void)setIsViewable:(BOOL)newIsViewable
+- (void)setIsViewable:(BOOL)newIsViewable
 {
     if(newIsViewable!=_isViewable){
         _isViewable=newIsViewable;
@@ -256,10 +257,18 @@ typedef enum {
     [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat:@"isViewable: %@", _isViewable?@"YES":@"NO"]];
 }
 
--(BOOL)isViewable
+- (BOOL)isViewable
 {
     [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"%@ %@", [self.class description], NSStringFromSelector(_cmd)]];
     return _isViewable;
+}
+
+- (void)setRootViewController:(UIViewController *)newRootViewController
+{
+    if(newRootViewController!=_rootViewController) {
+        _rootViewController=newRootViewController;
+    }
+    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat:@"setRootViewController: %@", _rootViewController]];
 }
 
 - (void)deviceOrientationDidChange:(NSNotification *)notification
@@ -489,8 +498,8 @@ typedef enum {
     if (!isInterstitial) {
         state = MRAIDStateExpanded;
         [self fireStateChangeEvent];
-        [self fireSizeChangeEvent];
     }
+    [self fireSizeChangeEvent];
     self.isViewable = YES;
 }
 
@@ -729,45 +738,49 @@ typedef enum {
 
 - (void)fireSizeChangeEvent
 {
-    int x;
-    int y;
-    int width;
-    int height;
-    if (state == MRAIDStateExpanded || isInterstitial) {
-        x = (int)currentWebView.frame.origin.x;
-        y = (int)currentWebView.frame.origin.y;
-        width = (int)currentWebView.frame.size.width;
-        height = (int)currentWebView.frame.size.height;
-    } else if (state == MRAIDStateResized) {
-        x = (int)resizeView.frame.origin.x;
-        y = (int)resizeView.frame.origin.y;
-        width = (int)resizeView.frame.size.width;
-        height = (int)resizeView.frame.size.height;
-    } else {
-        // Per the MRAID spec, the current or default position is relative to the rectangle defined by the getMaxSize method,
-        // that is, the largest size that the ad can resize to.
-        CGPoint originInRootView = [self.rootViewController.view convertPoint:CGPointZero fromView:self];
-        x = originInRootView.x;
-        y = originInRootView.y;
-        width = (int)self.frame.size.width;
-        height = (int)self.frame.size.height;
+    @synchronized(self){
+        int x;
+        int y;
+        int width;
+        int height;
+        if (state == MRAIDStateExpanded || isInterstitial) {
+            x = (int)currentWebView.frame.origin.x;
+            y = (int)currentWebView.frame.origin.y;
+            width = (int)currentWebView.frame.size.width;
+            height = (int)currentWebView.frame.size.height;
+        } else if (state == MRAIDStateResized) {
+            x = (int)resizeView.frame.origin.x;
+            y = (int)resizeView.frame.origin.y;
+            width = (int)resizeView.frame.size.width;
+            height = (int)resizeView.frame.size.height;
+        } else {
+            // Per the MRAID spec, the current or default position is relative to the rectangle defined by the getMaxSize method,
+            // that is, the largest size that the ad can resize to.
+            CGPoint originInRootView = [self.rootViewController.view convertPoint:CGPointZero fromView:self];
+            x = originInRootView.x;
+            y = originInRootView.y;
+            width = (int)self.frame.size.width;
+            height = (int)self.frame.size.height;
+        }
+        
+        [self injectJavaScript:[NSString stringWithFormat:@"mraid.setCurrentPosition(%d,%d,%d,%d);", x, y, width, height]];
     }
-    
-    [self injectJavaScript:[NSString stringWithFormat:@"mraid.setCurrentPosition(%d,%d,%d,%d);", x, y, width, height]];
 }
 
 - (void)fireStateChangeEvent
 {
-    NSArray *stateNames = @[
-                            @"loading",
-                            @"default",
-                            @"expanded",
-                            @"resized",
-                            @"hidden",
-                            ];
-    
-    NSString *stateName = stateNames[state];
-    [self injectJavaScript:[NSString stringWithFormat:@"mraid.fireStateChangeEvent('%@');", stateName]];
+    @synchronized(self) {
+        NSArray *stateNames = @[
+                                @"loading",
+                                @"default",
+                                @"expanded",
+                                @"resized",
+                                @"hidden",
+                                ];
+        
+        NSString *stateName = stateNames[state];
+        [self injectJavaScript:[NSString stringWithFormat:@"mraid.fireStateChangeEvent('%@');", stateName]];
+    }
 }
 
 - (void)fireViewableChangeEvent
@@ -848,46 +861,39 @@ typedef enum {
 
 - (void)webViewDidFinishLoad:(UIWebView *)wv
 {
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@", NSStringFromSelector(_cmd)]];
-    
-    // If wv is webViewPart2, that means the part 2 expanded web view has just loaded.
-    // In this case, state should already be MRAIDStateExpanded and should not be changed.
-    // if (wv != webViewPart2) {
-
-#if ENABLE_JS_LOG
-        [wv stringByEvaluatingJavaScriptFromString:@"var enableLog = true"];
-#endif
-
-    if (state == MRAIDStateLoading) {
-        state = MRAIDStateDefault;
-        [self injectJavaScript:[NSString stringWithFormat:@"mraid.setPlacementType('%@');", (isInterstitial ? @"interstitial" : @"inline")]];
-        [self setSupports:supportedFeatures];
-        [self setDefaultPosition];
-        [self setMaxSize];
-        [self setScreenSize];
-        [self fireStateChangeEvent];
-        [self fireSizeChangeEvent];
-        [self fireReadyEvent];
+    @synchronized(self) {
+        [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@", NSStringFromSelector(_cmd)]];
         
-        if (!isInterstitial) {
-            // For banners, isViewable is set to YES when the MRAIDView is 'ready'
-            // For interstitials, isViewable is set by the modal viewcontroller which by definition covers the entire screen, see the 'showAsInterstitial' method
-            //
-            // IMPORTANT:
-            // Host App controlled changes to isVisible such as resigning active, changing MRAIDView.frame, setting MRAIDView.hidden=YES, scrolling off screen in a scrollView or tableViewCell, etc. should be managed by host container by setting the isViewable property appropriately, the Demo app for example code
-            self.isViewable=YES;
+        // If wv is webViewPart2, that means the part 2 expanded web view has just loaded.
+        // In this case, state should already be MRAIDStateExpanded and should not be changed.
+        // if (wv != webViewPart2) {
+        
+        if (ENABLE_JS_LOG) {
+            [wv stringByEvaluatingJavaScriptFromString:@"var enableLog = true"];
         }
         
-        if ([self.delegate respondsToSelector:@selector(mraidViewAdReady:)]) {
-            [self.delegate mraidViewAdReady:self];
+        if (state == MRAIDStateLoading) {
+            state = MRAIDStateDefault;
+            [self injectJavaScript:[NSString stringWithFormat:@"mraid.setPlacementType('%@');", (isInterstitial ? @"interstitial" : @"inline")]];
+            [self setSupports:supportedFeatures];
+            [self setDefaultPosition];
+            [self setMaxSize];
+            [self setScreenSize];
+            [self fireStateChangeEvent];
+            [self fireSizeChangeEvent];
+            [self fireReadyEvent];
+            
+            if ([self.delegate respondsToSelector:@selector(mraidViewAdReady:)]) {
+                [self.delegate mraidViewAdReady:self];
+            }
+            
+            // Start monitoring device orientation so we can reset max Size and screenSize if needed.
+            [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(deviceOrientationDidChange:)
+                                                         name:UIDeviceOrientationDidChangeNotification
+                                                       object:nil];
         }
-        
-        // Start monitoring device orientation so we can reset max Size and screenSize if needed.
-        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(deviceOrientationDidChange:)
-                                                     name:UIDeviceOrientationDidChangeNotification
-                                                   object:nil];
     }
 }
 

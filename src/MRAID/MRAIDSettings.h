@@ -9,4 +9,4 @@
 #import <Foundation/Foundation.h>
 
 extern NSString* const kMRAIDKitVersion;
-extern BOOL const ENABLE_JS_LOG;
+extern BOOL ENABLE_JS_LOG;
