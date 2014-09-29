@@ -21,6 +21,7 @@
 #import "CloseButton.h"
 
 #define kCloseEventRegionSize 50
+#define SYSTEM_VERSION_LESS_THAN(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
 typedef enum {
     MRAIDStateLoading,
@@ -182,9 +183,7 @@ typedef enum {
         
         webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
         [self initWebView:webView];
-        
         currentWebView = webView;
-        
         [self addSubview:webView];
         
         previousMaxSize = CGSizeZero;
@@ -197,6 +196,7 @@ typedef enum {
                                                    length:__MRAID_mraid_js_len
                                              freeWhenDone:NO];
         mraidjs = [[NSString alloc] initWithData:mraidJSData encoding:NSUTF8StringEncoding];
+        mraidJSData = nil;
         
         baseURL = bsURL;
         state = MRAIDStateLoading;
@@ -223,9 +223,26 @@ typedef enum {
     [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"%@ %@", [self.class description], NSStringFromSelector(_cmd)]];
     
     [self removeObserver:self forKeyPath:@"self.frame"];
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+    
+    
+    webView = nil;
+    webViewPart2 = nil;
+    currentWebView = nil;
+    
+    mraidParser = nil;
+    modalVC = nil;
+    
+    orientationProperties = nil;
+    resizeProperties = nil;
+    
+    mraidFeatures = nil;
+    supportedFeatures = nil;
+    
+    closeEventRegion = nil;
+    resizeView = nil;
+    resizeCloseRegion = nil;
 }
 
 - (BOOL)isValidFeatureSet:(NSArray *)features
@@ -290,8 +307,8 @@ typedef enum {
     
     CGRect oldFrame = CGRectNull;
     CGRect newFrame = CGRectNull;
-    if ([change objectForKey:@"old"] != [NSNull null]) {
-        oldFrame = [[change objectForKey:@"old"] CGRectValue];
+    if (change[@"old"] != [NSNull null]) {
+        oldFrame = [change[@"old"] CGRectValue];
     }
     if ([object valueForKeyPath:keyPath] != [NSNull null]) {
         newFrame = [[object valueForKeyPath:keyPath] CGRectValue];
@@ -763,7 +780,11 @@ typedef enum {
             height = (int)self.frame.size.height;
         }
         
-        [self injectJavaScript:[NSString stringWithFormat:@"mraid.setCurrentPosition(%d,%d,%d,%d);", x, y, width, height]];
+        UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
+        BOOL isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation);
+        // [SKLogger debug:[NSString stringWithFormat:@"orientation is %@", (isLandscape ?  @"landscape" : @"portrait")]];
+        BOOL adjustOrientationForIOS8 = isInterstitial &&  isLandscape && !SYSTEM_VERSION_LESS_THAN(@"8.0");
+        [self injectJavaScript:[NSString stringWithFormat:@"mraid.setCurrentPosition(%d,%d,%d,%d);", x, y, adjustOrientationForIOS8?height:width, adjustOrientationForIOS8?width:height]];
     }
 }
 
@@ -826,8 +847,13 @@ typedef enum {
     UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
     BOOL isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation);
     // [SKLogger debug:[NSString stringWithFormat:@"orientation is %@", (isLandscape ?  @"landscape" : @"portrait")]];
-    if (isLandscape) {
-        screenSize = CGSizeMake(screenSize.height, screenSize.width);
+   
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
+        screenSize = CGSizeMake(screenSize.width, screenSize.height);
+    } else {
+        if (isLandscape) {
+            screenSize = CGSizeMake(screenSize.height, screenSize.width);
+        }
     }
     if (!CGSizeEqualToSize(screenSize, previousScreenSize)) {
         [self injectJavaScript:[NSString stringWithFormat:@"mraid.setScreenSize(%d,%d);",

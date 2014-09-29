@@ -7,7 +7,6 @@
 //
 
 #import "SKMRAIDParser.h"
-#import "SKMRAIDView.h"
 
 #import "SKLogger.h"
 
@@ -95,9 +94,9 @@
         command = [command stringByAppendingString:@":"];
     }
 
-    NSMutableDictionary *commandDict = [NSMutableDictionary dictionaryWithObject:command forKey:@"command"];
+    NSMutableDictionary *commandDict = [@{@"command" : command} mutableCopy];
     if (paramObj) {
-        [commandDict setObject:paramObj forKey:@"paramObj"];
+        commandDict[@"paramObj"] = paramObj;
     }
     return commandDict;
 }

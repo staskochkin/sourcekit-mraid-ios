@@ -45,6 +45,12 @@
     return nil;
 }
 
+- (void) dealloc
+{
+    mraidView = nil;
+    supportedFeatures = nil;
+}
+
 // designated initializer
 - (id)initWithSupportedFeatures:(NSArray *)features
                    withHtmlData:(NSString*)htmlData
