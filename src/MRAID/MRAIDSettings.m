@@ -8,5 +8,5 @@
 
 #import "MRAIDSettings.h"
 
-NSString* const kMRAIDKitVersion    = @"1.0.4";
+NSString* const kMRAIDKitVersion    = @"1.0.5";
 BOOL ENABLE_JS_LOG                  = NO;

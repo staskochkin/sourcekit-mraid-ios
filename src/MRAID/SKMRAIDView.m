@@ -325,6 +325,11 @@ typedef enum {
     [self fireSizeChangeEvent];
 }
 
+-(void)setBackgroundColor:(UIColor *)backgroundColor
+{
+    [super setBackgroundColor:backgroundColor];
+    currentWebView.backgroundColor = backgroundColor;
+}
 
 #pragma mark - interstitial support
 
@@ -503,6 +508,11 @@ typedef enum {
     
     if ([self.rootViewController respondsToSelector:@selector(presentViewController:animated:completion:)]) {
         // used if running >= iOS 6
+        if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {  // respect clear backgroundColor
+            self.rootViewController.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
+        } else {
+            modalVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        }
         [self.rootViewController presentViewController:modalVC animated:NO completion:nil];
     } else {
         // Turn off the warning about using a deprecated method.

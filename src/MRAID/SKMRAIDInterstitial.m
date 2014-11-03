@@ -118,6 +118,11 @@
     [SKLogger debug:@"MRAID - Interstitial" withMessage:[NSString stringWithFormat:@"setRootViewController: %@", newRootViewController]];
 }
 
+-(void)setBackgroundColor:(UIColor *)backgroundColor
+{
+    mraidView.backgroundColor = backgroundColor;
+}
+
 #pragma mark - MRAIDViewDelegate
 
 - (void)mraidViewAdReady:(SKMRAIDView *)mraidView

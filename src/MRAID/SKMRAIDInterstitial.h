@@ -32,6 +32,7 @@
 @property (nonatomic, unsafe_unretained) id<SKMRAIDServiceDelegate> serviceDelegate;
 @property (nonatomic, unsafe_unretained, setter = setRootViewController:) UIViewController *rootViewController;
 @property (nonatomic, assign, getter = isViewable, setter = setIsViewable:) BOOL isViewable;
+@property (nonatomic, copy) UIColor *backgroundColor;
 
 // IMPORTANT: This is the only valid initializer for an MRAIDInterstitial; -init will throw an exception
 - (id)initWithSupportedFeatures:(NSArray *)features
