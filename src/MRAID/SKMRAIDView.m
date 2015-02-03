@@ -31,7 +31,7 @@ typedef enum {
     MRAIDStateHidden
 } MRAIDState;
 
-@interface SKMRAIDView () <UIWebViewDelegate, SKMRAIDModalViewControllerDelegate>
+@interface SKMRAIDView () <UIWebViewDelegate, SKMRAIDModalViewControllerDelegate, UIGestureRecognizerDelegate>
 {
     MRAIDState state;
     // This corresponds to the MRAID placement type.
@@ -66,6 +66,9 @@ typedef enum {
     
     CGSize previousMaxSize;
     CGSize previousScreenSize;
+    
+    UITapGestureRecognizer *tapGestureRecognizer;
+    BOOL bonafideTapObserved;
 }
 
 // "hidden" method for interstitial support
@@ -155,6 +158,7 @@ typedef enum {
 {
     self = [super initWithFrame:frame];
     if (self) {
+        [self setUpTapGestureRecognizer];
         isInterstitial = isInter;
         _delegate = delegate;
         _serviceDelegate = serviceDelegate;
@@ -214,8 +218,19 @@ typedef enum {
                 [self.delegate mraidViewAdFailed:self];
             }
         }
+        if (isInter) {
+            bonafideTapObserved = YES;  // no autoRedirect suppression for Interstitials
+        }
     }
     return self;
+}
+
+- (void)cancel
+{
+    [SKLogger debug:@"MRAID - View" withMessage:@"cancel"];
+    [currentWebView stopLoading];
+    currentWebView = nil;
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 }
 
 - (void)dealloc
@@ -429,6 +444,11 @@ typedef enum {
 
 - (void)createCalendarEvent:(NSString *)eventJSON
 {
+    if(!bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
+        [SKLogger info:@"MRAID - View" withMessage:@"Suppressing an attempt to programmatically call mraid.createCalendarEvent() when no UI touch event exists."];
+        return;  // ignore programmatic touches (taps)
+    }
+
     eventJSON=[eventJSON stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %@", NSStringFromSelector(_cmd), eventJSON]];
     
@@ -444,6 +464,11 @@ typedef enum {
 // Note: This method is also used to present an interstitial ad.
 - (void)expand:(NSString *)urlString
 {
+    if(!bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
+        [SKLogger info:@"MRAID - View" withMessage:@"Suppressing an attempt to programmatically call mraid.expand() when no UI touch event exists."];
+        return;  // ignore programmatic touches (taps)
+    }
+    
     [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %@", NSStringFromSelector(_cmd), (urlString ? urlString : @"1-part")]];
     
     // The only time it is valid to call expand is when the ad is currently in either default or resized state.
@@ -466,6 +491,7 @@ typedef enum {
         webViewPart2 = [[UIWebView alloc] initWithFrame:frame];
         [self initWebView:webViewPart2];
         currentWebView = webViewPart2;
+        bonafideTapObserved = YES; // by definition for 2 part expand a valid tap has occurred
         
         if (mraidjs) {
             [self injectJavaScript:mraidjs];
@@ -511,7 +537,7 @@ typedef enum {
         if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {  // respect clear backgroundColor
             self.rootViewController.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
         } else {
-            modalVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+            modalVC.modalPresentationStyle = UIModalPresentationFullScreen;
         }
         [self.rootViewController presentViewController:modalVC animated:NO completion:nil];
     } else {
@@ -532,6 +558,11 @@ typedef enum {
 
 - (void)open:(NSString *)urlString
 {
+    if(!bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
+        [SKLogger info:@"MRAID - View" withMessage:@"Suppressing an attempt to programmatically call mraid.open() when no UI touch event exists."];
+       return;  // ignore programmatic touches (taps)
+    }
+    
     urlString = [urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %@", NSStringFromSelector(_cmd), urlString]];
     
@@ -543,6 +574,11 @@ typedef enum {
 
 - (void)playVideo:(NSString *)urlString
 {
+    if(!bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
+        [SKLogger info:@"MRAID - View" withMessage:@"Suppressing an attempt to programmatically call mraid.playVideo() when no UI touch event exists."];
+        return;  // ignore programmatic touches (taps)
+    }
+    
     urlString = [urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %@", NSStringFromSelector(_cmd), urlString]];
     if ([self.serviceDelegate respondsToSelector:@selector(mraidServicePlayVideoWithUrlString:)]) {
@@ -552,6 +588,11 @@ typedef enum {
 
 - (void)resize
 {
+    if(!bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
+        [SKLogger info:@"MRAID - View" withMessage:@"Suppressing an attempt to programmatically call mraid.resize when no UI touch event exists."];
+        return;  // ignore programmatic touches (taps)
+    }
+    
     [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@", NSStringFromSelector(_cmd)]];
     // If our delegate doesn't respond to the mraidViewShouldResizeToPosition:allowOffscreen: message,
     // then we can't do anything. We need help from the app here.
@@ -615,6 +656,11 @@ typedef enum {
 
 -(void)storePicture:(NSString *)urlString
 {
+    if(!bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
+        [SKLogger info:@"MRAID - View" withMessage:@"Suppressing an attempt to programmatically call mraid.storePicture when no UI touch event exists."];
+        return;  // ignore programmatic touches (taps)
+    }
+    
     urlString=[urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %@", NSStringFromSelector(_cmd), urlString]];
     
@@ -904,8 +950,12 @@ typedef enum {
         // In this case, state should already be MRAIDStateExpanded and should not be changed.
         // if (wv != webViewPart2) {
         
-        if (ENABLE_JS_LOG) {
+        if (SK_ENABLE_JS_LOG) {
             [wv stringByEvaluatingJavaScriptFromString:@"var enableLog = true"];
+        }
+        
+        if (SK_SUPPRESS_JS_ALERT) {
+            [wv stringByEvaluatingJavaScriptFromString:@"function alert(){}; function prompt(){}; function confirm(){}"];
         }
         
         if (state == MRAIDStateLoading) {
@@ -1017,6 +1067,10 @@ typedef enum {
     // disable selection
     NSString *js = @"window.getSelection().removeAllRanges();";
     [wv stringByEvaluatingJavaScriptFromString:js];
+    
+    // Alert suppression
+    if (SK_SUPPRESS_JS_ALERT)
+        [wv stringByEvaluatingJavaScriptFromString:@"function alert(){}; function prompt(){}; function confirm(){}"];
 }
 
 - (void)parseCommandUrl:(NSString *)commandUrlString
@@ -1039,6 +1093,47 @@ typedef enum {
     [self performSelector:selector withObject:paramObj];
     
 #pragma clang diagnostic pop
+}
+
+#pragma mark - Gesture Methods
+
+-(void)setUpTapGestureRecognizer
+{
+    if(!SK_SUPPRESS_BANNER_AUTO_REDIRECT){
+        return;  // return without adding the GestureRecognizer if the feature is not enabled
+    }
+    // One finger, one tap
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(oneFingerOneTap)];
+    
+    // Set up
+    [tapGestureRecognizer setNumberOfTapsRequired:1];
+    [tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [tapGestureRecognizer setDelegate:self];
+    
+    // Add the gesture to the view
+    [self addGestureRecognizer:tapGestureRecognizer];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;   // required to allow UIWebview to work correctly, see  http://stackoverflow.com/questions/2909807/does-uigesturerecognizer-work-on-a-uiwebview
+}
+
+-(void)oneFingerOneTap
+{
+    bonafideTapObserved=YES;
+    tapGestureRecognizer.delegate=nil;
+    tapGestureRecognizer=nil;
+    [SKLogger debug:@"MRAID - View" withMessage:@"tapGesture oneFingerTap observed"];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    if (touch.view == resizeCloseRegion || touch.view == closeEventRegion){
+        [SKLogger debug:@"MRAID - View" withMessage:@"tapGesture 'shouldReceiveTouch'=NO"];
+        return NO;
+    }
+    [SKLogger debug:@"MRAID - View" withMessage:@"tapGesture 'shouldReceiveTouch'=YES"];
+    return YES;
 }
 
 @end

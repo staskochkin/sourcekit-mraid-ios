@@ -30,9 +30,9 @@
 
 @interface SKMRAIDView : UIView
 
-@property (nonatomic, unsafe_unretained) id<SKMRAIDViewDelegate> delegate;
-@property (nonatomic, unsafe_unretained) id<SKMRAIDServiceDelegate> serviceDelegate;
-@property (nonatomic, unsafe_unretained, setter = setRootViewController:) UIViewController *rootViewController;
+@property (nonatomic, weak) id<SKMRAIDViewDelegate> delegate;
+@property (nonatomic, weak) id<SKMRAIDServiceDelegate> serviceDelegate;
+@property (nonatomic, weak, setter = setRootViewController:) UIViewController *rootViewController;
 @property (nonatomic, assign, getter = isViewable, setter = setIsViewable:) BOOL isViewable;
 
 // IMPORTANT: This is the only valid initializer for an MRAIDView; -init and -initWithFrame: will throw exceptions
@@ -43,5 +43,7 @@
            delegate:(id<SKMRAIDViewDelegate>)delegate
    serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
  rootViewController:(UIViewController *)rootViewController;
+
+- (void)cancel;
 
 @end
