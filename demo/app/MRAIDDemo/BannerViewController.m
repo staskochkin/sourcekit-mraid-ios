@@ -9,7 +9,6 @@
 #import "BannerViewController.h"
 #import "SKMRAIDView.h"
 #import "SKMRAIDServiceDelegate.h"
-#import "SKBrowser.h"
 
 @interface BannerViewController () <SKMRAIDViewDelegate, SKMRAIDServiceDelegate>
 
@@ -43,9 +42,6 @@
 - (void)loadCreativeOnABanner
 {
     // Type 1
-    NSString *htmlPath = [[NSBundle mainBundle] pathForResource:self.htmlFile ofType:@"html"];
-    NSURL *bundleUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
-    NSString* htmlData = [[NSString alloc] initWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
     
     
     // Type 2
@@ -57,12 +53,14 @@
  
     // Initialize and load the MRAIDView
     self.adView = [[SKMRAIDView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)
-                                      withHtmlData:htmlData
-                                       withBaseURL:bundleUrl
                                   supportedFeatures:@[MRAIDSupportsSMS, MRAIDSupportsTel, MRAIDSupportsCalendar, MRAIDSupportsStorePicture, MRAIDSupportsInlineVideo]
                                            delegate:self
                                    serviceDelegate:self
                                  rootViewController:self];
+    
+    NSString *htmlPath = [[NSBundle mainBundle] pathForResource:self.htmlFile ofType:@"html"];
+    NSString* htmlData = [[NSString alloc] initWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
+    [self.adView loadAdHTML:htmlData];
     
     self.adView.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:self.adView];
@@ -91,6 +89,8 @@
     if ([self.htmlFile isEqualToString:@"banner.isViewable"]) {
         [self performSelector:@selector(moveOffScreen) withObject:nil afterDelay:5];
     }
+    
+    mraidView.isViewable = YES;
 }
 
 - (void)mraidViewAdFailed:(SKMRAIDView *)mraidView
@@ -129,10 +129,6 @@
 - (void)mraidServiceOpenBrowserWithUrlString:(NSString *)urlString
 {
     NSLog(@"%@ MRAIDServiceDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), urlString);
-    SKBrowser *browser = [[SKBrowser alloc] initWithDelegate:nil withFeatures:@[kSourceKitBrowserFeatureSupportInlineMediaPlayback
-                                                                                              , kSourceKitBrowserFeatureDisableStatusBar
-                                                                                              , kSourceKitBrowserFeatureScalePagesToFit]];
-    [browser loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:urlString]]];
 }
 
 - (void)mraidServicePlayVideoWithUrlString:(NSString *)urlString

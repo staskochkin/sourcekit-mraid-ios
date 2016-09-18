@@ -8,6 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+FOUNDATION_EXPORT NSString * const kSKMRAIDErrorDomain;
+
+typedef enum {
+    MRAIDPreloadNoFillError,
+    MRAIDPreloadNetworkError,
+    MRAIDShowError,
+    MRAIDValidationError,
+    MRAIDSuspiciousCreativeError
+} MRAIDError;
+
 @class SKMRAIDView;
 @protocol SKMRAIDServiceDelegate;
 
@@ -17,10 +27,18 @@
 @optional
 
 // These callbacks are for basic banner ad functionality.
+- (void)mraidView:(SKMRAIDView *)mraidView preloadedAd:(NSString *)preloadedAd;
+
+- (void)mraidView:(SKMRAIDView *)mraidView didFailToPreloadAd:(NSError *)preloadError;
+
 - (void)mraidViewAdReady:(SKMRAIDView *)mraidView;
-- (void)mraidViewAdFailed:(SKMRAIDView *)mraidView;
+
+- (void)mraidView:(SKMRAIDView *)mraidView failToLoadAdThrowError:(NSError *)error;
+
 - (void)mraidViewWillExpand:(SKMRAIDView *)mraidView;
+
 - (void)mraidViewDidClose:(SKMRAIDView *)mraidView;
+
 - (void)mraidViewNavigate:(SKMRAIDView *)mraidView withURL:(NSURL *)url;
 
 // This callback is to ask permission to resize an ad.
@@ -33,17 +51,31 @@
 @property (nonatomic, weak) id<SKMRAIDViewDelegate> delegate;
 @property (nonatomic, weak) id<SKMRAIDServiceDelegate> serviceDelegate;
 @property (nonatomic, weak, setter = setRootViewController:) UIViewController *rootViewController;
-@property (nonatomic, assign, getter = isViewable, setter = setIsViewable:) BOOL isViewable;
+@property (nonatomic, assign) BOOL isViewable;
+//@property (nonatomic, assign, getter = isViewable, setter = setIsViewable:) BOOL isViewable;
 
 // IMPORTANT: This is the only valid initializer for an MRAIDView; -init and -initWithFrame: will throw exceptions
 - (id)initWithFrame:(CGRect)frame
-       withHtmlData:(NSString*)htmlData
-        withBaseURL:(NSURL*)bsURL
   supportedFeatures:(NSArray *)features
            delegate:(id<SKMRAIDViewDelegate>)delegate
    serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
  rootViewController:(UIViewController *)rootViewController;
 
+- (void)preloadAdFromURL:(NSURL *)url;
+
+- (void)loadAdHTML:(NSString *)html;
+
 - (void)cancel;
+
+@end
+
+@interface SKMRAIDView (Private)
+
+- (id)initWithFrame:(CGRect)frame
+     asInterstitial:(BOOL)isInter
+  supportedFeatures:(NSArray *)currentFeatures
+           delegate:(id<SKMRAIDViewDelegate>)delegate
+    serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+ rootViewController:(UIViewController *)rootViewController;
 
 @end

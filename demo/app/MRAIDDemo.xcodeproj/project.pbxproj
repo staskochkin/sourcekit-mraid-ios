@@ -107,7 +107,6 @@
 		27B95786183437820076286F /* interstitial.useCustomClose.html in Resources */ = {isa = PBXBuildFile; fileRef = 27B9573A183437820076286F /* interstitial.useCustomClose.html */; };
 		27B95787183437820076286F /* interstitial.viewableChange.html in Resources */ = {isa = PBXBuildFile; fileRef = 27B9573B183437820076286F /* interstitial.viewableChange.html */; };
 		27B95788183437820076286F /* nexage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 27B9573C183437820076286F /* nexage.gif */; };
-		953FF054183AB43300E146D2 /* libSourceKitCommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 953FF050183AB2E200E146D2 /* libSourceKitCommon.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -272,7 +271,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				953FF054183AB43300E146D2 /* libSourceKitCommon.a in Frameworks */,
 				27A462AD1815B38E008F7A5A /* libMRAID.a in Frameworks */,
 				27740FED17F2891C00EFFF39 /* CoreGraphics.framework in Frameworks */,
 				27740FEF17F2891C00EFFF39 /* UIKit.framework in Frameworks */,
@@ -831,6 +829,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MRAIDDemo/MRAIDDemo-Prefix.pch";
 				INFOPLIST_FILE = "MRAIDDemo/MRAIDDemo-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = MRAIDDemo;
 				WRAPPER_EXTENSION = app;
 			};
@@ -844,6 +843,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MRAIDDemo/MRAIDDemo-Prefix.pch";
 				INFOPLIST_FILE = "MRAIDDemo/MRAIDDemo-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = MRAIDDemo;
 				WRAPPER_EXTENSION = app;
 			};

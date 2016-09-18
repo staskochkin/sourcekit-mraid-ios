@@ -7,14 +7,12 @@
 //
 
 #import "AppDelegate.h"
-#import "SKLogger.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Set SourceKit Logging
-    [SKLogger setLogLevel:SourceKitLogLevelDebug];
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
     
     return YES;

@@ -98,7 +98,7 @@
 
 -(void)setIsViewable:(BOOL)newIsViewable
 {
-    mraidView.isViewable=newIsViewable;
+//    mraidView.isViewable=newIsViewable;
 }
 
 -(BOOL)isViewable

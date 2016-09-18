@@ -21,7 +21,10 @@
 #import "CloseButton.h"
 
 #define kCloseEventRegionSize 50
+#define kMinHTMLResponseLength 70
 #define SYSTEM_VERSION_LESS_THAN(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+
+NSString *const kSKMRAIDErrorDomain = @"com.skmraid.error";
 
 typedef enum {
     MRAIDStateLoading,
@@ -31,7 +34,7 @@ typedef enum {
     MRAIDStateHidden
 } MRAIDState;
 
-@interface SKMRAIDView () <UIWebViewDelegate, SKMRAIDModalViewControllerDelegate, UIGestureRecognizerDelegate>
+@interface SKMRAIDView () <WKNavigationDelegate, WKScriptMessageHandler, SKMRAIDModalViewControllerDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, assign) MRAIDState state;
     // This corresponds to the MRAID placement type.
@@ -55,9 +58,9 @@ typedef enum {
 @property (nonatomic, strong) NSArray *mraidFeatures;
 @property (nonatomic, strong) NSArray *supportedFeatures;
     
-@property (nonatomic, strong) UIWebView *webView;
-@property (nonatomic, strong) UIWebView *webViewPart2;
-@property (nonatomic, strong) UIWebView *currentWebView;
+@property (nonatomic, strong) WKWebView *webView;
+@property (nonatomic, strong) WKWebView *webViewPart2;
+@property (nonatomic, strong) WKWebView *currentWebView;
     
 @property (nonatomic, strong) UIButton *closeEventRegion;
     
@@ -69,38 +72,14 @@ typedef enum {
 @property (nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic, assign) BOOL bonafideTapObserved;
 
-// "hidden" method for interstitial support
-- (void)showAsInterstitial;
-
-- (void)deviceOrientationDidChange:(NSNotification *)notification;
-
-- (void)addCloseEventRegion;
-- (void)showResizeCloseRegion;
-- (void)removeResizeCloseRegion;
-- (void)setResizeViewPosition;
-
-// These methods provide the means for native code to talk to JavaScript code.
-- (void)injectJavaScript:(NSString *)js;
-// convenience methods to fire MRAID events
-- (void)fireErrorEventWithAction:(NSString *)action message:(NSString *)message;
-- (void)fireReadyEvent;
-- (void)fireSizeChangeEvent;
-- (void)fireStateChangeEvent;
-- (void)fireViewableChangeEvent;
-// setters
-- (void)setDefaultPosition;
--(void)setMaxSize;
--(void)setScreenSize;
-
-// internal helper methods
-- (void)initWebView:(UIWebView *)wv;
-- (void)parseCommandUrl:(NSString *)commandUrlString;
 
 @end
 
+
 @implementation SKMRAIDView
 
-@synthesize isViewable = _isViewable;
+
+#pragma mark - Designated Initilizers
 
 - (id)init {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
@@ -125,17 +104,11 @@ typedef enum {
     return nil;
 }
 
-- (id)initWithFrame:(CGRect)frame
-       withHtmlData:(NSString*)htmlData
-        withBaseURL:(NSURL*)bsURL
-  supportedFeatures:(NSArray *)features
-           delegate:(id<SKMRAIDViewDelegate>)delegate
-   serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
- rootViewController:(UIViewController *)rootViewController
+#pragma mark - Public
+
+- (id)initWithFrame:(CGRect)frame supportedFeatures:(NSArray *)features delegate:(id<SKMRAIDViewDelegate>)delegate serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate rootViewController:(UIViewController *)rootViewController
 {
     return [self initWithFrame:frame
-                  withHtmlData:htmlData
-                   withBaseURL:bsURL
                 asInterstitial:NO
              supportedFeatures:features
                       delegate:delegate
@@ -143,10 +116,78 @@ typedef enum {
             rootViewController:rootViewController];
 }
 
+- (void)preloadAdFromURL:(NSURL *)url {
+    __weak typeof(self) weakSelf = self;
+    [[[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        
+        if (error || !data) {
+            NSError * mraidError = [NSError errorWithDomain:kSKMRAIDErrorDomain code:MRAIDPreloadNetworkError userInfo:error.userInfo];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([weakSelf.delegate respondsToSelector:@selector(mraidView:didFailToPreloadAd:)]) {
+                    [weakSelf.delegate mraidView:weakSelf didFailToPreloadAd:mraidError];
+                }
+            });
+            return;
+        }
+        
+        NSString * downloadedData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        if ([downloadedData length] < kMinHTMLResponseLength) {
+            NSError * mraidError = [NSError errorWithDomain:kSKMRAIDErrorDomain code:MRAIDPreloadNoFillError userInfo:nil];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([weakSelf.delegate respondsToSelector:@selector(mraidView:didFailToPreloadAd:)]) {
+                    [weakSelf.delegate mraidView:weakSelf didFailToPreloadAd:mraidError];
+                }
+            });
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([weakSelf.delegate respondsToSelector:@selector(mraidView:preloadedAd:)]) {
+                [weakSelf.delegate mraidView:weakSelf preloadedAd:downloadedData];
+            }
+        });
+        
+    }] resume];
+}
+
+- (void)loadAdHTML:(NSString *)html {
+    self.webView = [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+    [self initWebView:self.webView];
+    self.currentWebView = self.webView;
+    // Get mraid.js as binary data
+    NSData* mraidJSData = [NSData dataWithBytesNoCopy:__MRAID_mraid_js
+                                               length:__MRAID_mraid_js_len
+                                         freeWhenDone:NO];
+    self.mraidjs = [[NSString alloc] initWithData:mraidJSData encoding:NSUTF8StringEncoding];
+    mraidJSData = nil;
+    
+    if (self.mraidjs) {
+        [self injectJavaScript:self.mraidjs];
+    }
+    
+    html = [SKMRAIDUtil processRawHtml:html];
+    if (html) {
+        self.state = MRAIDStateLoading;
+        [self.currentWebView loadHTMLString:html baseURL:self.baseURL];
+    } else {
+        if ([self.delegate respondsToSelector:@selector(mraidView:failToLoadAdThrowError:)]) {
+            NSError * error = [NSError errorWithDomain:kSKMRAIDErrorDomain code:MRAIDValidationError userInfo:nil];
+            [self.delegate mraidView:self failToLoadAdThrowError:error];
+        }
+    }
+}
+
+- (void)cancel
+{
+    [self.currentWebView stopLoading];
+    self.currentWebView = nil;
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+}
+
+
+#pragma mark - Private
+
 // designated initializer
 - (id)initWithFrame:(CGRect)frame
-       withHtmlData:(NSString*)htmlData
-        withBaseURL:(NSURL*)bsURL
      asInterstitial:(BOOL)isInter
   supportedFeatures:(NSArray *)currentFeatures
            delegate:(id<SKMRAIDViewDelegate>)delegate
@@ -161,7 +202,7 @@ typedef enum {
         _serviceDelegate = serviceDelegate;
         _rootViewController = rootViewController;
         
-        self.state = MRAIDStateLoading;
+        self.state = MRAIDStateDefault;
         self.isViewable = NO;
         self.useCustomClose = NO;
         
@@ -182,38 +223,12 @@ typedef enum {
             self.supportedFeatures=currentFeatures;
         }
         
-        self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
-        [self initWebView:self.webView];
-        self.currentWebView = self.webView;
-        [self addSubview:self.webView];
         
         self.previousMaxSize = CGSizeZero;
         self.previousScreenSize = CGSizeZero;
         
         [self addObserver:self forKeyPath:@"self.frame" options:NSKeyValueObservingOptionOld context:NULL];
  
-        // Get mraid.js as binary data
-        NSData* mraidJSData = [NSData dataWithBytesNoCopy:__MRAID_mraid_js
-                                                   length:__MRAID_mraid_js_len
-                                             freeWhenDone:NO];
-        self.mraidjs = [[NSString alloc] initWithData:mraidJSData encoding:NSUTF8StringEncoding];
-        mraidJSData = nil;
-        
-        self.baseURL = bsURL;
-        self.state = MRAIDStateLoading;
-        
-        if (self.mraidjs) {
-            [self injectJavaScript:self.mraidjs];
-        }
-        
-        htmlData = [SKMRAIDUtil processRawHtml:htmlData];
-        if (htmlData) {
-            [self.currentWebView loadHTMLString:htmlData baseURL:self.baseURL];
-        } else {
-            if ([self.delegate respondsToSelector:@selector(mraidViewAdFailed:)]) {
-                [self.delegate mraidViewAdFailed:self];
-            }
-        }
         if (isInter) {
             self.bonafideTapObserved = YES;  // no autoRedirect suppression for Interstitials
         }
@@ -221,12 +236,6 @@ typedef enum {
     return self;
 }
 
-- (void)cancel
-{
-    [self.currentWebView stopLoading];
-    self.currentWebView = nil;
-    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-}
 
 - (void)dealloc
 {
@@ -273,17 +282,15 @@ typedef enum {
     return YES;
 }
 
-- (void)setIsViewable:(BOOL)newIsViewable
+- (void)setIsViewable:(BOOL)isViewable
 {
-    if(newIsViewable!= self.isViewable){
-        self.isViewable=newIsViewable;
-        [self fireViewableChangeEvent];
+    _isViewable=isViewable;
+    if (isViewable) {
+        [self addSubview:self.currentWebView];
+    } else {
+        [self.currentWebView removeFromSuperview];
     }
-}
-
-- (BOOL)isViewable
-{
-    return _isViewable;
+    [self fireViewableChangeEvent];
 }
 
 - (void)setRootViewController:(UIViewController *)newRootViewController
@@ -295,11 +302,9 @@ typedef enum {
 
 - (void)deviceOrientationDidChange:(NSNotification *)notification
 {
-    @synchronized (self) {
-        [self setScreenSize];
-        [self setMaxSize];
-        [self setDefaultPosition];
-    }
+    [self setScreenSize];
+    [self setMaxSize];
+    [self setDefaultPosition];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -367,7 +372,7 @@ typedef enum {
     
     if (self.webViewPart2) {
         // Clean up webViewPart2 if returning from 2-part expansion.
-        self.webViewPart2.delegate = nil;
+        self.webViewPart2.navigationDelegate = nil;
         self.currentWebView =self. webView;
         self.webViewPart2 = nil;
     } else {
@@ -452,7 +457,7 @@ typedef enum {
         [self.webView removeFromSuperview];
     } else {
         // 2-part expansion
-        self.webViewPart2 = [[UIWebView alloc] initWithFrame:frame];
+        self.webViewPart2 = [[WKWebView alloc] initWithFrame:frame];
         [self initWebView:self.webViewPart2];
         self.currentWebView = self.webViewPart2;
         self.bonafideTapObserved = YES; // by definition for 2 part expand a valid tap has occurred
@@ -479,7 +484,7 @@ typedef enum {
         } else {
             // Error! Clean up and return.
             self.currentWebView = self.webView;
-            self.webViewPart2.delegate = nil;
+            self.webViewPart2.navigationDelegate = nil;
             self.webViewPart2 = nil;
             self.modalVC = nil;
             return;
@@ -743,7 +748,9 @@ typedef enum {
 
 - (void)injectJavaScript:(NSString *)js
 {
-    [self.currentWebView stringByEvaluatingJavaScriptFromString:js];
+    [self.currentWebView evaluateJavaScript:js completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
+       //TODO: Do something with calback
+    }];
 }
 
 // convenience methods
@@ -882,96 +889,113 @@ typedef enum {
     }
 }
 
-#pragma mark - UIWebViewDelegate
+#pragma mark - WKNavigationDelegate
 
-- (void)webViewDidStartLoad:(UIWebView *)wv
-{
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)wv
-{
-    @synchronized(self) {
-        // If wv is webViewPart2, that means the part 2 expanded web view has just loaded.
-        // In this case, state should already be MRAIDStateExpanded and should not be changed.
-        // if (wv != webViewPart2) {
-        
-        if (SK_ENABLE_JS_LOG) {
-            [wv stringByEvaluatingJavaScriptFromString:@"var enableLog = true"];
-        }
-        
-        if (SK_SUPPRESS_JS_ALERT) {
-            [wv stringByEvaluatingJavaScriptFromString:@"function alert(){}; function prompt(){}; function confirm(){}"];
-        }
-        
-        if (self.state == MRAIDStateLoading) {
-            self.state = MRAIDStateDefault;
-            [self injectJavaScript:[NSString stringWithFormat:@"mraid.setPlacementType('%@');", (self.isInterstitial ? @"interstitial" : @"inline")]];
-            [self setSupports:self.supportedFeatures];
-            [self setDefaultPosition];
-            [self setMaxSize];
-            [self setScreenSize];
-            [self fireStateChangeEvent];
-            [self fireSizeChangeEvent];
-            [self fireReadyEvent];
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+    if (SK_ENABLE_JS_LOG) {
+        [webView evaluateJavaScript:@"var enableLog = true" completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
             
-            if ([self.delegate respondsToSelector:@selector(mraidViewAdReady:)]) {
-                [self.delegate mraidViewAdReady:self];
-            }
-            
-            // Start monitoring device orientation so we can reset max Size and screenSize if needed.
-            [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(deviceOrientationDidChange:)
-                                                         name:UIDeviceOrientationDidChangeNotification
-                                                       object:nil];
-        }
+        }];
     }
-}
-
-- (void)webView:(UIWebView *)wv didFailLoadWithError:(NSError *)error
-{
-}
-
-- (BOOL)webView:(UIWebView *)wv shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
-{
-    NSURL *url = [request URL];
-    NSString *scheme = [url scheme];
-    NSString *absUrlString = [url absoluteString];
     
-    if ([scheme isEqualToString:@"mraid"]) {
-        [self parseCommandUrl:absUrlString];
-
-    } else if ([scheme isEqualToString:@"console-log"]) {
-
-    } else {
+    [self disableJsCallbackInWebViewIfNeeded:webView];
+    
+    if (self.state == MRAIDStateLoading) {
+        self.state = MRAIDStateDefault;
+        [self injectJavaScript:[NSString stringWithFormat:@"mraid.setPlacementType('%@');", (self.isInterstitial ? @"interstitial" : @"inline")]];
+        [self setSupports:self.supportedFeatures];
+        [self setDefaultPosition];
+        [self setMaxSize];
+        [self setScreenSize];
+        [self fireStateChangeEvent];
+        [self fireSizeChangeEvent];
+        [self fireReadyEvent];
         
-        // Links, Form submissions
-        if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-            // For banner views
-            if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
-                [self.delegate mraidViewNavigate:self withURL:url];
-            }
-        } else {
-            // Need to let browser to handle rendering and other things
-            return YES;
+        if ([self.delegate respondsToSelector:@selector(mraidViewAdReady:)]) {
+            [self.delegate mraidViewAdReady:self];
+        }
+        
+        // Start monitoring device orientation so we can reset max Size and screenSize if needed.
+        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(deviceOrientationDidChange:)
+                                                     name:UIDeviceOrientationDidChangeNotification
+                                                   object:nil];
+    }
+}
+
+//- (void)webViewDidStartLoad:(UIWebView *)wv
+//{
+//}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    if ([self.delegate respondsToSelector:@selector(mraidView:failToLoadAdThrowError:)]) {
+        NSError * mraidError = [NSError errorWithDomain:kSKMRAIDErrorDomain code:MRAIDShowError userInfo:error.userInfo];
+        [self.delegate mraidView:self failToLoadAdThrowError:mraidError];
+    }
+}
+
+//- (void)webView:(UIWebView *)wv didFailLoadWithError:(NSError *)error
+//{
+//}
+
+//- (BOOL)webView:(UIWebView *)wv shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+//    NSURL *url = [request URL];
+//    NSString *scheme = [url scheme];
+//    NSString *absUrlString = [url absoluteString];
+//    
+//    if ([scheme isEqualToString:@"mraid"]) {
+//        [self parseCommandUrl:absUrlString];
+//
+//    } else if ([scheme isEqualToString:@"console-log"]) {
+//
+//    } else {
+//        
+//        // Links, Form submissions
+//        if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+//            // For banner views
+//            if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
+//                [self.delegate mraidViewNavigate:self withURL:url];
+//            }
+//        } else {
+//            // Need to let browser to handle rendering and other things
+//            return YES;
+//        }
+//    }
+//    return NO;
+//}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    //TODO: autoclick protection
+    if (self.state == MRAIDStateLoading) {
+        NSString * request = navigationAction.request.URL.absoluteString;
+        
+        if ([request containsString:@"about:blank"] ||
+            [request containsString:@"http://"] ||
+            [request containsString:@"https://"]) {
+            decisionHandler(WKNavigationActionPolicyAllow);
         }
     }
-    return NO;
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
+
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
+    [self parseCommandUrl:message.body];
+}
+
 
 #pragma mark - MRAIDModalViewControllerDelegate
 
-- (void)mraidModalViewControllerDidRotate:(SKMRAIDModalViewController *)modalViewController
-{
+- (void)mraidModalViewControllerDidRotate:(SKMRAIDModalViewController *)modalViewController {
     [self setScreenSize];
     [self fireSizeChangeEvent];
 }
 
 #pragma mark - internal helper methods
 
-- (void)initWebView:(UIWebView *)wv
+- (void)initWebView:(WKWebView *)wv
 {
-    wv.delegate = self;
+    wv.navigationDelegate = self;
     wv.opaque = NO;
     wv.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight |
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
@@ -979,36 +1003,38 @@ typedef enum {
     wv.autoresizesSubviews = YES;
     
     if ([self.supportedFeatures containsObject:MRAIDSupportsInlineVideo]) {
-        wv.allowsInlineMediaPlayback = YES;
-        wv.mediaPlaybackRequiresUserAction = NO;
+        wv.configuration.allowsInlineMediaPlayback = YES;
+        wv.configuration.requiresUserActionForMediaPlayback = NO;
     } else {
-        wv.allowsInlineMediaPlayback = NO;
-        wv.mediaPlaybackRequiresUserAction = YES;
+        wv.configuration.allowsInlineMediaPlayback = NO;
+        wv.configuration.requiresUserActionForMediaPlayback = YES;
     }
     
+    [wv.configuration.userContentController addScriptMessageHandler:self name:@"mraid://"];
+    
     // disable scrolling
-    UIScrollView *scrollView;
-    if ([wv respondsToSelector:@selector(scrollView)]) {
-        // UIWebView has a scrollView property in iOS 5+.
-        scrollView = [wv scrollView];
-    } else {
-        // We have to look for the UIWebView's scrollView in iOS 4.
-        for (id subview in [self subviews]) {
-            if ([subview isKindOfClass:[UIScrollView class]]) {
-                scrollView = subview;
-                break;
-            }
-        }
-    }
+    UIScrollView *scrollView = [wv scrollView];
     scrollView.scrollEnabled = NO;
     
     // disable selection
     NSString *js = @"window.getSelection().removeAllRanges();";
-    [wv stringByEvaluatingJavaScriptFromString:js];
+    [wv evaluateJavaScript:js completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
+        //TODO:
+    }];
     
     // Alert suppression
-    if (SK_SUPPRESS_JS_ALERT)
-        [wv stringByEvaluatingJavaScriptFromString:@"function alert(){}; function prompt(){}; function confirm(){}"];
+    [self disableJsCallbackInWebViewIfNeeded:wv];
+    }
+
+- (void)disableJsCallbackInWebViewIfNeeded:(WKWebView *)webView {
+    if (SK_SUPPRESS_JS_ALERT) {
+        NSString * disableJSAlertScript = @"function alert(){}; function prompt(){}; function confirm(){}";
+        [webView evaluateJavaScript:disableJSAlertScript completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
+            //TODO:
+            
+        }];
+    }
+
 }
 
 - (void)parseCommandUrl:(NSString *)commandUrlString
