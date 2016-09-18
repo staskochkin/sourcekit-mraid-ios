@@ -8,8 +8,6 @@
 
 #import "SKMRAIDParser.h"
 
-#import "SKLogger.h"
-
 @interface SKMRAIDParser ()
 
 - (BOOL)isValidCommand:(NSString *)command;
@@ -29,8 +27,6 @@
      We need to parse out the command, create a dictionary of the paramters and their associated values,
      and then send an appropriate message back to the MRAIDView to run the command.
      */
-    
-    [SKLogger debug:@"MRAID - Parser" withMessage:[NSString stringWithFormat:@"%@ %@", NSStringFromSelector(_cmd), commandUrl]];
     
     // Remove mraid:// prefix.
     NSString *s = [commandUrl substringFromIndex:8];
@@ -57,13 +53,11 @@
     
     // Check for valid command.
     if (![self isValidCommand:command]) {
-        [SKLogger warning:@"MRAID - Parser" withMessage:[NSString stringWithFormat:@"command %@ is unknown", command]];
         return nil;
     }
     
     // Check for valid parameters for the given command.
     if (![self checkParamsForCommand:command params:params]) {
-        [SKLogger warning:@"MRAID - Parser" withMessage:[NSString stringWithFormat:@"command URL %@ is missing parameters", commandUrl]];
         return nil;
     }
     

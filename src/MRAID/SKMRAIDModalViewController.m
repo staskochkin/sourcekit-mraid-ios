@@ -9,7 +9,6 @@
 #import "SKMRAIDModalViewController.h"
 
 #import "SKMRAIDUtil.h"
-#import "SKLogger.h"
 #import "SKMRAIDOrientationProperties.h"
 
 @interface SKMRAIDModalViewController ()
@@ -83,8 +82,6 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    [SKLogger debug:@"MRAID - ModalViewController" withMessage:[NSString stringWithFormat:@"%@ %@", [self.class description], NSStringFromSelector(_cmd)]];
 
     isStatusBarHidden = [[UIApplication sharedApplication] isStatusBarHidden];
     if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
@@ -96,7 +93,6 @@
 {
     [super viewDidAppear:animated];
     
-    [SKLogger debug:@"MRAID - ModalViewController" withMessage:[NSString stringWithFormat:@"%@ %@", [self.class description], NSStringFromSelector(_cmd)]];
     hasViewAppeared = YES;
     
     if (hasRotated) {
@@ -153,22 +149,16 @@
         }
     }
     
-    [SKLogger debug:@"MRAID - ModalViewController" withMessage:[NSString stringWithFormat: @"%@ %@ %@", [self.class description], NSStringFromSelector(_cmd), (retval ? @"YES" : @"NO")]];
     return retval;
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
 {
-    [SKLogger debug:@"MRAID - ModalViewController" withMessage:[NSString stringWithFormat: @"%@ %@ %@",
-                            [self.class description],
-                            NSStringFromSelector(_cmd),
-                            [self stringfromUIInterfaceOrientation:preferredOrientation]]];
     return preferredOrientation;
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    [SKLogger debug:@"MRAID - ModalViewController" withMessage:[NSString stringWithFormat: @"%@ %@", [self.class description], NSStringFromSelector(_cmd)]];
     if (orientationProperties.forceOrientation == MRAIDForceOrientationPortrait) {
         return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
     }
@@ -209,13 +199,6 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    UIInterfaceOrientation toInterfaceOrientation = self.interfaceOrientation;
-    [SKLogger debug:@"MRAID - ModalViewController" withMessage:[NSString stringWithFormat:@"%@ %@from %@ to %@",
-                      [self.class description],
-                      NSStringFromSelector(_cmd),
-                      [self stringfromUIInterfaceOrientation:fromInterfaceOrientation],
-                      [self stringfromUIInterfaceOrientation:toInterfaceOrientation]]];
-    
     if (hasViewAppeared) {
         [self.delegate mraidModalViewControllerDidRotate:self];
         hasRotated = NO;
@@ -239,12 +222,7 @@
             orientationString = @"wtf!";
             break;
     }
-    
-    [SKLogger debug:@"MRAID - ModalViewController" withMessage:[NSString stringWithFormat: @"%@ %@ %@ %@",
-                      [self.class description],
-                      NSStringFromSelector(_cmd),
-                      (orientationProperties.allowOrientationChange ? @"YES" : @"NO"),
-                      orientationString]];
+
 
     orientationProperties = orientationProps;
     UIInterfaceOrientation currentInterfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
@@ -312,9 +290,6 @@
         }
     }
     
-    [SKLogger debug:@"MRAID - ModalViewController" withMessage:[NSString stringWithFormat:@"requesting from %@ to %@",
-                            [self stringfromUIInterfaceOrientation:currentInterfaceOrientation],
-                            [self stringfromUIInterfaceOrientation:preferredOrientation]]];
     
     if ((orientationProperties.forceOrientation == MRAIDForceOrientationPortrait && UIInterfaceOrientationIsPortrait(currentInterfaceOrientation)) ||
         (orientationProperties.forceOrientation == MRAIDForceOrientationLandscape && UIInterfaceOrientationIsLandscape(currentInterfaceOrientation)) ||
@@ -341,11 +316,9 @@
     } else {
         // < iOS 6
         // Turn off the warning about using a deprecated method.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [self dismissModalViewControllerAnimated:NO];
-        [presentingVC presentModalViewController:self animated:NO];
-#pragma clang diagnostic pop
+        [self dismissViewControllerAnimated:YES completion:^{
+            [presentingVC presentViewController:self animated:YES completion:nil];
+        }];
     }
     
     hasRotated = YES;

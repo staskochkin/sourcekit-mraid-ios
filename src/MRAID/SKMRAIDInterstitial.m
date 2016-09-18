@@ -8,7 +8,6 @@
 
 #import "SKMRAIDInterstitial.h"
 #import "SKMRAIDView.h"
-#import "SKLogger.h"
 #import "SKMRAIDServiceDelegate.h"
 
 @interface SKMRAIDInterstitial () <SKMRAIDViewDelegate, SKMRAIDServiceDelegate>
@@ -89,10 +88,7 @@
 
 - (void)show
 {
-    if (!isReady) {
-        [SKLogger warning:@"MRAID - Interstitial" withMessage:@"interstitial is not ready to show"];
-        return;
-    }
+    if (!isReady) return;
     
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
@@ -102,20 +98,17 @@
 
 -(void)setIsViewable:(BOOL)newIsViewable
 {
-    [SKLogger debug:@"MRAID - Interstitial" withMessage:[NSString stringWithFormat: @"%@ %@", [self.class description], NSStringFromSelector(_cmd)]];
     mraidView.isViewable=newIsViewable;
 }
 
 -(BOOL)isViewable
 {
-    [SKLogger debug:@"MRAID - Interstitial" withMessage:[NSString stringWithFormat: @"%@ %@", [self.class description], NSStringFromSelector(_cmd)]];
     return _isViewable;
 }
 
 - (void)setRootViewController:(UIViewController *)newRootViewController
 {
     mraidView.rootViewController = newRootViewController;
-    [SKLogger debug:@"MRAID - Interstitial" withMessage:[NSString stringWithFormat:@"setRootViewController: %@", newRootViewController]];
 }
 
 -(void)setBackgroundColor:(UIColor *)backgroundColor
@@ -127,7 +120,6 @@
 
 - (void)mraidViewAdReady:(SKMRAIDView *)mraidView
 {
-    NSLog(@"%@ MRAIDViewDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
     isReady = YES;
     if ([self.delegate respondsToSelector:@selector(mraidInterstitialAdReady:)]) {
         [self.delegate mraidInterstitialAdReady:self];
@@ -136,7 +128,6 @@
 
 - (void)mraidViewAdFailed:(SKMRAIDView *)mraidView
 {
-    NSLog(@"%@ MRAIDViewDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
     isReady = YES;
     if ([self.delegate respondsToSelector:@selector(mraidInterstitialAdFailed:)]) {
         [self.delegate mraidInterstitialAdFailed:self];
@@ -145,7 +136,6 @@
 
 - (void)mraidViewWillExpand:(SKMRAIDView *)mraidView
 {
-    NSLog(@"%@ MRAIDViewDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
     if ([self.delegate respondsToSelector:@selector(mraidInterstitialWillShow:)]) {
         [self.delegate mraidInterstitialWillShow:self];
     }
@@ -153,7 +143,6 @@
 
 - (void)mraidViewDidClose:(SKMRAIDView *)mv
 {
-    NSLog(@"%@ MRAIDViewDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
     if ([self.delegate respondsToSelector:@selector(mraidInterstitialDidHide:)]) {
         [self.delegate mraidInterstitialDidHide:self];
     }

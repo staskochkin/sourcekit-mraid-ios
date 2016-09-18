@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Nexage, Inc. All rights reserved.
 //
 
+#import <WebKit/WebKit.h>
+
 #import "SKMRAIDView.h"
 #import "SKMRAIDOrientationProperties.h"
 #import "SKMRAIDResizeProperties.h"
@@ -14,8 +16,6 @@
 #import "SKMRAIDServiceDelegate.h"
 #import "SKMRAIDUtil.h"
 #import "MRAIDSettings.h"
-
-#import "SKLogger.h"
 
 #import "mraidjs.h"
 #import "CloseButton.h"
@@ -32,44 +32,42 @@ typedef enum {
 } MRAIDState;
 
 @interface SKMRAIDView () <UIWebViewDelegate, SKMRAIDModalViewControllerDelegate, UIGestureRecognizerDelegate>
-{
-    MRAIDState state;
+
+@property (nonatomic, assign) MRAIDState state;
     // This corresponds to the MRAID placement type.
-    BOOL isInterstitial;
+@property (nonatomic, assign) BOOL isInterstitial;
     
     // The only property of the MRAID expandProperties we need to keep track of
     // on the native side is the useCustomClose property.
     // The width, height, and isModal properties are not used in MRAID v2.0.
-    BOOL useCustomClose;
+@property (nonatomic, assign) BOOL useCustomClose;
     
-    SKMRAIDOrientationProperties *orientationProperties;
-    SKMRAIDResizeProperties *resizeProperties;
+@property (nonatomic, strong) SKMRAIDOrientationProperties *orientationProperties;
+@property (nonatomic, strong) SKMRAIDResizeProperties *resizeProperties;
     
-    SKMRAIDParser *mraidParser;
-    SKMRAIDModalViewController *modalVC;
+@property (nonatomic, strong) SKMRAIDParser *mraidParser;
+@property (nonatomic, strong) SKMRAIDModalViewController *modalVC;
     
-    NSString *mraidjs;
+@property (nonatomic, strong) NSString *mraidjs;
     
-    NSURL *baseURL;
+@property (nonatomic, strong) NSURL *baseURL;
     
-    NSArray *mraidFeatures;
-    NSArray *supportedFeatures;
+@property (nonatomic, strong) NSArray *mraidFeatures;
+@property (nonatomic, strong) NSArray *supportedFeatures;
     
-    UIWebView *webView;
-    UIWebView *webViewPart2;
-    UIWebView *currentWebView;
+@property (nonatomic, strong) UIWebView *webView;
+@property (nonatomic, strong) UIWebView *webViewPart2;
+@property (nonatomic, strong) UIWebView *currentWebView;
     
-    UIButton *closeEventRegion;
+@property (nonatomic, strong) UIButton *closeEventRegion;
     
-    UIView *resizeView;
-    UIButton *resizeCloseRegion;
+@property (nonatomic, strong) UIView *resizeView;
+@property (nonatomic, strong) UIButton *resizeCloseRegion;
+@property (nonatomic, assign) CGSize previousMaxSize;
+@property (nonatomic, assign) CGSize previousScreenSize;
     
-    CGSize previousMaxSize;
-    CGSize previousScreenSize;
-    
-    UITapGestureRecognizer *tapGestureRecognizer;
-    BOOL bonafideTapObserved;
-}
+@property (nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
+@property (nonatomic, assign) BOOL bonafideTapObserved;
 
 // "hidden" method for interstitial support
 - (void)showAsInterstitial;
@@ -102,8 +100,7 @@ typedef enum {
 
 @implementation SKMRAIDView
 
-@synthesize isViewable=_isViewable;
-@synthesize rootViewController = _rootViewController;
+@synthesize isViewable = _isViewable;
 
 - (id)init {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
@@ -159,21 +156,21 @@ typedef enum {
     self = [super initWithFrame:frame];
     if (self) {
         [self setUpTapGestureRecognizer];
-        isInterstitial = isInter;
+        self.isInterstitial = isInter;
         _delegate = delegate;
         _serviceDelegate = serviceDelegate;
         _rootViewController = rootViewController;
         
-        state = MRAIDStateLoading;
-        _isViewable = NO;
-        useCustomClose = NO;
+        self.state = MRAIDStateLoading;
+        self.isViewable = NO;
+        self.useCustomClose = NO;
         
-        orientationProperties = [[SKMRAIDOrientationProperties alloc] init];
-        resizeProperties = [[SKMRAIDResizeProperties alloc] init];
+        self.orientationProperties = [[SKMRAIDOrientationProperties alloc] init];
+        self.resizeProperties = [[SKMRAIDResizeProperties alloc] init];
         
-        mraidParser = [[SKMRAIDParser alloc] init];
+        self.mraidParser = [[SKMRAIDParser alloc] init];
         
-        mraidFeatures = @[
+        self.mraidFeatures = @[
                           MRAIDSupportsSMS,
                           MRAIDSupportsTel,
                           MRAIDSupportsCalendar,
@@ -182,16 +179,16 @@ typedef enum {
                           ];
         
         if([self isValidFeatureSet:currentFeatures] && serviceDelegate){
-            supportedFeatures=currentFeatures;
+            self.supportedFeatures=currentFeatures;
         }
         
-        webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
-        [self initWebView:webView];
-        currentWebView = webView;
-        [self addSubview:webView];
+        self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+        [self initWebView:self.webView];
+        self.currentWebView = self.webView;
+        [self addSubview:self.webView];
         
-        previousMaxSize = CGSizeZero;
-        previousScreenSize = CGSizeZero;
+        self.previousMaxSize = CGSizeZero;
+        self.previousScreenSize = CGSizeZero;
         
         [self addObserver:self forKeyPath:@"self.frame" options:NSKeyValueObservingOptionOld context:NULL];
  
@@ -199,27 +196,26 @@ typedef enum {
         NSData* mraidJSData = [NSData dataWithBytesNoCopy:__MRAID_mraid_js
                                                    length:__MRAID_mraid_js_len
                                              freeWhenDone:NO];
-        mraidjs = [[NSString alloc] initWithData:mraidJSData encoding:NSUTF8StringEncoding];
+        self.mraidjs = [[NSString alloc] initWithData:mraidJSData encoding:NSUTF8StringEncoding];
         mraidJSData = nil;
         
-        baseURL = bsURL;
-        state = MRAIDStateLoading;
+        self.baseURL = bsURL;
+        self.state = MRAIDStateLoading;
         
-        if (mraidjs) {
-            [self injectJavaScript:mraidjs];
+        if (self.mraidjs) {
+            [self injectJavaScript:self.mraidjs];
         }
         
         htmlData = [SKMRAIDUtil processRawHtml:htmlData];
         if (htmlData) {
-            [currentWebView loadHTMLString:htmlData baseURL:baseURL];
+            [self.currentWebView loadHTMLString:htmlData baseURL:self.baseURL];
         } else {
-            [SKLogger error:@"MRAID - View" withMessage:@"Ad HTML is invalid, cannot load"];
             if ([self.delegate respondsToSelector:@selector(mraidViewAdFailed:)]) {
                 [self.delegate mraidViewAdFailed:self];
             }
         }
         if (isInter) {
-            bonafideTapObserved = YES;  // no autoRedirect suppression for Interstitials
+            self.bonafideTapObserved = YES;  // no autoRedirect suppression for Interstitials
         }
     }
     return self;
@@ -227,37 +223,35 @@ typedef enum {
 
 - (void)cancel
 {
-    [SKLogger debug:@"MRAID - View" withMessage:@"cancel"];
-    [currentWebView stopLoading];
-    currentWebView = nil;
+    [self.currentWebView stopLoading];
+    self.currentWebView = nil;
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 }
 
 - (void)dealloc
 {
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"%@ %@", [self.class description], NSStringFromSelector(_cmd)]];
     
     [self removeObserver:self forKeyPath:@"self.frame"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     
     
-    webView = nil;
-    webViewPart2 = nil;
-    currentWebView = nil;
+    self.webView = nil;
+    self.webViewPart2 = nil;
+    self.currentWebView = nil;
     
-    mraidParser = nil;
-    modalVC = nil;
+    self.mraidParser = nil;
+    self.modalVC = nil;
     
-    orientationProperties = nil;
-    resizeProperties = nil;
+    self.orientationProperties = nil;
+    self.resizeProperties = nil;
     
-    mraidFeatures = nil;
-    supportedFeatures = nil;
+    self.mraidFeatures = nil;
+    self.supportedFeatures = nil;
     
-    closeEventRegion = nil;
-    resizeView = nil;
-    resizeCloseRegion = nil;
+    self.closeEventRegion = nil;
+    self.resizeView = nil;
+    self.resizeCloseRegion = nil;
 }
 
 - (BOOL)isValidFeatureSet:(NSArray *)features
@@ -273,7 +267,6 @@ typedef enum {
     // Validate the features set by the user
     for (id feature in features) {
         if (![kFeatures containsObject:feature]) {
-            [SKLogger warning:@"MRAID - View" withMessage:[NSString stringWithFormat:@"feature %@ is unknown, no supports set", feature]];
             return NO;
         }
     }
@@ -282,16 +275,14 @@ typedef enum {
 
 - (void)setIsViewable:(BOOL)newIsViewable
 {
-    if(newIsViewable!=_isViewable){
-        _isViewable=newIsViewable;
+    if(newIsViewable!= self.isViewable){
+        self.isViewable=newIsViewable;
         [self fireViewableChangeEvent];
     }
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat:@"isViewable: %@", _isViewable?@"YES":@"NO"]];
 }
 
 - (BOOL)isViewable
 {
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"%@ %@", [self.class description], NSStringFromSelector(_cmd)]];
     return _isViewable;
 }
 
@@ -300,12 +291,10 @@ typedef enum {
     if(newRootViewController!=_rootViewController) {
         _rootViewController=newRootViewController;
     }
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat:@"setRootViewController: %@", _rootViewController]];
 }
 
 - (void)deviceOrientationDidChange:(NSNotification *)notification
 {
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"%@ %@", [self.class description], NSStringFromSelector(_cmd)]];
     @synchronized (self) {
         [self setScreenSize];
         [self setMaxSize];
@@ -318,8 +307,6 @@ typedef enum {
         return;
     }
     
-    [SKLogger debug:@"MRAID - View" withMessage:@"self.frame has changed"];
-    
     CGRect oldFrame = CGRectNull;
     CGRect newFrame = CGRectNull;
     if (change[@"old"] != [NSNull null]) {
@@ -329,10 +316,7 @@ typedef enum {
         newFrame = [[object valueForKeyPath:keyPath] CGRectValue];
     }
     
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat:@"old %@", NSStringFromCGRect(oldFrame)]];
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat:@"new %@", NSStringFromCGRect(newFrame)]];
-    
-    if (state == MRAIDStateResized) {
+    if (self.state == MRAIDStateResized) {
         [self setResizeViewPosition];
     }
     [self setDefaultPosition];
@@ -343,14 +327,13 @@ typedef enum {
 -(void)setBackgroundColor:(UIColor *)backgroundColor
 {
     [super setBackgroundColor:backgroundColor];
-    currentWebView.backgroundColor = backgroundColor;
+    self.currentWebView.backgroundColor = backgroundColor;
 }
 
 #pragma mark - interstitial support
 
 - (void)showAsInterstitial
 {
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"%@", NSStringFromSelector(_cmd)]];
     [self expand:nil];
 }
 
@@ -361,61 +344,50 @@ typedef enum {
 
 - (void)close
 {
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@", NSStringFromSelector(_cmd)]];
-    
-    if (state == MRAIDStateLoading ||
-        (state == MRAIDStateDefault && !isInterstitial) ||
-        state == MRAIDStateHidden) {
+    if (self.state == MRAIDStateLoading ||
+        (self.state == MRAIDStateDefault && !self.isInterstitial) ||
+        self.state == MRAIDStateHidden) {
         // do nothing
         return;
     }
     
-    if (state == MRAIDStateResized) {
+    if (self.state == MRAIDStateResized) {
         [self closeFromResize];
         return;
     }
     
-    if (modalVC) {
-        [closeEventRegion removeFromSuperview];
-        closeEventRegion = nil;
-        [currentWebView removeFromSuperview];
-        if ([modalVC respondsToSelector:@selector(dismissViewControllerAnimated:completion:)]) {
-            // used if running >= iOS 6
-            [modalVC dismissViewControllerAnimated:NO completion:nil];
-        } else {
-            // Turn off the warning about using a deprecated method.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            [modalVC dismissModalViewControllerAnimated:NO];
-#pragma clang diagnostic pop
-        }
+    if (self.modalVC) {
+        [self.closeEventRegion removeFromSuperview];
+        self.closeEventRegion = nil;
+        [self.currentWebView removeFromSuperview];
+        [self.modalVC dismissViewControllerAnimated:NO completion:nil];
     }
     
-    modalVC = nil;
+    self.modalVC = nil;
     
-    if (webViewPart2) {
+    if (self.webViewPart2) {
         // Clean up webViewPart2 if returning from 2-part expansion.
-        webViewPart2.delegate = nil;
-        currentWebView = webView;
-        webViewPart2 = nil;
+        self.webViewPart2.delegate = nil;
+        self.currentWebView =self. webView;
+        self.webViewPart2 = nil;
     } else {
         // Reset frame of webView if returning from 1-part expansion.
-        webView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+        self.webView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
     }
     
-    [self addSubview:webView];
+    [self addSubview:self.webView];
     
-    if (!isInterstitial) {
+    if (!self.isInterstitial) {
         [self fireSizeChangeEvent];
     } else {
         self.isViewable = NO;
         [self fireViewableChangeEvent];
     }
     
-    if (state == MRAIDStateDefault && isInterstitial) {
-        state = MRAIDStateHidden;
-    } else if (state == MRAIDStateExpanded || state == MRAIDStateResized) {
-        state = MRAIDStateDefault;
+    if (self.state == MRAIDStateDefault && self.isInterstitial) {
+        self.state = MRAIDStateHidden;
+    } else if (self.state == MRAIDStateExpanded || self.state == MRAIDStateResized) {
+        self.state = MRAIDStateDefault;
     }
     [self fireStateChangeEvent];
     
@@ -427,15 +399,14 @@ typedef enum {
 // This is a helper method which is not part of the official MRAID API.
 - (void)closeFromResize
 {
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback helper %@", NSStringFromSelector(_cmd)]];
     [self removeResizeCloseRegion];
-    state = MRAIDStateDefault;
+    self.state = MRAIDStateDefault;
     [self fireStateChangeEvent];
-    [webView removeFromSuperview];
-    webView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
-    [self addSubview:webView];
-    [resizeView removeFromSuperview];
-    resizeView = nil;
+    [self.webView removeFromSuperview];
+    self.webView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+    [self addSubview:self.webView];
+    [self.resizeView removeFromSuperview];
+    self.resizeView = nil;
     [self fireSizeChangeEvent];
     if ([self.delegate respondsToSelector:@selector(mraidViewDidClose:)]) {
         [self.delegate mraidViewDidClose:self];
@@ -444,57 +415,50 @@ typedef enum {
 
 - (void)createCalendarEvent:(NSString *)eventJSON
 {
-    if(!bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
-        [SKLogger info:@"MRAID - View" withMessage:@"Suppressing an attempt to programmatically call mraid.createCalendarEvent() when no UI touch event exists."];
+    if(!self.bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
         return;  // ignore programmatic touches (taps)
     }
 
     eventJSON=[eventJSON stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %@", NSStringFromSelector(_cmd), eventJSON]];
     
-    if ([supportedFeatures containsObject:MRAIDSupportsCalendar]) {
+    if ([self.supportedFeatures containsObject:MRAIDSupportsCalendar]) {
         if ([self.serviceDelegate respondsToSelector:@selector(mraidServiceCreateCalendarEventWithEventJSON:)]) {
             [self.serviceDelegate mraidServiceCreateCalendarEventWithEventJSON:eventJSON];
         }
-    } else {
-        [SKLogger warning:@"MRAID - View" withMessage:[NSString stringWithFormat:@"No calendar support has been included."]];
-   }
+    }
 }
 
 // Note: This method is also used to present an interstitial ad.
 - (void)expand:(NSString *)urlString
 {
-    if(!bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
-        [SKLogger info:@"MRAID - View" withMessage:@"Suppressing an attempt to programmatically call mraid.expand() when no UI touch event exists."];
+    if(!self.bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
         return;  // ignore programmatic touches (taps)
     }
     
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %@", NSStringFromSelector(_cmd), (urlString ? urlString : @"1-part")]];
-    
     // The only time it is valid to call expand is when the ad is currently in either default or resized state.
-    if (state != MRAIDStateDefault && state != MRAIDStateResized) {
+    if (self.state != MRAIDStateDefault && self.state != MRAIDStateResized) {
         // do nothing
         return;
     }
     
-    modalVC = [[SKMRAIDModalViewController alloc] initWithOrientationProperties:orientationProperties];
+    self.modalVC = [[SKMRAIDModalViewController alloc] initWithOrientationProperties:self.orientationProperties];
     CGRect frame = [[UIScreen mainScreen] bounds];
-    modalVC.view.frame = frame;
-    modalVC.delegate = self;
+    self.modalVC.view.frame = frame;
+    self.modalVC.delegate = self;
     
     if (!urlString) {
         // 1-part expansion
-        webView.frame = frame;
-        [webView removeFromSuperview];
+        self.webView.frame = frame;
+        [self.webView removeFromSuperview];
     } else {
         // 2-part expansion
-        webViewPart2 = [[UIWebView alloc] initWithFrame:frame];
-        [self initWebView:webViewPart2];
-        currentWebView = webViewPart2;
-        bonafideTapObserved = YES; // by definition for 2 part expand a valid tap has occurred
+        self.webViewPart2 = [[UIWebView alloc] initWithFrame:frame];
+        [self initWebView:self.webViewPart2];
+        self.currentWebView = self.webViewPart2;
+        self.bonafideTapObserved = YES; // by definition for 2 part expand a valid tap has occurred
         
-        if (mraidjs) {
-            [self injectJavaScript:mraidjs];
+        if (self.mraidjs) {
+            [self injectJavaScript:self.mraidjs];
         }
         
         // Check to see whether we've been given an absolute or relative URL.
@@ -502,7 +466,7 @@ typedef enum {
         urlString = [urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         if (![[NSURL URLWithString:urlString] scheme]) {
             // relative URL
-            urlString = [[[baseURL absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByAppendingString:urlString];
+            urlString = [[[self.baseURL absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByAppendingString:urlString];
         }
         
         // Need to escape characters which are URL specific
@@ -511,14 +475,13 @@ typedef enum {
         NSError *error;
         NSString *content = [NSString stringWithContentsOfURL:[NSURL URLWithString:urlString] encoding:NSUTF8StringEncoding error:&error];
         if (!error) {
-            [webViewPart2 loadHTMLString:content baseURL:baseURL];
+            [self.webViewPart2 loadHTMLString:content baseURL:self.baseURL];
         } else {
             // Error! Clean up and return.
-            [SKLogger error:@"MRAID - View" withMessage:[NSString stringWithFormat:@"Could not load part 2 expanded content for URL: %@" ,urlString]];
-            currentWebView = webView;
-            webViewPart2.delegate = nil;
-            webViewPart2 = nil;
-            modalVC = nil;
+            self.currentWebView = self.webView;
+            self.webViewPart2.delegate = nil;
+            self.webViewPart2 = nil;
+            self.modalVC = nil;
             return;
         }
     }
@@ -527,7 +490,7 @@ typedef enum {
         [self.delegate mraidViewWillExpand:self];
     }
     
-    [modalVC.view addSubview:currentWebView];
+    [self.modalVC.view addSubview:self.currentWebView];
     
     // always include the close event region
     [self addCloseEventRegion];
@@ -537,19 +500,18 @@ typedef enum {
         if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {  // respect clear backgroundColor
             self.rootViewController.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
         } else {
-            modalVC.modalPresentationStyle = UIModalPresentationFullScreen;
+            self.modalVC.modalPresentationStyle = UIModalPresentationFullScreen;
         }
-        [self.rootViewController presentViewController:modalVC animated:NO completion:nil];
+        [self.rootViewController presentViewController:self.modalVC animated:NO completion:nil];
     } else {
         // Turn off the warning about using a deprecated method.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [self.rootViewController presentModalViewController:modalVC animated:NO];
-#pragma clang diagnostic pop
+
+        [self.rootViewController presentViewController:self.modalVC animated:NO completion:^{
+        }];
     }
     
-    if (!isInterstitial) {
-        state = MRAIDStateExpanded;
+    if (!self.isInterstitial) {
+        self.state = MRAIDStateExpanded;
         [self fireStateChangeEvent];
     }
     [self fireSizeChangeEvent];
@@ -558,13 +520,11 @@ typedef enum {
 
 - (void)open:(NSString *)urlString
 {
-    if(!bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
-        [SKLogger info:@"MRAID - View" withMessage:@"Suppressing an attempt to programmatically call mraid.open() when no UI touch event exists."];
+    if(!self.bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
        return;  // ignore programmatic touches (taps)
     }
     
     urlString = [urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %@", NSStringFromSelector(_cmd), urlString]];
     
     // Notify the callers
     if ([self.serviceDelegate respondsToSelector:@selector(mraidServiceOpenBrowserWithUrlString:)]) {
@@ -574,13 +534,11 @@ typedef enum {
 
 - (void)playVideo:(NSString *)urlString
 {
-    if(!bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
-        [SKLogger info:@"MRAID - View" withMessage:@"Suppressing an attempt to programmatically call mraid.playVideo() when no UI touch event exists."];
+    if(!self.bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
         return;  // ignore programmatic touches (taps)
     }
     
     urlString = [urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %@", NSStringFromSelector(_cmd), urlString]];
     if ([self.serviceDelegate respondsToSelector:@selector(mraidServicePlayVideoWithUrlString:)]) {
         [self.serviceDelegate mraidServicePlayVideoWithUrlString:urlString];
     }
@@ -588,41 +546,39 @@ typedef enum {
 
 - (void)resize
 {
-    if(!bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
-        [SKLogger info:@"MRAID - View" withMessage:@"Suppressing an attempt to programmatically call mraid.resize when no UI touch event exists."];
+    if(!self.bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
         return;  // ignore programmatic touches (taps)
     }
     
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@", NSStringFromSelector(_cmd)]];
     // If our delegate doesn't respond to the mraidViewShouldResizeToPosition:allowOffscreen: message,
     // then we can't do anything. We need help from the app here.
     if (![self.delegate respondsToSelector:@selector(mraidViewShouldResize:toPosition:allowOffscreen:)]) {
         return;
     }
     
-    CGRect resizeFrame = CGRectMake(resizeProperties.offsetX, resizeProperties.offsetY, resizeProperties.width, resizeProperties.height);
+    CGRect resizeFrame = CGRectMake(self.resizeProperties.offsetX, self.resizeProperties.offsetY, self.resizeProperties.width, self.resizeProperties.height);
     // The offset of the resize frame is relative to the origin of the default banner.
     CGPoint bannerOriginInRootView = [self.rootViewController.view convertPoint:CGPointZero fromView:self];
     resizeFrame.origin.x += bannerOriginInRootView.x;
     resizeFrame.origin.y += bannerOriginInRootView.y;
     
-    if (![self.delegate mraidViewShouldResize:self toPosition:resizeFrame allowOffscreen:resizeProperties.allowOffscreen]) {
+    if (![self.delegate mraidViewShouldResize:self toPosition:resizeFrame allowOffscreen:self.resizeProperties.allowOffscreen]) {
         return;
     }
     
     // resize here
-    state = MRAIDStateResized;
+    self.state = MRAIDStateResized;
     [self fireStateChangeEvent];
     
-    if (!resizeView) {
-        resizeView = [[UIView alloc] initWithFrame:resizeFrame];
-        [webView removeFromSuperview];
-        [resizeView addSubview:webView];
-        [self.rootViewController.view addSubview:resizeView];
+    if (!self.resizeView) {
+        self.resizeView = [[UIView alloc] initWithFrame:resizeFrame];
+        [self.webView removeFromSuperview];
+        [self.resizeView addSubview:self.webView];
+        [self.rootViewController.view addSubview:self.resizeView];
     }
     
-    resizeView.frame = resizeFrame;
-    webView.frame = resizeView.bounds;
+    self.resizeView.frame = resizeFrame;
+    self.webView.frame = self.resizeView.bounds;
     [self showResizeCloseRegion];
     [self fireSizeChangeEvent];
 }
@@ -631,10 +587,9 @@ typedef enum {
 {
     BOOL allowOrientationChange = [[properties valueForKey:@"allowOrientationChange"] boolValue];
     NSString *forceOrientation = [properties valueForKey:@"forceOrientation"];
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %@ %@", NSStringFromSelector(_cmd), (allowOrientationChange ? @"YES" : @"NO"), forceOrientation]];
-    orientationProperties.allowOrientationChange = allowOrientationChange;
-    orientationProperties.forceOrientation = [SKMRAIDOrientationProperties MRAIDForceOrientationFromString:forceOrientation];
-    [modalVC forceToOrientation:orientationProperties];
+    self.orientationProperties.allowOrientationChange = allowOrientationChange;
+    self.orientationProperties.forceOrientation = [SKMRAIDOrientationProperties MRAIDForceOrientationFromString:forceOrientation];
+    [self.modalVC forceToOrientation:self.orientationProperties];
 }
 
 - (void)setResizeProperties:(NSDictionary *)properties;
@@ -645,39 +600,33 @@ typedef enum {
     int offsetY = [[properties valueForKey:@"offsetY"] intValue];
     NSString *customClosePosition = [properties valueForKey:@"customClosePosition"];
     BOOL allowOffscreen = [[properties valueForKey:@"allowOffscreen"] boolValue];
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %d %d %d %d %@ %@", NSStringFromSelector(_cmd), width, height, offsetX, offsetY, customClosePosition, (allowOffscreen ? @"YES" : @"NO")]];
-    resizeProperties.width = width;
-    resizeProperties.height = height;
-    resizeProperties.offsetX = offsetX;
-    resizeProperties.offsetY = offsetY;
-    resizeProperties.customClosePosition = [SKMRAIDResizeProperties MRAIDCustomClosePositionFromString:customClosePosition];
-    resizeProperties.allowOffscreen = allowOffscreen;
+    self.resizeProperties.width = width;
+    self.resizeProperties.height = height;
+    self.resizeProperties.offsetX = offsetX;
+    self.resizeProperties.offsetY = offsetY;
+    self.resizeProperties.customClosePosition = [SKMRAIDResizeProperties MRAIDCustomClosePositionFromString:customClosePosition];
+    self.resizeProperties.allowOffscreen = allowOffscreen;
 }
 
 -(void)storePicture:(NSString *)urlString
 {
-    if(!bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
-        [SKLogger info:@"MRAID - View" withMessage:@"Suppressing an attempt to programmatically call mraid.storePicture when no UI touch event exists."];
+    if(!self.bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
         return;  // ignore programmatic touches (taps)
     }
     
     urlString=[urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %@", NSStringFromSelector(_cmd), urlString]];
     
-    if ([supportedFeatures containsObject:MRAIDSupportsStorePicture]) {
+    if ([self.supportedFeatures containsObject:MRAIDSupportsStorePicture]) {
         if ([self.serviceDelegate respondsToSelector:@selector(mraidServiceStorePictureWithUrlString:)]) {
             [self.serviceDelegate mraidServiceStorePictureWithUrlString:urlString];
         }
-    } else {
-        [SKLogger warning:@"MRAID - View" withMessage:[NSString stringWithFormat:@"No MRAIDSupportsStorePicture feature has been included"]];
     }
 }
 
 - (void)useCustomClose:(NSString *)isCustomCloseString
 {
     BOOL isCustomClose = [isCustomCloseString boolValue];
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@ %@", NSStringFromSelector(_cmd), (isCustomClose ? @"YES" : @"NO")]];
-    useCustomClose = isCustomClose;
+    self.useCustomClose = isCustomClose;
 }
 
 #pragma mark - JavaScript --> native support helpers
@@ -686,40 +635,40 @@ typedef enum {
 
 - (void)addCloseEventRegion
 {
-    closeEventRegion = [UIButton buttonWithType:UIButtonTypeCustom];
-    closeEventRegion.backgroundColor = [UIColor clearColor];
-    [closeEventRegion addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
+    self.closeEventRegion = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.closeEventRegion.backgroundColor = [UIColor clearColor];
+    [self.closeEventRegion addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
     
-    if (!useCustomClose) {
+    if (!self.useCustomClose) {
         // get button image from header file
         NSData* buttonData = [NSData dataWithBytesNoCopy:__MRAID_CloseButton_png
                                                   length:__MRAID_CloseButton_png_len
                                             freeWhenDone:NO];
         UIImage *closeButtonImage = [UIImage imageWithData:buttonData];
-        [closeEventRegion setBackgroundImage:closeButtonImage forState:UIControlStateNormal];
+        [self.closeEventRegion setBackgroundImage:closeButtonImage forState:UIControlStateNormal];
     }
     
-    closeEventRegion.frame = CGRectMake(0, 0, kCloseEventRegionSize, kCloseEventRegionSize);
-    CGRect frame = closeEventRegion.frame;
+    self.closeEventRegion.frame = CGRectMake(0, 0, kCloseEventRegionSize, kCloseEventRegionSize);
+    CGRect frame = self.closeEventRegion.frame;
     
     // align on top right
-    int x = CGRectGetWidth(modalVC.view.frame) - CGRectGetWidth(frame);
+    int x = CGRectGetWidth(self.modalVC.view.frame) - CGRectGetWidth(frame);
     frame.origin = CGPointMake(x, 0);
-    closeEventRegion.frame = frame;
+    self.closeEventRegion.frame = frame;
     // autoresizing so it stays at top right (flexible left and flexible bottom margin)
-    closeEventRegion.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
+    self.closeEventRegion.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
     
-    [modalVC.view addSubview:closeEventRegion];
+    [self.modalVC.view addSubview:self.closeEventRegion];
 }
 
 - (void)showResizeCloseRegion
 {
-    if (!resizeCloseRegion) {
-        resizeCloseRegion = [UIButton buttonWithType:UIButtonTypeCustom];
-        resizeCloseRegion.frame = CGRectMake(0, 0, kCloseEventRegionSize, kCloseEventRegionSize);
-        resizeCloseRegion.backgroundColor = [UIColor clearColor];
-        [resizeCloseRegion addTarget:self action:@selector(closeFromResize) forControlEvents:UIControlEventTouchUpInside];
-        [resizeView addSubview:resizeCloseRegion];
+    if (!self.resizeCloseRegion) {
+        self.resizeCloseRegion = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.resizeCloseRegion.frame = CGRectMake(0, 0, kCloseEventRegionSize, kCloseEventRegionSize);
+        self.resizeCloseRegion.backgroundColor = [UIColor clearColor];
+        [self.resizeCloseRegion addTarget:self action:@selector(closeFromResize) forControlEvents:UIControlEventTouchUpInside];
+        [self.resizeView addSubview:self.resizeCloseRegion];
     }
     
     // align appropriately
@@ -727,7 +676,7 @@ typedef enum {
     int y;
     UIViewAutoresizing autoresizingMask = UIViewAutoresizingNone;
     
-    switch (resizeProperties.customClosePosition) {
+    switch (self.resizeProperties.customClosePosition) {
         case MRAIDCustomClosePositionTopLeft:
         case MRAIDCustomClosePositionBottomLeft:
             x = 0;
@@ -735,59 +684,58 @@ typedef enum {
         case MRAIDCustomClosePositionTopCenter:
         case MRAIDCustomClosePositionCenter:
         case MRAIDCustomClosePositionBottomCenter:
-            x = (CGRectGetWidth(resizeView.frame) - CGRectGetWidth(resizeCloseRegion.frame)) / 2;
+            x = (CGRectGetWidth(self.resizeView.frame) - CGRectGetWidth(self.resizeCloseRegion.frame)) / 2;
             autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
             break;
         case MRAIDCustomClosePositionTopRight:
         case MRAIDCustomClosePositionBottomRight:
-            x = CGRectGetWidth(resizeView.frame) - CGRectGetWidth(resizeCloseRegion.frame);
+            x = CGRectGetWidth(self.resizeView.frame) - CGRectGetWidth(self.resizeCloseRegion.frame);
             autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
             break;
     }
     
-    switch (resizeProperties.customClosePosition) {
+    switch (self.resizeProperties.customClosePosition) {
         case MRAIDCustomClosePositionTopLeft:
         case MRAIDCustomClosePositionTopCenter:
         case MRAIDCustomClosePositionTopRight:
             y = 0;
             break;
         case MRAIDCustomClosePositionCenter:
-            y = (CGRectGetHeight(resizeView.frame) - CGRectGetHeight(resizeCloseRegion.frame)) / 2;
+            y = (CGRectGetHeight(self.resizeView.frame) - CGRectGetHeight(self.resizeCloseRegion.frame)) / 2;
             autoresizingMask |= UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
             break;
         case MRAIDCustomClosePositionBottomLeft:
         case MRAIDCustomClosePositionBottomCenter:
         case MRAIDCustomClosePositionBottomRight:
-            y = CGRectGetHeight(resizeView.frame) - CGRectGetHeight(resizeCloseRegion.frame);
+            y = CGRectGetHeight(self.resizeView.frame) - CGRectGetHeight(self.resizeCloseRegion.frame);
             autoresizingMask |= UIViewAutoresizingFlexibleTopMargin;
             break;
     }
     
-    CGRect resizeCloseRegionFrame = resizeCloseRegion.frame;
+    CGRect resizeCloseRegionFrame = self.resizeCloseRegion.frame;
     resizeCloseRegionFrame.origin = CGPointMake(x, y);
-    resizeCloseRegion.frame = resizeCloseRegionFrame;
-    resizeCloseRegion.autoresizingMask = autoresizingMask;
+    self.resizeCloseRegion.frame = resizeCloseRegionFrame;
+    self.resizeCloseRegion.autoresizingMask = autoresizingMask;
 }
 
 - (void)removeResizeCloseRegion
 {
-    if (resizeCloseRegion) {
-        [resizeCloseRegion removeFromSuperview];
-        resizeCloseRegion = nil;
+    if (self.resizeCloseRegion) {
+        [self.resizeCloseRegion removeFromSuperview];
+        self.resizeCloseRegion = nil;
     }
 }
 
 - (void)setResizeViewPosition
 {
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"%@", NSStringFromSelector(_cmd)]];
-    CGRect oldResizeFrame = resizeView.frame;
-    CGRect newResizeFrame = CGRectMake(resizeProperties.offsetX, resizeProperties.offsetY, resizeProperties.width, resizeProperties.height);
+    CGRect oldResizeFrame = self.resizeView.frame;
+    CGRect newResizeFrame = CGRectMake(self.resizeProperties.offsetX, self.resizeProperties.offsetY, self.resizeProperties.width, self.resizeProperties.height);
     // The offset of the resize frame is relative to the origin of the default banner.
     CGPoint bannerOriginInRootView = [self.rootViewController.view convertPoint:CGPointZero fromView:self];
     newResizeFrame.origin.x += bannerOriginInRootView.x;
     newResizeFrame.origin.y += bannerOriginInRootView.y;
     if (!CGRectEqualToRect(oldResizeFrame, newResizeFrame)) {
-        resizeView.frame = newResizeFrame;
+        self.resizeView.frame = newResizeFrame;
     }
 }
 
@@ -795,7 +743,7 @@ typedef enum {
 
 - (void)injectJavaScript:(NSString *)js
 {
-    [currentWebView stringByEvaluatingJavaScriptFromString:js];
+    [self.currentWebView stringByEvaluatingJavaScriptFromString:js];
 }
 
 // convenience methods
@@ -816,16 +764,16 @@ typedef enum {
         int y;
         int width;
         int height;
-        if (state == MRAIDStateExpanded || isInterstitial) {
-            x = (int)currentWebView.frame.origin.x;
-            y = (int)currentWebView.frame.origin.y;
-            width = (int)currentWebView.frame.size.width;
-            height = (int)currentWebView.frame.size.height;
-        } else if (state == MRAIDStateResized) {
-            x = (int)resizeView.frame.origin.x;
-            y = (int)resizeView.frame.origin.y;
-            width = (int)resizeView.frame.size.width;
-            height = (int)resizeView.frame.size.height;
+        if (self.state == MRAIDStateExpanded || self.isInterstitial) {
+            x = (int)self.currentWebView.frame.origin.x;
+            y = (int)self.currentWebView.frame.origin.y;
+            width = (int)self.currentWebView.frame.size.width;
+            height = (int)self.currentWebView.frame.size.height;
+        } else if (self.state == MRAIDStateResized) {
+            x = (int)self.resizeView.frame.origin.x;
+            y = (int)self.resizeView.frame.origin.y;
+            width = (int)self.resizeView.frame.size.width;
+            height = (int)self.resizeView.frame.size.height;
         } else {
             // Per the MRAID spec, the current or default position is relative to the rectangle defined by the getMaxSize method,
             // that is, the largest size that the ad can resize to.
@@ -838,8 +786,8 @@ typedef enum {
         
         UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
         BOOL isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation);
-        // [SKLogger debug:[NSString stringWithFormat:@"orientation is %@", (isLandscape ?  @"landscape" : @"portrait")]];
-        BOOL adjustOrientationForIOS8 = isInterstitial &&  isLandscape && !SYSTEM_VERSION_LESS_THAN(@"8.0");
+
+        BOOL adjustOrientationForIOS8 = self.isInterstitial &&  isLandscape && !SYSTEM_VERSION_LESS_THAN(@"8.0");
         [self injectJavaScript:[NSString stringWithFormat:@"mraid.setCurrentPosition(%d,%d,%d,%d);", x, y, adjustOrientationForIOS8?height:width, adjustOrientationForIOS8?width:height]];
     }
 }
@@ -855,7 +803,7 @@ typedef enum {
                                 @"hidden",
                                 ];
         
-        NSString *stateName = stateNames[state];
+        NSString *stateName = stateNames[self.state];
         [self injectJavaScript:[NSString stringWithFormat:@"mraid.fireStateChangeEvent('%@');", stateName]];
     }
 }
@@ -867,7 +815,7 @@ typedef enum {
 
 - (void)setDefaultPosition
 {
-    if (isInterstitial) {
+    if (self.isInterstitial) {
         // For interstitials, we define defaultPosition to be the same as screen size, so set the value there.
         return;
     }
@@ -882,16 +830,16 @@ typedef enum {
 
 -(void)setMaxSize
 {
-    if (isInterstitial) {
+    if (self.isInterstitial) {
         // For interstitials, we define maxSize to be the same as screen size, so set the value there.
         return;
     }
     CGSize maxSize = self.rootViewController.view.bounds.size;
-    if (!CGSizeEqualToSize(maxSize, previousMaxSize)) {
+    if (!CGSizeEqualToSize(maxSize, self.previousMaxSize)) {
         [self injectJavaScript:[NSString stringWithFormat:@"mraid.setMaxSize(%d,%d);",
                                 (int)maxSize.width,
                                 (int)maxSize.height]];
-        previousMaxSize = CGSizeMake(maxSize.width, maxSize.height);
+        self.previousMaxSize = CGSizeMake(maxSize.width, maxSize.height);
     }
 }
 
@@ -911,12 +859,12 @@ typedef enum {
             screenSize = CGSizeMake(screenSize.height, screenSize.width);
         }
     }
-    if (!CGSizeEqualToSize(screenSize, previousScreenSize)) {
+    if (!CGSizeEqualToSize(screenSize, self.previousScreenSize)) {
         [self injectJavaScript:[NSString stringWithFormat:@"mraid.setScreenSize(%d,%d);",
                                 (int)screenSize.width,
                                 (int)screenSize.height]];
-        previousScreenSize = CGSizeMake(screenSize.width, screenSize.height);
-        if (isInterstitial) {
+        self.previousScreenSize = CGSizeMake(screenSize.width, screenSize.height);
+        if (self.isInterstitial) {
             [self injectJavaScript:[NSString stringWithFormat:@"mraid.setMaxSize(%d,%d);",
                                     (int)screenSize.width,
                                     (int)screenSize.height]];
@@ -929,7 +877,7 @@ typedef enum {
 
 -(void)setSupports:(NSArray *)currentFeatures
 {
-    for (id aFeature in mraidFeatures) {
+    for (id aFeature in self.mraidFeatures) {
             [self injectJavaScript:[NSString stringWithFormat:@"mraid.setSupports('%@',%@);", aFeature,[currentFeatures containsObject:aFeature]?@"true":@"false"]];
     }
 }
@@ -938,14 +886,11 @@ typedef enum {
 
 - (void)webViewDidStartLoad:(UIWebView *)wv
 {
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@", NSStringFromSelector(_cmd)]];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)wv
 {
     @synchronized(self) {
-        [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@", NSStringFromSelector(_cmd)]];
-        
         // If wv is webViewPart2, that means the part 2 expanded web view has just loaded.
         // In this case, state should already be MRAIDStateExpanded and should not be changed.
         // if (wv != webViewPart2) {
@@ -958,10 +903,10 @@ typedef enum {
             [wv stringByEvaluatingJavaScriptFromString:@"function alert(){}; function prompt(){}; function confirm(){}"];
         }
         
-        if (state == MRAIDStateLoading) {
-            state = MRAIDStateDefault;
-            [self injectJavaScript:[NSString stringWithFormat:@"mraid.setPlacementType('%@');", (isInterstitial ? @"interstitial" : @"inline")]];
-            [self setSupports:supportedFeatures];
+        if (self.state == MRAIDStateLoading) {
+            self.state = MRAIDStateDefault;
+            [self injectJavaScript:[NSString stringWithFormat:@"mraid.setPlacementType('%@');", (self.isInterstitial ? @"interstitial" : @"inline")]];
+            [self setSupports:self.supportedFeatures];
             [self setDefaultPosition];
             [self setMaxSize];
             [self setScreenSize];
@@ -985,7 +930,6 @@ typedef enum {
 
 - (void)webView:(UIWebView *)wv didFailLoadWithError:(NSError *)error
 {
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"JS callback %@", NSStringFromSelector(_cmd)]];
 }
 
 - (BOOL)webView:(UIWebView *)wv shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
@@ -998,17 +942,13 @@ typedef enum {
         [self parseCommandUrl:absUrlString];
 
     } else if ([scheme isEqualToString:@"console-log"]) {
-        [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat:@"JS console: %@",
-                          [[absUrlString substringFromIndex:14] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding ]]];
+
     } else {
-        [SKLogger info:@"MRAID - View" withMessage:[NSString stringWithFormat:@"Found URL %@ with type %@", absUrlString, @(navigationType)]];
         
         // Links, Form submissions
         if (navigationType == UIWebViewNavigationTypeLinkClicked) {
             // For banner views
             if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
-                [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat:@"JS webview load: %@",
-                                                                    [absUrlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
                 [self.delegate mraidViewNavigate:self withURL:url];
             }
         } else {
@@ -1023,7 +963,6 @@ typedef enum {
 
 - (void)mraidModalViewControllerDidRotate:(SKMRAIDModalViewController *)modalViewController
 {
-    [SKLogger debug:@"MRAID - View" withMessage:[NSString stringWithFormat: @"%@", NSStringFromSelector(_cmd)]];
     [self setScreenSize];
     [self fireSizeChangeEvent];
 }
@@ -1039,13 +978,12 @@ typedef enum {
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
     wv.autoresizesSubviews = YES;
     
-    if ([supportedFeatures containsObject:MRAIDSupportsInlineVideo]) {
+    if ([self.supportedFeatures containsObject:MRAIDSupportsInlineVideo]) {
         wv.allowsInlineMediaPlayback = YES;
         wv.mediaPlaybackRequiresUserAction = NO;
     } else {
         wv.allowsInlineMediaPlayback = NO;
         wv.mediaPlaybackRequiresUserAction = YES;
-        [SKLogger warning:@"MRAID - View" withMessage:[NSString stringWithFormat:@"No inline video support has been included, videos will play full screen without autoplay."]];
     }
     
     // disable scrolling
@@ -1075,9 +1013,8 @@ typedef enum {
 
 - (void)parseCommandUrl:(NSString *)commandUrlString
 {
-    NSDictionary *commandDict = [mraidParser parseCommandUrl:commandUrlString];
+    NSDictionary *commandDict = [self.mraidParser parseCommandUrl:commandUrlString];
     if (!commandDict) {
-        [SKLogger warning:@"MRAID - View" withMessage:[NSString stringWithFormat:@"invalid command URL: %@", commandUrlString]];
         return;
     }
     
@@ -1103,15 +1040,15 @@ typedef enum {
         return;  // return without adding the GestureRecognizer if the feature is not enabled
     }
     // One finger, one tap
-    tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(oneFingerOneTap)];
+    self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(oneFingerOneTap)];
     
     // Set up
-    [tapGestureRecognizer setNumberOfTapsRequired:1];
-    [tapGestureRecognizer setNumberOfTouchesRequired:1];
-    [tapGestureRecognizer setDelegate:self];
+    [self.tapGestureRecognizer setNumberOfTapsRequired:1];
+    [self.tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [self.tapGestureRecognizer setDelegate:self];
     
     // Add the gesture to the view
-    [self addGestureRecognizer:tapGestureRecognizer];
+    [self addGestureRecognizer:self.tapGestureRecognizer];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -1120,19 +1057,16 @@ typedef enum {
 
 -(void)oneFingerOneTap
 {
-    bonafideTapObserved=YES;
-    tapGestureRecognizer.delegate=nil;
-    tapGestureRecognizer=nil;
-    [SKLogger debug:@"MRAID - View" withMessage:@"tapGesture oneFingerTap observed"];
+    self.bonafideTapObserved=YES;
+    self.tapGestureRecognizer.delegate=nil;
+    self.tapGestureRecognizer=nil;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-    if (touch.view == resizeCloseRegion || touch.view == closeEventRegion){
-        [SKLogger debug:@"MRAID - View" withMessage:@"tapGesture 'shouldReceiveTouch'=NO"];
+    if (touch.view == self.resizeCloseRegion || touch.view == self.closeEventRegion){
         return NO;
     }
-    [SKLogger debug:@"MRAID - View" withMessage:@"tapGesture 'shouldReceiveTouch'=YES"];
     return YES;
 }
 
