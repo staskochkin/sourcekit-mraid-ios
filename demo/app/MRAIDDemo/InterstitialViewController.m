@@ -50,7 +50,7 @@
     
     // Type 1
     NSString *htmlPath = [[NSBundle mainBundle] pathForResource:self.htmlFile ofType:@"html"];
-    NSURL *bundleUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
+//    NSURL *bundleUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
     NSString* htmlData = [[NSString alloc] initWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
     
     // Type 2
@@ -61,12 +61,10 @@
     
 
     // Initialize and load the interstitial creative
-    interstitial = [[SKMRAIDInterstitial alloc] initWithSupportedFeatures:@[MRAIDSupportsSMS, MRAIDSupportsTel, MRAIDSupportsCalendar, MRAIDSupportsStorePicture, MRAIDSupportsInlineVideo]
-                                                           withHtmlData:htmlData
-                                                            withBaseURL:bundleUrl
-                                                               delegate:self
-                                                       serviceDelegate:self
-                                                     rootViewController:self];
+    NSArray * supportedFeatures = @[MRAIDSupportsSMS, MRAIDSupportsTel, MRAIDSupportsCalendar, MRAIDSupportsStorePicture, MRAIDSupportsInlineVideo];
+    interstitial = [[SKMRAIDInterstitial alloc] initWithSupportedFeatures:supportedFeatures delegate:self serviceDelegate:self rootViewController:self];
+    [interstitial loadAdHTML:htmlData];
+                    
 }
 
 - (IBAction)displayInterstitial:(id)sender
@@ -133,25 +131,22 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     NSLog(@"%@ %@", [[self class] description], NSStringFromSelector(_cmd));
-    interstitial.isViewable=NO;
+   
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     NSLog(@"%@ %@", [[self class] description], NSStringFromSelector(_cmd));
-    interstitial.isViewable=YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     NSLog(@"%@ %@", [[self class] description], NSStringFromSelector(_cmd));
-    interstitial.isViewable=NO;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     NSLog(@"%@ %@", [[self class] description], NSStringFromSelector(_cmd));
-    interstitial.isViewable=YES;
 }
 
 @end

@@ -25,7 +25,6 @@ typedef enum {
 @protocol SKMRAIDViewDelegate <NSObject>
 
 @optional
-
 // These callbacks are for basic banner ad functionality.
 - (void)mraidView:(SKMRAIDView *)mraidView preloadedAd:(NSString *)preloadedAd;
 
@@ -43,6 +42,8 @@ typedef enum {
 
 // This callback is to ask permission to resize an ad.
 - (BOOL)mraidViewShouldResize:(SKMRAIDView *)mraidView toPosition:(CGRect)position allowOffscreen:(BOOL)allowOffscreen;
+
+- (UIImage *)customCloseButtonImageForMraidView:(SKMRAIDView *)mraidView;
 
 @end
 
@@ -77,5 +78,7 @@ typedef enum {
            delegate:(id<SKMRAIDViewDelegate>)delegate
     serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
  rootViewController:(UIViewController *)rootViewController;
+
+- (void)showAsInterstitial;
 
 @end

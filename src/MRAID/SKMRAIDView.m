@@ -24,6 +24,8 @@
 #define kMinHTMLResponseLength 70
 #define SYSTEM_VERSION_LESS_THAN(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
+#define kScriptObserverName @"observe"
+
 NSString *const kSKMRAIDErrorDomain = @"com.skmraid.error";
 
 typedef enum {
@@ -150,8 +152,7 @@ typedef enum {
 }
 
 - (void)loadAdHTML:(NSString *)html {
-    self.webView = [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
-    [self initWebView:self.webView];
+    self.webView = [self defaultWebViewWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
     self.currentWebView = self.webView;
     // Get mraid.js as binary data
     NSData* mraidJSData = [NSData dataWithBytesNoCopy:__MRAID_mraid_js
@@ -285,12 +286,14 @@ typedef enum {
 - (void)setIsViewable:(BOOL)isViewable
 {
     _isViewable=isViewable;
+    [self fireViewableChangeEvent];
+    if (!self.isInterstitial) return;
+    
     if (isViewable) {
         [self addSubview:self.currentWebView];
     } else {
         [self.currentWebView removeFromSuperview];
     }
-    [self fireViewableChangeEvent];
 }
 
 - (void)setRootViewController:(UIViewController *)newRootViewController
@@ -436,7 +439,7 @@ typedef enum {
 // Note: This method is also used to present an interstitial ad.
 - (void)expand:(NSString *)urlString
 {
-    if(!self.bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
+    if((!self.bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT) || !self.isInterstitial){
         return;  // ignore programmatic touches (taps)
     }
     
@@ -457,8 +460,7 @@ typedef enum {
         [self.webView removeFromSuperview];
     } else {
         // 2-part expansion
-        self.webViewPart2 = [[WKWebView alloc] initWithFrame:frame];
-        [self initWebView:self.webViewPart2];
+        self.webViewPart2 = [self defaultWebViewWithFrame:frame];
         self.currentWebView = self.webViewPart2;
         self.bonafideTapObserved = YES; // by definition for 2 part expand a valid tap has occurred
         
@@ -500,27 +502,22 @@ typedef enum {
     // always include the close event region
     [self addCloseEventRegion];
     
-    if ([self.rootViewController respondsToSelector:@selector(presentViewController:animated:completion:)]) {
-        // used if running >= iOS 6
-        if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {  // respect clear backgroundColor
-            self.rootViewController.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
-        } else {
-            self.modalVC.modalPresentationStyle = UIModalPresentationFullScreen;
-        }
-        [self.rootViewController presentViewController:self.modalVC animated:NO completion:nil];
+   
+    // used if running >= iOS 6
+    if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {  // respect clear backgroundColor
+        self.rootViewController.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
     } else {
-        // Turn off the warning about using a deprecated method.
-
-        [self.rootViewController presentViewController:self.modalVC animated:NO completion:^{
-        }];
+        self.modalVC.modalPresentationStyle = UIModalPresentationFullScreen;
     }
     
-    if (!self.isInterstitial) {
-        self.state = MRAIDStateExpanded;
-        [self fireStateChangeEvent];
-    }
-    [self fireSizeChangeEvent];
-    self.isViewable = YES;
+    [self.rootViewController presentViewController:self.modalVC animated:NO completion:^{
+        if (!self.isInterstitial) {
+            self.state = MRAIDStateExpanded;
+            [self fireStateChangeEvent];
+        }
+        [self fireSizeChangeEvent];
+        self.isViewable = YES;
+    }];
 }
 
 - (void)open:(NSString *)urlString
@@ -644,13 +641,16 @@ typedef enum {
     self.closeEventRegion.backgroundColor = [UIColor clearColor];
     [self.closeEventRegion addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
     
-    if (!self.useCustomClose) {
+    if (!self.useCustomClose || ![self.delegate respondsToSelector:@selector(customCloseButtonImageForMraidView:)]) {
         // get button image from header file
         NSData* buttonData = [NSData dataWithBytesNoCopy:__MRAID_CloseButton_png
                                                   length:__MRAID_CloseButton_png_len
                                             freeWhenDone:NO];
         UIImage *closeButtonImage = [UIImage imageWithData:buttonData];
         [self.closeEventRegion setBackgroundImage:closeButtonImage forState:UIControlStateNormal];
+    }
+    if ([self.delegate respondsToSelector:@selector(customCloseButtonImageForMraidView:)]) {
+        [self.closeEventRegion setBackgroundImage:[self.delegate customCloseButtonImageForMraidView:self] forState:UIControlStateNormal];
     }
     
     self.closeEventRegion.frame = CGRectMake(0, 0, kCloseEventRegionSize, kCloseEventRegionSize);
@@ -766,53 +766,50 @@ typedef enum {
 
 - (void)fireSizeChangeEvent
 {
-    @synchronized(self){
-        int x;
-        int y;
-        int width;
-        int height;
-        if (self.state == MRAIDStateExpanded || self.isInterstitial) {
-            x = (int)self.currentWebView.frame.origin.x;
-            y = (int)self.currentWebView.frame.origin.y;
-            width = (int)self.currentWebView.frame.size.width;
-            height = (int)self.currentWebView.frame.size.height;
-        } else if (self.state == MRAIDStateResized) {
-            x = (int)self.resizeView.frame.origin.x;
-            y = (int)self.resizeView.frame.origin.y;
-            width = (int)self.resizeView.frame.size.width;
-            height = (int)self.resizeView.frame.size.height;
-        } else {
-            // Per the MRAID spec, the current or default position is relative to the rectangle defined by the getMaxSize method,
-            // that is, the largest size that the ad can resize to.
-            CGPoint originInRootView = [self.rootViewController.view convertPoint:CGPointZero fromView:self];
-            x = originInRootView.x;
-            y = originInRootView.y;
-            width = (int)self.frame.size.width;
-            height = (int)self.frame.size.height;
-        }
-        
-        UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
-        BOOL isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation);
-
-        BOOL adjustOrientationForIOS8 = self.isInterstitial &&  isLandscape && !SYSTEM_VERSION_LESS_THAN(@"8.0");
-        [self injectJavaScript:[NSString stringWithFormat:@"mraid.setCurrentPosition(%d,%d,%d,%d);", x, y, adjustOrientationForIOS8?height:width, adjustOrientationForIOS8?width:height]];
+    int x;
+    int y;
+    int width;
+    int height;
+    if (self.state == MRAIDStateExpanded || self.isInterstitial) {
+        x = (int)self.currentWebView.frame.origin.x;
+        y = (int)self.currentWebView.frame.origin.y;
+        width = (int)self.currentWebView.frame.size.width;
+        height = (int)self.currentWebView.frame.size.height;
+    } else if (self.state == MRAIDStateResized) {
+        x = (int)self.resizeView.frame.origin.x;
+        y = (int)self.resizeView.frame.origin.y;
+        width = (int)self.resizeView.frame.size.width;
+        height = (int)self.resizeView.frame.size.height;
+    } else {
+        // Per the MRAID spec, the current or default position is relative to the rectangle defined by the getMaxSize method,
+        // that is, the largest size that the ad can resize to.
+        CGPoint originInRootView = [self.rootViewController.view convertPoint:CGPointZero fromView:self];
+        x = originInRootView.x;
+        y = originInRootView.y;
+        width = (int)self.frame.size.width;
+        height = (int)self.frame.size.height;
     }
+    
+    UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
+    BOOL isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation);
+    
+    BOOL adjustOrientationForIOS8 = self.isInterstitial &&  isLandscape && !SYSTEM_VERSION_LESS_THAN(@"8.0");
+    [self injectJavaScript:[NSString stringWithFormat:@"mraid.setCurrentPosition(%d,%d,%d,%d);", x, y, adjustOrientationForIOS8?height:width, adjustOrientationForIOS8?width:height]];
 }
 
 - (void)fireStateChangeEvent
 {
-    @synchronized(self) {
-        NSArray *stateNames = @[
-                                @"loading",
-                                @"default",
-                                @"expanded",
-                                @"resized",
-                                @"hidden",
-                                ];
-        
-        NSString *stateName = stateNames[self.state];
-        [self injectJavaScript:[NSString stringWithFormat:@"mraid.fireStateChangeEvent('%@');", stateName]];
-    }
+    NSArray *stateNames = @[
+                            @"loading",
+                            @"default",
+                            @"expanded",
+                            @"resized",
+                            @"hidden",
+                            ];
+    
+    NSString *stateName = stateNames[self.state];
+    [self injectJavaScript:[NSString stringWithFormat:@"mraid.fireStateChangeEvent('%@');", stateName]];
+    
 }
 
 - (void)fireViewableChangeEvent
@@ -967,16 +964,46 @@ typedef enum {
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
     //TODO: autoclick protection
+    
+    WKNavigationActionPolicy policy = WKNavigationActionPolicyCancel;
+    
+    NSString * request = navigationAction.request.URL.absoluteString;
     if (self.state == MRAIDStateLoading) {
-        NSString * request = navigationAction.request.URL.absoluteString;
-        
+
         if ([request containsString:@"about:blank"] ||
             [request containsString:@"http://"] ||
             [request containsString:@"https://"]) {
-            decisionHandler(WKNavigationActionPolicyAllow);
+            
+            policy = WKNavigationActionPolicyAllow;
         }
     }
-    decisionHandler(WKNavigationActionPolicyAllow);
+    
+    if (self.state == MRAIDStateDefault) {
+        
+        if (_bonafideTapObserved && (navigationAction.navigationType == WKNavigationTypeLinkActivated ||
+                                     navigationAction.navigationType == WKNavigationTypeOther)) {
+            
+            NSString * scheme = navigationAction.request.URL.scheme;
+            BOOL iframe = ![navigationAction.request.URL isEqual:navigationAction.request.mainDocumentURL];
+            
+            // If we load a URL from an iFrame that did not originate from a click or
+            // is a deep link, handle normally and return safeToAutoloadLink.
+            if (iframe && !((navigationAction.navigationType == WKNavigationTypeLinkActivated) && ([scheme isEqualToString:@"https"] || [scheme isEqualToString:@"http"]))) {
+                BOOL safeToAutoload = navigationAction.navigationType == WKNavigationTypeLinkActivated ||
+                                                                        _bonafideTapObserved ||
+                                                                        [scheme isEqualToString:@"https"] ||
+                                                                        [scheme isEqualToString:@"http"];
+                
+                policy = safeToAutoload ? WKNavigationActionPolicyAllow : WKNavigationActionPolicyCancel;
+            }
+
+            if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
+                [self.delegate mraidViewNavigate:self withURL:navigationAction.request.URL];
+            }
+        }
+    }
+    
+    decisionHandler(policy);
 }
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
@@ -993,24 +1020,28 @@ typedef enum {
 
 #pragma mark - internal helper methods
 
-- (void)initWebView:(WKWebView *)wv
+- (WKWebView *)defaultWebViewWithFrame:(CGRect)frame
 {
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    if ([self.supportedFeatures containsObject:MRAIDSupportsInlineVideo]) {
+        configuration.allowsInlineMediaPlayback = YES;
+        configuration.requiresUserActionForMediaPlayback = NO;
+    } else {
+        configuration.allowsInlineMediaPlayback = NO;
+        configuration.requiresUserActionForMediaPlayback = YES;
+    }
+    
+    WKUserContentController *controller = [[WKUserContentController alloc] init];
+    [controller addScriptMessageHandler:self name:kScriptObserverName];
+    configuration.userContentController = controller;
+    
+    WKWebView * wv = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     wv.navigationDelegate = self;
     wv.opaque = NO;
     wv.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight |
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
     wv.autoresizesSubviews = YES;
-    
-    if ([self.supportedFeatures containsObject:MRAIDSupportsInlineVideo]) {
-        wv.configuration.allowsInlineMediaPlayback = YES;
-        wv.configuration.requiresUserActionForMediaPlayback = NO;
-    } else {
-        wv.configuration.allowsInlineMediaPlayback = NO;
-        wv.configuration.requiresUserActionForMediaPlayback = YES;
-    }
-    
-    [wv.configuration.userContentController addScriptMessageHandler:self name:@"mraid://"];
     
     // disable scrolling
     UIScrollView *scrollView = [wv scrollView];
@@ -1024,17 +1055,16 @@ typedef enum {
     
     // Alert suppression
     [self disableJsCallbackInWebViewIfNeeded:wv];
-    }
+    return wv;
+}
 
 - (void)disableJsCallbackInWebViewIfNeeded:(WKWebView *)webView {
     if (SK_SUPPRESS_JS_ALERT) {
         NSString * disableJSAlertScript = @"function alert(){}; function prompt(){}; function confirm(){}";
         [webView evaluateJavaScript:disableJSAlertScript completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
             //TODO:
-            
         }];
     }
-
 }
 
 - (void)parseCommandUrl:(NSString *)commandUrlString

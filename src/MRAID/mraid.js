@@ -607,11 +607,7 @@ mraid.fireViewableChangeEvent = function(newIsViewable) {
  **************************************************************************/
 
 var callNative = function(command) {
-    var iframe = document.createElement("IFRAME");
-    iframe.setAttribute("src", "mraid://" + command);
-    document.documentElement.appendChild(iframe);
-    iframe.parentNode.removeChild(iframe);
-    iframe = null;
+    window.webkit.messageHandlers.observe.postMessage(command);
 };
 
 var fireEvent = function(event) {

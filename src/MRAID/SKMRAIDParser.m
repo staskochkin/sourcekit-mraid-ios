@@ -28,17 +28,17 @@
      and then send an appropriate message back to the MRAIDView to run the command.
      */
     
-    // Remove mraid:// prefix.
-    NSString *s = [commandUrl substringFromIndex:8];
+//    // Remove mraid:// prefix.
+//    NSString *s = [commandUrl substringFromIndex:8];
     
     NSString *command;
     NSMutableDictionary *params;
     
     // Check for parameters, parse them if found
-    NSRange range = [s rangeOfString:@"?"];
+    NSRange range = [commandUrl rangeOfString:@"?"];
     if (range.location != NSNotFound) {
-        command = [s substringToIndex:range.location];
-        NSString *paramStr = [s substringFromIndex:(range.location + 1)];
+        command = [commandUrl substringToIndex:range.location];
+        NSString *paramStr = [commandUrl substringFromIndex:(range.location + 1)];
         NSArray *paramArray = [paramStr componentsSeparatedByString:@"&"];
         params = [NSMutableDictionary dictionaryWithCapacity:5];
         for (NSString *param in paramArray) {
@@ -48,7 +48,7 @@
             [params setValue:val forKey:key];
         }
     } else {
-        command = s;
+        command = commandUrl;
     }
     
     // Check for valid command.

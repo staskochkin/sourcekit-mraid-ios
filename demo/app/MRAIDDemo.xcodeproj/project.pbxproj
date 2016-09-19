@@ -131,20 +131,6 @@
 			remoteGlobalIDString = 27BBC1621833E99900074066;
 			remoteInfo = "MRAID Tests";
 		};
-		953FF04F183AB2E200E146D2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 953FF04B183AB2E200E146D2 /* SourceKitCommon.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 2750AD631832BBF9005E1EE0;
-			remoteInfo = SourceKitCommon;
-		};
-		953FF052183AB42600E146D2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 953FF04B183AB2E200E146D2 /* SourceKitCommon.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 2750AD621832BBF9005E1EE0;
-			remoteInfo = SourceKitCommon;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -261,7 +247,6 @@
 		27B9573A183437820076286F /* interstitial.useCustomClose.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = interstitial.useCustomClose.html; sourceTree = "<group>"; };
 		27B9573B183437820076286F /* interstitial.viewableChange.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = interstitial.viewableChange.html; sourceTree = "<group>"; };
 		27B9573C183437820076286F /* nexage.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = nexage.gif; sourceTree = "<group>"; };
-		953FF04B183AB2E200E146D2 /* SourceKitCommon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SourceKitCommon.xcodeproj; path = "../../../sourcekit-common-ios/src/SourceKitCommon.xcodeproj"; sourceTree = "<group>"; };
 		95DB64DD198299FF00EF3446 /* SKBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKBrowser.h; path = "../../../../sourcekit-common-ios/src/Browser/SKBrowser.h"; sourceTree = "<group>"; };
 		95DB64DE198299FF00EF3446 /* SKLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKLogger.h; path = "../../../../sourcekit-common-ios/src/Logger/SKLogger.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -335,7 +320,6 @@
 		27740FDE17F2891C00EFFF39 = {
 			isa = PBXGroup;
 			children = (
-				953FF04B183AB2E200E146D2 /* SourceKitCommon.xcodeproj */,
 				278E62E61805AB4900A786B4 /* MRAID.xcodeproj */,
 				E248E2C317FA0E11003F4B8A /* MRAIDDemo */,
 				27740FE917F2891C00EFFF39 /* Frameworks */,
@@ -510,14 +494,6 @@
 			name = Images;
 			sourceTree = "<group>";
 		};
-		953FF04C183AB2E200E146D2 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				953FF050183AB2E200E146D2 /* libSourceKitCommon.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		E248E2C317FA0E11003F4B8A /* MRAIDDemo */ = {
 			isa = PBXGroup;
 			children = (
@@ -547,7 +523,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				953FF053183AB42600E146D2 /* PBXTargetDependency */,
 				27A462AC1815B38A008F7A5A /* PBXTargetDependency */,
 			);
 			name = MRAIDDemo;
@@ -561,7 +536,7 @@
 		27740FDF17F2891C00EFFF39 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = Nexage;
 				TargetAttributes = {
 					27740FE617F2891C00EFFF39 = {
@@ -585,10 +560,6 @@
 					ProductGroup = 278E62E71805AB4900A786B4 /* Products */;
 					ProjectRef = 278E62E61805AB4900A786B4 /* MRAID.xcodeproj */;
 				},
-				{
-					ProductGroup = 953FF04C183AB2E200E146D2 /* Products */;
-					ProjectRef = 953FF04B183AB2E200E146D2 /* SourceKitCommon.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -610,13 +581,6 @@
 			fileType = wrapper.cfbundle;
 			path = "MRAID Tests.xctest";
 			remoteRef = 27BBC1781833E9ED00074066 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		953FF050183AB2E200E146D2 /* libSourceKitCommon.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libSourceKitCommon.a;
-			remoteRef = 953FF04F183AB2E200E146D2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -743,11 +707,6 @@
 			name = MRAID;
 			targetProxy = 27A462AB1815B38A008F7A5A /* PBXContainerItemProxy */;
 		};
-		953FF053183AB42600E146D2 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = SourceKitCommon;
-			targetProxy = 953FF052183AB42600E146D2 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -764,13 +723,19 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -783,7 +748,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -802,20 +767,25 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -830,6 +800,7 @@
 				GCC_PREFIX_HEADER = "MRAIDDemo/MRAIDDemo-Prefix.pch";
 				INFOPLIST_FILE = "MRAIDDemo/MRAIDDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.nexage.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = MRAIDDemo;
 				WRAPPER_EXTENSION = app;
 			};
@@ -844,6 +815,7 @@
 				GCC_PREFIX_HEADER = "MRAIDDemo/MRAIDDemo-Prefix.pch";
 				INFOPLIST_FILE = "MRAIDDemo/MRAIDDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.nexage.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = MRAIDDemo;
 				WRAPPER_EXTENSION = app;
 			};
