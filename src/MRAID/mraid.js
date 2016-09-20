@@ -793,7 +793,8 @@ function isRectContained(containingRect, containedRect) {
         containedRect.y >= containingRect.y &&
         (containedRect.y + containedRect.height) <= (containingRect.y + containingRect.height));
 }
- 
+
+
 function printRect(label, rect) {
     log.d(label +
           " [" + rect.x + "," + rect.y + "]" +

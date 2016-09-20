@@ -74,7 +74,6 @@ typedef enum {
 @property (nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic, assign) BOOL bonafideTapObserved;
 
-
 @end
 
 
@@ -287,7 +286,8 @@ typedef enum {
 {
     _isViewable=isViewable;
     [self fireViewableChangeEvent];
-    if (!self.isInterstitial) return;
+    
+    if (self.isInterstitial) return;
     
     if (isViewable) {
         [self addSubview:self.currentWebView];
@@ -537,6 +537,9 @@ typedef enum {
 - (void)playVideo:(NSString *)urlString
 {
     if(!self.bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
+        NSString * pauseVideoScript = @"var video = document.querySelector('video');\
+                                        video.pause();";
+        [self.currentWebView evaluateJavaScript:pauseVideoScript completionHandler:nil];
         return;  // ignore programmatic touches (taps)
     }
     
@@ -856,11 +859,12 @@ typedef enum {
     BOOL isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation);
     // [SKLogger debug:[NSString stringWithFormat:@"orientation is %@", (isLandscape ?  @"landscape" : @"portrait")]];
    
+    CGFloat scale = [UIScreen mainScreen].scale;
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
-        screenSize = CGSizeMake(screenSize.width, screenSize.height);
+        screenSize = CGSizeMake(screenSize.width * scale, screenSize.height * scale);
     } else {
         if (isLandscape) {
-            screenSize = CGSizeMake(screenSize.height, screenSize.width);
+            screenSize = CGSizeMake(screenSize.height * scale, screenSize.width * scale);
         }
     }
     if (!CGSizeEqualToSize(screenSize, self.previousScreenSize)) {
@@ -886,6 +890,7 @@ typedef enum {
     }
 }
 
+
 #pragma mark - WKNavigationDelegate
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
@@ -907,6 +912,7 @@ typedef enum {
         [self fireStateChangeEvent];
         [self fireSizeChangeEvent];
         [self fireReadyEvent];
+        [self disableFullscreenVideoInWebView:webView];
         
         if ([self.delegate respondsToSelector:@selector(mraidViewAdReady:)]) {
             [self.delegate mraidViewAdReady:self];
@@ -921,46 +927,12 @@ typedef enum {
     }
 }
 
-//- (void)webViewDidStartLoad:(UIWebView *)wv
-//{
-//}
-
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
     if ([self.delegate respondsToSelector:@selector(mraidView:failToLoadAdThrowError:)]) {
         NSError * mraidError = [NSError errorWithDomain:kSKMRAIDErrorDomain code:MRAIDShowError userInfo:error.userInfo];
         [self.delegate mraidView:self failToLoadAdThrowError:mraidError];
     }
 }
-
-//- (void)webView:(UIWebView *)wv didFailLoadWithError:(NSError *)error
-//{
-//}
-
-//- (BOOL)webView:(UIWebView *)wv shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-//    NSURL *url = [request URL];
-//    NSString *scheme = [url scheme];
-//    NSString *absUrlString = [url absoluteString];
-//    
-//    if ([scheme isEqualToString:@"mraid"]) {
-//        [self parseCommandUrl:absUrlString];
-//
-//    } else if ([scheme isEqualToString:@"console-log"]) {
-//
-//    } else {
-//        
-//        // Links, Form submissions
-//        if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-//            // For banner views
-//            if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
-//                [self.delegate mraidViewNavigate:self withURL:url];
-//            }
-//        } else {
-//            // Need to let browser to handle rendering and other things
-//            return YES;
-//        }
-//    }
-//    return NO;
-//}
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
     //TODO: autoclick protection
@@ -1010,7 +982,6 @@ typedef enum {
     [self parseCommandUrl:message.body];
 }
 
-
 #pragma mark - MRAIDModalViewControllerDelegate
 
 - (void)mraidModalViewControllerDidRotate:(SKMRAIDModalViewController *)modalViewController {
@@ -1025,11 +996,13 @@ typedef enum {
     WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
     if ([self.supportedFeatures containsObject:MRAIDSupportsInlineVideo]) {
         configuration.allowsInlineMediaPlayback = YES;
-        configuration.requiresUserActionForMediaPlayback = NO;
+        configuration.requiresUserActionForMediaPlayback = self.isInterstitial;
     } else {
         configuration.allowsInlineMediaPlayback = NO;
         configuration.requiresUserActionForMediaPlayback = YES;
     }
+    
+    configuration.preferences.javaScriptCanOpenWindowsAutomatically = NO;
     
     WKUserContentController *controller = [[WKUserContentController alloc] init];
     [controller addScriptMessageHandler:self name:kScriptObserverName];
@@ -1041,6 +1014,7 @@ typedef enum {
     wv.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight |
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+    
     wv.autoresizesSubviews = YES;
     
     // disable scrolling
@@ -1065,6 +1039,16 @@ typedef enum {
             //TODO:
         }];
     }
+}
+
+- (void)disableFullscreenVideoInWebView:(WKWebView *)webView {
+    NSString * disableFullScreenAutoplaySript = @"var video = document.querySelector('video');\
+    video.setAttribute('webkit-playsinline', true);\
+    video.setAttribute('playsinline', true);\
+    video.setAttribute('muted', true);\
+    video.addEventListener('playing', mraid.playVideo)";
+    
+    [webView evaluateJavaScript:disableFullScreenAutoplaySript completionHandler:nil];
 }
 
 - (void)parseCommandUrl:(NSString *)commandUrlString

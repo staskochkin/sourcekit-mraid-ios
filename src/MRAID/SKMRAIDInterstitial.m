@@ -138,7 +138,7 @@
 }
 
 - (void)mraidView:(SKMRAIDView *)mraidView didFailToPreloadAd:(NSError *)preloadError {
-    if ([self.delegate respondsToSelector:@selector(mraidView:didFailToPreloadAd:)]) {
+    if ([self.delegate respondsToSelector:@selector(mraidInterstitial:didFailToPreloadAd:)]) {
         [self.delegate mraidInterstitial:self didFailToPreloadAd:preloadError];
     }
 }

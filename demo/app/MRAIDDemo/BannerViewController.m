@@ -58,9 +58,10 @@
                                    serviceDelegate:self
                                  rootViewController:self];
     
-    NSString *htmlPath = [[NSBundle mainBundle] pathForResource:self.htmlFile ofType:@"html"];
-    NSString* htmlData = [[NSString alloc] initWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
-    [self.adView loadAdHTML:htmlData];
+//    NSString *htmlPath = [[NSBundle mainBundle] pathForResource:self.htmlFile ofType:@"html"];
+//    NSString* htmlData = [[NSString alloc] initWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
+    NSURL * url = [NSURL URLWithString:@"http://iab.net/ad.html"];
+    [self.adView preloadAdFromURL:url];
     
     self.adView.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:self.adView];
@@ -82,6 +83,10 @@
 }
 
 #pragma mark - MRAIDViewDelegate
+
+- (void)mraidView:(SKMRAIDView *)mraidView preloadedAd:(NSString *)preloadedAd {
+    [self.adView loadAdHTML:preloadedAd];
+}
 
 - (void)mraidViewAdReady:(SKMRAIDView *)mraidView
 {

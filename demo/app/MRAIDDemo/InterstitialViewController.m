@@ -49,9 +49,9 @@
 {
     
     // Type 1
-    NSString *htmlPath = [[NSBundle mainBundle] pathForResource:self.htmlFile ofType:@"html"];
-//    NSURL *bundleUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
-    NSString* htmlData = [[NSString alloc] initWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
+//    NSString *htmlPath = [[NSBundle mainBundle] pathForResource:self.htmlFile ofType:@"html"];
+////    NSURL *bundleUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
+//    NSString* htmlData = [[NSString alloc] initWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
     
     // Type 2
     //    NSString* htmlData = @"<html><body align='center'>Hello World<br/><button type='button' onclick='alert(mraid.getVersion());'>Get Version</button></body></html>";
@@ -62,8 +62,14 @@
 
     // Initialize and load the interstitial creative
     NSArray * supportedFeatures = @[MRAIDSupportsSMS, MRAIDSupportsTel, MRAIDSupportsCalendar, MRAIDSupportsStorePicture, MRAIDSupportsInlineVideo];
-    interstitial = [[SKMRAIDInterstitial alloc] initWithSupportedFeatures:supportedFeatures delegate:self serviceDelegate:self rootViewController:self];
-    [interstitial loadAdHTML:htmlData];
+    
+    interstitial = [[SKMRAIDInterstitial alloc] initWithSupportedFeatures:supportedFeatures
+                                                                 delegate:self
+                                                          serviceDelegate:self
+                                                       rootViewController:self];
+    
+    NSURL * url = [NSURL URLWithString:@"http://iab.net/ad.html"];
+    [interstitial preloadAdFromURL:url];
                     
 }
 
@@ -75,6 +81,15 @@
 
 #pragma mark - MRAIDInterstitialDelegate
 
+- (void)mraidInterstitial:(SKMRAIDInterstitial *)mraidInterstitial preloadedAd:(NSString *)preloadedAd {
+    [interstitial loadAdHTML:preloadedAd];
+    
+}
+
+- (void)mraidInterstitial:(SKMRAIDInterstitial *)mraidInterstitial didFailToPreloadAd:(NSError *)preloadError {
+    
+}
+
 - (void)mraidInterstitialAdReady:(SKMRAIDInterstitial *)mraidInterstitial
 {
     NSLog(@"%@ MRAIDInterstitialDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
@@ -83,7 +98,7 @@
     self.displayInterButton.enabled = YES;
 }
 
-- (void)mraidInterstitialAdFailed:(SKMRAIDInterstitial *)mraidInterstitial
+- (void)mraidInterstitialAdFailed:(SKMRAIDInterstitial *)mraidInterstitial 
 {
     NSLog(@"%@ MRAIDInterstitialDelegate %@", [[self class] description], NSStringFromSelector(_cmd));
 }
