@@ -143,4 +143,11 @@
     }
 }
 
+- (UIImage *)customCloseButtonImageForMraidView:(SKMRAIDView *)mraidView {
+    if ([self.delegate respondsToSelector:@selector(customCloseButtonImageForMraidInterstitial:)]) {
+        return [self.delegate customCloseButtonImageForMraidInterstitial:self];
+    }
+    return nil;
+}
+
 @end

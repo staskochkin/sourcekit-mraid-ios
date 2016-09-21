@@ -151,6 +151,15 @@ typedef enum {
 }
 
 - (void)loadAdHTML:(NSString *)html {
+    if (!html) {
+        NSDictionary *userInfo = @{
+                                   NSLocalizedDescriptionKey: NSLocalizedString(@"Operation was unsuccessful.", nil),
+                                   NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"HTML cannot be nil", nil)};
+        NSError * error = [NSError errorWithDomain:kSKMRAIDErrorDomain code:MRAIDValidationError userInfo:userInfo];
+        [self.delegate mraidView:self failToLoadAdThrowError:error];
+        return;
+    }
+    
     self.webView = [self defaultWebViewWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
     self.currentWebView = self.webView;
     // Get mraid.js as binary data
@@ -204,7 +213,6 @@ typedef enum {
         
         self.state = MRAIDStateDefault;
         self.isViewable = NO;
-        self.useCustomClose = NO;
         
         self.orientationProperties = [[SKMRAIDOrientationProperties alloc] init];
         self.resizeProperties = [[SKMRAIDResizeProperties alloc] init];
@@ -638,23 +646,29 @@ typedef enum {
 
 // These methods are helper methods for the ones above.
 
+- (UIImage *)defaultCloseButtonImage {
+    NSData* buttonData = [NSData dataWithBytesNoCopy:__MRAID_CloseButton_png
+                                              length:__MRAID_CloseButton_png_len
+                                        freeWhenDone:NO];
+    UIImage * closeButtonImage = [UIImage imageWithData:buttonData];
+    return closeButtonImage;
+}
+
 - (void)addCloseEventRegion
 {
     self.closeEventRegion = [UIButton buttonWithType:UIButtonTypeCustom];
     self.closeEventRegion.backgroundColor = [UIColor clearColor];
     [self.closeEventRegion addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
-    
-    if (!self.useCustomClose || ![self.delegate respondsToSelector:@selector(customCloseButtonImageForMraidView:)]) {
-        // get button image from header file
-        NSData* buttonData = [NSData dataWithBytesNoCopy:__MRAID_CloseButton_png
-                                                  length:__MRAID_CloseButton_png_len
-                                            freeWhenDone:NO];
-        UIImage *closeButtonImage = [UIImage imageWithData:buttonData];
-        [self.closeEventRegion setBackgroundImage:closeButtonImage forState:UIControlStateNormal];
-    }
+
+    //We untrust to advertizers and use our close button anyway
+//    if (self.useCustomClose) {
+    UIImage * closeButtonImage;
     if ([self.delegate respondsToSelector:@selector(customCloseButtonImageForMraidView:)]) {
-        [self.closeEventRegion setBackgroundImage:[self.delegate customCloseButtonImageForMraidView:self] forState:UIControlStateNormal];
+        closeButtonImage = [self.delegate customCloseButtonImageForMraidView:self];
     }
+    
+    [self.closeEventRegion setBackgroundImage:closeButtonImage ? : [self defaultCloseButtonImage] forState:UIControlStateNormal];
+//    }
     
     self.closeEventRegion.frame = CGRectMake(0, 0, kCloseEventRegionSize, kCloseEventRegionSize);
     CGRect frame = self.closeEventRegion.frame;

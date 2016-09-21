@@ -48,10 +48,10 @@
 - (IBAction)fetchInterstitial:(id)sender
 {
     
-    // Type 1
-//    NSString *htmlPath = [[NSBundle mainBundle] pathForResource:self.htmlFile ofType:@"html"];
-////    NSURL *bundleUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
-//    NSString* htmlData = [[NSString alloc] initWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
+//     Type 1
+    NSString *htmlPath = [[NSBundle mainBundle] pathForResource:self.htmlFile ofType:@"html"];
+//    NSURL *bundleUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
+    NSString* htmlData = [[NSString alloc] initWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
     
     // Type 2
     //    NSString* htmlData = @"<html><body align='center'>Hello World<br/><button type='button' onclick='alert(mraid.getVersion());'>Get Version</button></body></html>";
@@ -68,8 +68,8 @@
                                                           serviceDelegate:self
                                                        rootViewController:self];
     
-    NSURL * url = [NSURL URLWithString:@"http://iab.net/ad.html"];
-    [interstitial preloadAdFromURL:url];
+//    NSURL * url = [NSURL URLWithString:@"http://iab.net/ad.html"];
+    [interstitial loadAdHTML:htmlData];
                     
 }
 
@@ -139,6 +139,18 @@
 - (void)mraidServiceStorePictureWithUrlString:(NSString *)urlString
 {
     NSLog(@"%@ MRAIDServiceDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), urlString);
+}
+
+- (UIImage *)customCloseButtonImageForMraidInterstitial:(SKMRAIDInterstitial *)mraidInterstitial {
+    CGSize imageSize = CGSizeMake(64, 64);
+    UIColor *fillColor = [UIColor redColor];
+    UIGraphicsBeginImageContextWithOptions(imageSize, YES, 0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    [fillColor setFill];
+    CGContextFillRect(context, CGRectMake(0, 0, imageSize.width, imageSize.height));
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
 }
 
 #pragma mark - handle isViewable events
