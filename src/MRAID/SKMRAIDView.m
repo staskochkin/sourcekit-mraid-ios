@@ -241,10 +241,6 @@ typedef enum {
         self.previousScreenSize = CGSizeZero;
         
         [self addObserver:self forKeyPath:@"self.frame" options:NSKeyValueObservingOptionOld context:NULL];
- 
-        if (isInter) {
-            self.bonafideTapObserved = YES;  // no autoRedirect suppression for Interstitials
-        }
     }
     return self;
 }
@@ -452,7 +448,7 @@ typedef enum {
 // Note: This method is also used to present an interstitial ad.
 - (void)expand:(NSString *)urlString
 {
-    if((!self.bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT) || !self.isInterstitial){
+    if((!self.bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT) && !self.isInterstitial){
         return;  // ignore programmatic touches (taps)
     }
     
