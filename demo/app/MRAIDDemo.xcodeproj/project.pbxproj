@@ -800,6 +800,7 @@
 				GCC_PREFIX_HEADER = "MRAIDDemo/MRAIDDemo-Prefix.pch";
 				INFOPLIST_FILE = "MRAIDDemo/MRAIDDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.nexage.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = MRAIDDemo;
 				WRAPPER_EXTENSION = app;
@@ -815,6 +816,7 @@
 				GCC_PREFIX_HEADER = "MRAIDDemo/MRAIDDemo-Prefix.pch";
 				INFOPLIST_FILE = "MRAIDDemo/MRAIDDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.nexage.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = MRAIDDemo;
 				WRAPPER_EXTENSION = app;

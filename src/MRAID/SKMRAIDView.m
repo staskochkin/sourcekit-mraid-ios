@@ -16,11 +16,14 @@
 #import "SKMRAIDServiceDelegate.h"
 #import "SKMRAIDUtil.h"
 #import "MRAIDSettings.h"
+#import "UIButton+SKExtension.h"
 
 #import "mraidjs.h"
 #import "CloseButton.h"
 
-#define kCloseEventRegionSize 50
+#define kCloseEventRegionSize 20
+#define kCloseEventRegionInset -30
+#define kStatusBarOffset 25
 #define kMinHTMLResponseLength 70
 #define SYSTEM_VERSION_LESS_THAN(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
@@ -152,11 +155,13 @@ typedef enum {
 
 - (void)loadAdHTML:(NSString *)html {
     if (!html) {
-        NSDictionary *userInfo = @{
-                                   NSLocalizedDescriptionKey: NSLocalizedString(@"Operation was unsuccessful.", nil),
-                                   NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"HTML cannot be nil", nil)};
-        NSError * error = [NSError errorWithDomain:kSKMRAIDErrorDomain code:MRAIDValidationError userInfo:userInfo];
-        [self.delegate mraidView:self failToLoadAdThrowError:error];
+        if ([self.delegate respondsToSelector:@selector(mraidView:failToLoadAdThrowError:)]) {
+            NSDictionary *userInfo = @{
+                                       NSLocalizedDescriptionKey: NSLocalizedString(@"Operation was unsuccessful.", nil),
+                                       NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"HTML cannot be nil", nil)};
+            NSError * error = [NSError errorWithDomain:kSKMRAIDErrorDomain code:MRAIDValidationError userInfo:userInfo];
+            [self.delegate mraidView:self failToLoadAdThrowError:error];
+        }
         return;
     }
     
@@ -671,11 +676,13 @@ typedef enum {
 //    }
     
     self.closeEventRegion.frame = CGRectMake(0, 0, kCloseEventRegionSize, kCloseEventRegionSize);
+    
     CGRect frame = self.closeEventRegion.frame;
+    self.closeEventRegion.sk_hitTestEdgeInsets = UIEdgeInsetsMake(kCloseEventRegionInset, kCloseEventRegionInset, kCloseEventRegionInset, kCloseEventRegionInset);
     
     // align on top right
     int x = CGRectGetWidth(self.modalVC.view.frame) - CGRectGetWidth(frame);
-    frame.origin = CGPointMake(x, 0);
+    frame.origin = CGPointMake(x, kStatusBarOffset);
     self.closeEventRegion.frame = frame;
     // autoresizing so it stays at top right (flexible left and flexible bottom margin)
     self.closeEventRegion.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
