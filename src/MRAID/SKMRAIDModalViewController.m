@@ -7,11 +7,13 @@
 //
 
 #import "SKMRAIDModalViewController.h"
-
+#import "MRAIDSettings.h"
 #import "SKMRAIDUtil.h"
 #import "SKMRAIDOrientationProperties.h"
 
-@interface SKMRAIDModalViewController ()
+typedef void (^tapBlock)();
+
+@interface SKMRAIDModalViewController () <UIGestureRecognizerDelegate>
 {
     BOOL isStatusBarHidden;
     BOOL hasViewAppeared;
@@ -21,7 +23,7 @@
     UIInterfaceOrientation preferredOrientation;
 }
 
-- (NSString *)stringfromUIInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+@property (nonatomic, strong) UITapGestureRecognizer * tapGestureRecognizer;
 
 @end
 
@@ -75,6 +77,37 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+#pragma mrak - Gestures
+
+- (void)setTapObserver {
+    if(!SK_SUPPRESS_BANNER_AUTO_REDIRECT){
+        return;  // return without adding the GestureRecognizer if the feature is not enabled
+    }
+    // One finger, one tap
+    self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(oneFingerOneTap)];
+    
+    // Set up
+    [self.tapGestureRecognizer setNumberOfTapsRequired:1];
+    [self.tapGestureRecognizer setNumberOfTouchesRequired:1];
+    [self.tapGestureRecognizer setDelegate:self];
+    
+    [self.view addGestureRecognizer:self.tapGestureRecognizer];
+}
+
+- (void)oneFingerOneTap {
+    [self.delegate mraidModalViewControllerDidRecieveTap:self];
+}
+
+- (void)removeTapObserver {
+    self.tapGestureRecognizer.delegate=nil;
+    self.tapGestureRecognizer=nil;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;   // required to allow UIWebview to work correctly, see  http://stackoverflow.com/questions/2909807/does-uigesturerecognizer-work-on-a-uiwebview
+}
+
 
 #pragma mark - status bar
 

@@ -14,6 +14,7 @@
 @protocol SKMRAIDModalViewControllerDelegate <NSObject>
 
 - (void)mraidModalViewControllerDidRotate:(SKMRAIDModalViewController *)modalViewController;
+- (void)mraidModalViewControllerDidRecieveTap:(SKMRAIDModalViewController *)modalViewController;
 
 @end
 
@@ -21,6 +22,8 @@
 
 @property (nonatomic, unsafe_unretained) id<SKMRAIDModalViewControllerDelegate> delegate;
 
+- (void)setTapObserver;
+- (void)removeTapObserver;
 - (id)initWithOrientationProperties:(SKMRAIDOrientationProperties *)orientationProperties;
 - (void)forceToOrientation:(SKMRAIDOrientationProperties *)orientationProperties;
 

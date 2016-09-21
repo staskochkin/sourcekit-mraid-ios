@@ -508,6 +508,9 @@ typedef enum {
     
     [self.modalVC.view addSubview:self.currentWebView];
     
+    if (SK_SUPPRESS_BANNER_AUTO_REDIRECT) {
+        [self.modalVC setTapObserver];
+    }
     // always include the close event region
     [self addCloseEventRegion];
     
@@ -1004,6 +1007,11 @@ typedef enum {
 - (void)mraidModalViewControllerDidRotate:(SKMRAIDModalViewController *)modalViewController {
     [self setScreenSize];
     [self fireSizeChangeEvent];
+}
+
+- (void)mraidModalViewControllerDidRecieveTap:(SKMRAIDModalViewController *)modalViewController {
+    [self oneFingerOneTap];
+    [modalViewController removeTapObserver];
 }
 
 #pragma mark - internal helper methods
