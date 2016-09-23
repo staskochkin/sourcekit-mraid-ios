@@ -385,7 +385,7 @@ typedef enum {
     if (self.webViewPart2) {
         // Clean up webViewPart2 if returning from 2-part expansion.
         self.webViewPart2.navigationDelegate = nil;
-        self.currentWebView =self. webView;
+        self.currentWebView = self.webView;
         self.webViewPart2 = nil;
     } else {
         // Reset frame of webView if returning from 1-part expansion.
@@ -1021,10 +1021,18 @@ typedef enum {
     WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
     if ([self.supportedFeatures containsObject:MRAIDSupportsInlineVideo]) {
         configuration.allowsInlineMediaPlayback = YES;
-        configuration.requiresUserActionForMediaPlayback = self.isInterstitial;
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+            configuration.requiresUserActionForMediaPlayback = self.isInterstitial;
+        } else {
+            configuration.mediaPlaybackRequiresUserAction = self.isInterstitial;
+        }
     } else {
         configuration.allowsInlineMediaPlayback = NO;
-        configuration.requiresUserActionForMediaPlayback = YES;
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+            configuration.requiresUserActionForMediaPlayback = self.isInterstitial;
+        } else {
+            configuration.mediaPlaybackRequiresUserAction = self.isInterstitial;
+        }
     }
     
     configuration.preferences.javaScriptCanOpenWindowsAutomatically = NO;
