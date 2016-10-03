@@ -71,6 +71,10 @@
     [self.mraidView cancel];
 }
 
+- (void)close {
+    [self.mraidView close];
+}
+
 
 - (void)show
 {
@@ -143,11 +147,10 @@
     }
 }
 
-- (UIImage *)customCloseButtonImageForMraidView:(SKMRAIDView *)mraidView {
-    if ([self.delegate respondsToSelector:@selector(customCloseButtonImageForMraidInterstitial:)]) {
-        return [self.delegate customCloseButtonImageForMraidInterstitial:self];
+- (void)mraidView:(SKMRAIDView *)mraidView requierToUseCustomCloseInView:(UIView *)view {
+    if ([self.delegate respondsToSelector:@selector(mraidInterstitial:requierToUseCustomCloseInView:)]) {
+        return [self.delegate mraidInterstitial:self requierToUseCustomCloseInView:view];
     }
-    return nil;
 }
 
 @end

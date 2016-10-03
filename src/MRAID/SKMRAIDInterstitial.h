@@ -24,7 +24,7 @@
 - (void)mraidInterstitialWillShow:(SKMRAIDInterstitial *)mraidInterstitial;
 - (void)mraidInterstitialDidHide:(SKMRAIDInterstitial *)mraidInterstitial;
 - (void)mraidInterstitialNavigate:(SKMRAIDInterstitial *)mraidInterstitial withURL:(NSURL *)url;
-- (UIImage *)customCloseButtonImageForMraidInterstitial:(SKMRAIDInterstitial *)mraidInterstitial;
+- (void)mraidInterstitial:(SKMRAIDInterstitial *)mraidView requierToUseCustomCloseInView:(UIView *)view;
 
 @end
 
@@ -51,5 +51,7 @@
 - (BOOL)isAdReady;
 
 - (void)show;
+
+- (void)close;
 
 @end

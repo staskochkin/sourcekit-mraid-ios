@@ -541,8 +541,8 @@ typedef enum {
     urlString = [urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     // Notify the callers
-    if ([self.serviceDelegate respondsToSelector:@selector(mraidServiceOpenBrowserWithUrlString:)]) {
-        [self.serviceDelegate mraidServiceOpenBrowserWithUrlString:urlString];
+    if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
+        [self.delegate mraidViewNavigate:self withURL:[NSURL URLWithString:urlString]];
     }
 }
 
@@ -660,19 +660,16 @@ typedef enum {
 
 - (void)addCloseEventRegion
 {
+    if ([self.delegate respondsToSelector:@selector(mraidView:requierToUseCustomCloseInView:)]) {
+        [self.delegate mraidView:self requierToUseCustomCloseInView:self.modalVC.view];
+        return;
+    }
+    
     self.closeEventRegion = [UIButton buttonWithType:UIButtonTypeCustom];
     self.closeEventRegion.backgroundColor = [UIColor clearColor];
     [self.closeEventRegion addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
-
-    //We untrust to advertizers and use our close button anyway
-//    if (self.useCustomClose) {
-    UIImage * closeButtonImage;
-    if ([self.delegate respondsToSelector:@selector(customCloseButtonImageForMraidView:)]) {
-        closeButtonImage = [self.delegate customCloseButtonImageForMraidView:self];
-    }
     
-    [self.closeEventRegion setBackgroundImage:closeButtonImage ? : [self defaultCloseButtonImage] forState:UIControlStateNormal];
-//    }
+    [self.closeEventRegion setBackgroundImage: [self defaultCloseButtonImage] forState:UIControlStateNormal];
     
     self.closeEventRegion.frame = CGRectMake(0, 0, kCloseEventRegionSize, kCloseEventRegionSize);
     

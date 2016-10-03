@@ -43,7 +43,7 @@ typedef enum {
 // This callback is to ask permission to resize an ad.
 - (BOOL)mraidViewShouldResize:(SKMRAIDView *)mraidView toPosition:(CGRect)position allowOffscreen:(BOOL)allowOffscreen;
 
-- (UIImage *)customCloseButtonImageForMraidView:(SKMRAIDView *)mraidView;
+- (void)mraidView:(SKMRAIDView *)mraidView requierToUseCustomCloseInView:(UIView *)view;
 
 @end
 
@@ -67,6 +67,8 @@ typedef enum {
 - (void)loadAdHTML:(NSString *)html;
 
 - (void)cancel;
+
+- (void)close;
 
 @end
 
