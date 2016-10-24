@@ -167,6 +167,7 @@ typedef enum {
     
     self.webView = [self defaultWebViewWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
     self.currentWebView = self.webView;
+    [self addSubview:self.currentWebView];
     // Get mraid.js as binary data
     NSData* mraidJSData = [NSData dataWithBytesNoCopy:__MRAID_mraid_js
                                                length:__MRAID_mraid_js_len
@@ -295,14 +296,6 @@ typedef enum {
 {
     _isViewable=isViewable;
     [self fireViewableChangeEvent];
-    
-    if (self.isInterstitial) return;
-    
-    if (isViewable) {
-        [self addSubview:self.currentWebView];
-    } else {
-        [self.currentWebView removeFromSuperview];
-    }
 }
 
 - (void)setRootViewController:(UIViewController *)newRootViewController
