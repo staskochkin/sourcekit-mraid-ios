@@ -17,6 +17,7 @@
 #import "SKMRAIDUtil.h"
 #import "MRAIDSettings.h"
 #import "UIButton+SKExtension.h"
+#import "NSURL+SecuredURL.h"
 
 #import "mraidjs.h"
 #import "CloseButton.h"
@@ -122,6 +123,8 @@ typedef enum {
 
 - (void)preloadAdFromURL:(NSURL *)url {
     __weak typeof(self) weakSelf = self;
+    url = [url parseUrlToSecuredUrl];
+    
     [[[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         
         if (error || !data) {

@@ -45,6 +45,7 @@
 		27BBC17B1833EA0500074066 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BBC17A1833EA0500074066 /* XCTest.framework */; };
 		27EBFE7517F2837900FCB7DD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27EBFE7417F2837900FCB7DD /* UIKit.framework */; };
 		9C7D4FBB1D9276F0003FE6E2 /* UIButton+SKExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C7D4FBA1D9276F0003FE6E2 /* UIButton+SKExtension.m */; };
+		B953BC071DD0CAF600CB6422 /* NSURL+SecuredURL.m in Sources */ = {isa = PBXBuildFile; fileRef = B953BC061DD0CAF600CB6422 /* NSURL+SecuredURL.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,6 +109,8 @@
 		27EBFE7417F2837900FCB7DD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		9C7D4FB91D9276F0003FE6E2 /* UIButton+SKExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+SKExtension.h"; sourceTree = "<group>"; };
 		9C7D4FBA1D9276F0003FE6E2 /* UIButton+SKExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+SKExtension.m"; sourceTree = "<group>"; };
+		B953BC051DD0CAF600CB6422 /* NSURL+SecuredURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+SecuredURL.h"; sourceTree = "<group>"; };
+		B953BC061DD0CAF600CB6422 /* NSURL+SecuredURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+SecuredURL.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +159,8 @@
 				2738BDE719815D9100A968BF /* SKMRAIDView.m */,
 				9C7D4FB91D9276F0003FE6E2 /* UIButton+SKExtension.h */,
 				9C7D4FBA1D9276F0003FE6E2 /* UIButton+SKExtension.m */,
+				B953BC051DD0CAF600CB6422 /* NSURL+SecuredURL.h */,
+				B953BC061DD0CAF600CB6422 /* NSURL+SecuredURL.m */,
 			);
 			path = MRAID;
 			sourceTree = "<group>";
@@ -314,6 +319,7 @@
 			files = (
 				2738BDF319815D9100A968BF /* SKMRAIDModalViewController.m in Sources */,
 				9C7D4FBB1D9276F0003FE6E2 /* UIButton+SKExtension.m in Sources */,
+				B953BC071DD0CAF600CB6422 /* NSURL+SecuredURL.m in Sources */,
 				2738BDF719815D9100A968BF /* SKMRAIDUtil.m in Sources */,
 				2738BDED19815D9100A968BF /* SKMRAIDOrientationProperties.m in Sources */,
 				2738BDF519815D9100A968BF /* SKMRAIDParser.m in Sources */,
