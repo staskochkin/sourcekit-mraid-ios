@@ -33,8 +33,7 @@
                                                withTemplate:@""];
     
     // Add html, head, and/or body tags as needed.
-    range = [rawHtml rangeOfString:@"<html"];
-    BOOL hasHtmlTag = (range.location != NSNotFound);
+    BOOL hasHtmlTag = ([rawHtml rangeOfString:@"<html"].location != NSNotFound) || ([rawHtml rangeOfString:@"<!DOCTYPE html"].location != NSNotFound);
     range = [rawHtml rangeOfString:@"<head"];
     BOOL hasHeadTag = (range.location != NSNotFound);
     range = [rawHtml rangeOfString:@"<body"];
