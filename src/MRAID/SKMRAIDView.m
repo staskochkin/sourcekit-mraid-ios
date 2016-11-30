@@ -40,7 +40,7 @@ typedef enum {
     MRAIDStateHidden
 } MRAIDState;
 
-@interface SKMRAIDView () <WKNavigationDelegate, WKScriptMessageHandler, SKMRAIDModalViewControllerDelegate, UIGestureRecognizerDelegate>
+@interface SKMRAIDView () <WKNavigationDelegate, WKScriptMessageHandler, SKMRAIDModalViewControllerDelegate, UIGestureRecognizerDelegate, WKUIDelegate>
 
 @property (nonatomic, assign) MRAIDState state;
     // This corresponds to the MRAID placement type.
@@ -948,7 +948,6 @@ typedef enum {
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-    //TODO: autoclick protection
     
     WKNavigationActionPolicy policy = WKNavigationActionPolicyCancel;
     
@@ -995,6 +994,27 @@ typedef enum {
     [self parseCommandUrl:message.body];
 }
 
+#pragma mark - WKUIDelegate
+
+- (nullable WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
+    
+    if (self.state == MRAIDStateDefault) {
+        NSString * scheme = navigationAction.request.URL.scheme;
+        BOOL isHttpLink = [scheme isEqualToString:@"https"] ||
+                          [scheme isEqualToString:@"http"];
+        
+        BOOL safeToAutoload = navigationAction.navigationType == WKNavigationTypeLinkActivated ||
+                              navigationAction.navigationType == WKNavigationTypeOther;
+
+        if (_bonafideTapObserved && isHttpLink && safeToAutoload) {
+            if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
+                [self.delegate mraidViewNavigate:self withURL:navigationAction.request.URL];
+            }
+        }
+    }
+    return nil;
+}
+
 #pragma mark - MRAIDModalViewControllerDelegate
 
 - (void)mraidModalViewControllerDidRotate:(SKMRAIDModalViewController *)modalViewController {
@@ -1036,6 +1056,7 @@ typedef enum {
     
     WKWebView * wv = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     wv.navigationDelegate = self;
+    wv.UIDelegate = self;
     wv.opaque = NO;
     wv.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight |
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
