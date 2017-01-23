@@ -257,7 +257,6 @@ typedef enum {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     
-    
     self.webView = nil;
     self.webViewPart2 = nil;
     self.currentWebView = nil;
@@ -274,6 +273,7 @@ typedef enum {
     self.closeEventRegion = nil;
     self.resizeView = nil;
     self.resizeCloseRegion = nil;
+    
 }
 
 - (BOOL)isValidFeatureSet:(NSArray *)features
@@ -298,6 +298,14 @@ typedef enum {
 - (void)setIsViewable:(BOOL)isViewable
 {
     _isViewable=isViewable;
+    
+    if (isViewable) {
+        [self removeScriptMessageHandlerInWebView:self.currentWebView];
+        [self addScriptMessageHandlerInWebView:self.currentWebView];
+    } else {
+        [self removeScriptMessageHandlerInWebView:self.currentWebView];
+    }
+    
     [self fireViewableChangeEvent];
 }
 
@@ -1051,10 +1059,10 @@ typedef enum {
     configuration.preferences.javaScriptCanOpenWindowsAutomatically = NO;
     
     WKUserContentController *controller = [[WKUserContentController alloc] init];
-    [controller addScriptMessageHandler:self name:kScriptObserverName];
     configuration.userContentController = controller;
     
     WKWebView * wv = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    [self addScriptMessageHandlerInWebView:wv];
     wv.navigationDelegate = self;
     wv.UIDelegate = self;
     wv.opaque = NO;
@@ -1077,6 +1085,14 @@ typedef enum {
     // Alert suppression
     [self disableJsCallbackInWebViewIfNeeded:wv];
     return wv;
+}
+
+- (void)addScriptMessageHandlerInWebView:(WKWebView *)webView {
+    [webView.configuration.userContentController addScriptMessageHandler:self name:kScriptObserverName];
+}
+
+- (void)removeScriptMessageHandlerInWebView:(WKWebView *)webView {
+    [webView.configuration.userContentController removeScriptMessageHandlerForName:kScriptObserverName];
 }
 
 - (void)disableJsCallbackInWebViewIfNeeded:(WKWebView *)webView {
