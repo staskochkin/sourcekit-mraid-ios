@@ -45,6 +45,8 @@ typedef enum {
 
 - (void)mraidView:(SKMRAIDView *)mraidView requierToUseCustomCloseInView:(UIView *)view;
 
+- (void)mraidView:(SKMRAIDView *)mraidView intersectJsLogMessage:(NSString *)logMessage;
+
 @end
 
 @interface SKMRAIDView : UIView

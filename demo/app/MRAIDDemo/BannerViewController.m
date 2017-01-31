@@ -98,6 +98,10 @@
     mraidView.isViewable = YES;
 }
 
+- (void)mraidView:(SKMRAIDView *)mraidView intersectJsLogMessage:(NSString *)logMessage {
+    NSLog(@"[JS Message Log]: %@", logMessage);
+}
+
 - (void)mraidViewAdFailed:(SKMRAIDView *)mraidView
 {
     NSLog(@"%@ MRAIDViewDelegate %@", [[self class] description], NSStringFromSelector(_cmd));

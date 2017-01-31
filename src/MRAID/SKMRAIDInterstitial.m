@@ -149,7 +149,13 @@
 
 - (void)mraidView:(SKMRAIDView *)mraidView requierToUseCustomCloseInView:(UIView *)view {
     if ([self.delegate respondsToSelector:@selector(mraidInterstitial:requierToUseCustomCloseInView:)]) {
-        return [self.delegate mraidInterstitial:self requierToUseCustomCloseInView:view];
+        [self.delegate mraidInterstitial:self requierToUseCustomCloseInView:view];
+    }
+}
+
+- (void)mraidView:(SKMRAIDView *)mraidView intersectJsLogMessage:(NSString *)logMessage {
+    if ([self.delegate respondsToSelector:@selector(mraidInterstitial:intersectJsLogMessage:)]) {
+        [self.delegate mraidInterstitial:self intersectJsLogMessage:logMessage];
     }
 }
 

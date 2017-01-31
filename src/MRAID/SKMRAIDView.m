@@ -29,6 +29,7 @@
 #define SYSTEM_VERSION_LESS_THAN(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
 #define kScriptObserverName @"observe"
+#define kLogHandlerName @"logHandler"
 
 NSString *const kSKMRAIDErrorDomain = @"com.skmraid.error";
 
@@ -168,8 +169,10 @@ typedef enum {
         return;
     }
     
+    
     self.webView = [self defaultWebViewWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
     self.currentWebView = self.webView;
+    
     [self addSubview:self.currentWebView];
     // Get mraid.js as binary data
     NSData* mraidJSData = [NSData dataWithBytesNoCopy:__MRAID_mraid_js
@@ -181,6 +184,8 @@ typedef enum {
     if (self.mraidjs) {
         [self injectJavaScript:self.mraidjs];
     }
+    
+    [self intersectJsLog];
     
     html = [SKMRAIDUtil processRawHtml:html];
     if (html) {
@@ -299,11 +304,12 @@ typedef enum {
 {
     _isViewable=isViewable;
     
+    WKUserContentController * controller = self.currentWebView.configuration.userContentController;
     if (isViewable) {
-        [self removeScriptMessageHandlerInWebView:self.currentWebView];
-        [self addScriptMessageHandlerInWebView:self.currentWebView];
+        [self removeScriptMessageHandlerInController:controller];
+        [self addScriptMessageHandlerToController:controller];
     } else {
-        [self removeScriptMessageHandlerInWebView:self.currentWebView];
+        [self removeScriptMessageHandlerInController:controller];
     }
     
     [self fireViewableChangeEvent];
@@ -772,9 +778,10 @@ typedef enum {
 
 - (void)injectJavaScript:(NSString *)js
 {
-    [self.currentWebView evaluateJavaScript:js completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
-       //TODO: Do something with calback
-    }];
+    [self.currentWebView evaluateJavaScript:js completionHandler:nil];
+//    [self.currentWebView evaluateJavaScript:js completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
+//        NSLog(@"Callback %@ \n Error: %@", callback, error);
+//    }];
 }
 
 // convenience methods
@@ -915,12 +922,6 @@ typedef enum {
 #pragma mark - WKNavigationDelegate
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-    if (SK_ENABLE_JS_LOG) {
-        [webView evaluateJavaScript:@"var enableLog = true" completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
-            
-        }];
-    }
-    
     [self disableJsCallbackInWebViewIfNeeded:webView];
     
     if (self.state == MRAIDStateLoading) {
@@ -956,12 +957,10 @@ typedef enum {
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-    
     WKNavigationActionPolicy policy = WKNavigationActionPolicyCancel;
-    
     NSString * request = navigationAction.request.URL.absoluteString;
+    
     if (self.state == MRAIDStateLoading) {
-
         if ([request containsString:@"about:blank"] ||
             [request containsString:@"http://"] ||
             [request containsString:@"https://"]) {
@@ -971,10 +970,12 @@ typedef enum {
     }
     
     if (self.state == MRAIDStateDefault) {
-        
         if (_bonafideTapObserved && (navigationAction.navigationType == WKNavigationTypeLinkActivated ||
                                      navigationAction.navigationType == WKNavigationTypeOther)) {
-            
+            if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
+                [self.delegate mraidViewNavigate:self withURL:navigationAction.request.URL];
+            }
+        } else {
             NSString * scheme = navigationAction.request.URL.scheme;
             BOOL iframe = ![navigationAction.request.URL isEqual:navigationAction.request.mainDocumentURL];
             
@@ -982,15 +983,11 @@ typedef enum {
             // is a deep link, handle normally and return safeToAutoloadLink.
             if (iframe && !((navigationAction.navigationType == WKNavigationTypeLinkActivated) && ([scheme isEqualToString:@"https"] || [scheme isEqualToString:@"http"]))) {
                 BOOL safeToAutoload = navigationAction.navigationType == WKNavigationTypeLinkActivated ||
-                                                                        _bonafideTapObserved ||
-                                                                        [scheme isEqualToString:@"https"] ||
-                                                                        [scheme isEqualToString:@"http"];
+                _bonafideTapObserved ||
+                [scheme isEqualToString:@"https"] ||
+                [scheme isEqualToString:@"http"];
                 
                 policy = safeToAutoload ? WKNavigationActionPolicyAllow : WKNavigationActionPolicyCancel;
-            }
-
-            if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
-                [self.delegate mraidViewNavigate:self withURL:navigationAction.request.URL];
             }
         }
     }
@@ -999,7 +996,15 @@ typedef enum {
 }
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
-    [self parseCommandUrl:message.body];
+    NSString * observer = message.name;
+    
+    if ([observer isEqualToString:kLogHandlerName]) {
+        if ([self.delegate respondsToSelector:@selector(mraidView:intersectJsLogMessage:)]) {
+            [self.delegate mraidView:self intersectJsLogMessage:message.body];
+        }
+    } else if ([observer isEqualToString:kScriptObserverName]) {
+        [self parseCommandUrl:message.body];
+    }
 }
 
 #pragma mark - WKUIDelegate
@@ -1060,9 +1065,9 @@ typedef enum {
     
     WKUserContentController *controller = [[WKUserContentController alloc] init];
     configuration.userContentController = controller;
-    
+    [self addScriptMessageHandlerToController:controller];
     WKWebView * wv = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
-    [self addScriptMessageHandlerInWebView:wv];
+    
     wv.navigationDelegate = self;
     wv.UIDelegate = self;
     wv.opaque = NO;
@@ -1087,12 +1092,33 @@ typedef enum {
     return wv;
 }
 
-- (void)addScriptMessageHandlerInWebView:(WKWebView *)webView {
-    [webView.configuration.userContentController addScriptMessageHandler:self name:kScriptObserverName];
+- (void)intersectJsLog {
+    NSString *script = @"console = new Object(); \n" \
+                        "console.log = function(log) { \n" \
+                        "   window.webkit.messageHandlers.logHandler.postMessage(log); \n" \
+                        "}; \n" \
+                        "console.debug = console.log; \n" \
+                        "console.info = console.log; \n" \
+                        "console.warn = console.log; \n" \
+                        "console.error = console.log;";
+
+    [self injectJavaScript:script];
 }
 
-- (void)removeScriptMessageHandlerInWebView:(WKWebView *)webView {
-    [webView.configuration.userContentController removeScriptMessageHandlerForName:kScriptObserverName];
+- (NSArray *)scriptMessageHandlersNames {
+    return @[kScriptObserverName, kLogHandlerName];
+}
+
+- (void)addScriptMessageHandlerToController:(WKUserContentController *)controller {
+    [self.scriptMessageHandlersNames enumerateObjectsUsingBlock:^(NSString * name, NSUInteger idx, BOOL * _Nonnull stop) {
+        [controller addScriptMessageHandler:self name:name];
+    }];
+}
+
+- (void)removeScriptMessageHandlerInController:(WKUserContentController *)controller {
+    [self.scriptMessageHandlersNames enumerateObjectsUsingBlock:^(NSString * name, NSUInteger idx, BOOL * _Nonnull stop) {
+        [controller removeScriptMessageHandlerForName:name];
+    }];
 }
 
 - (void)disableJsCallbackInWebViewIfNeeded:(WKWebView *)webView {

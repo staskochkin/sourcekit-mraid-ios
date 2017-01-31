@@ -803,6 +803,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.nexage.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = MRAIDDemo;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -819,6 +820,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.nexage.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = MRAIDDemo;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

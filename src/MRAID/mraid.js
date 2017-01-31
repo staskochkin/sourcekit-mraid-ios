@@ -11,17 +11,6 @@
  * console logging helper
  **************************************************************************/
 
-var console = {};
-console.log = function(msg) {
- if (typeof enableLog != 'undefined') {
-    var iframe = document.createElement("IFRAME");
-    iframe.setAttribute("src", "console-log://" + msg);
-    document.documentElement.appendChild(iframe);
-    iframe.parentNode.removeChild(iframe);
-    iframe = null;
- }
-};
-
 LogLevelEnum = {
     "DEBUG"   : 0,
     "INFO"    : 1,
