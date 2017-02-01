@@ -9,6 +9,8 @@
 #import "BannerViewController.h"
 #import "SKMRAIDView.h"
 #import "SKMRAIDServiceDelegate.h"
+#import <WebKit/WebKit.h>
+
 
 @interface BannerViewController () <SKMRAIDViewDelegate, SKMRAIDServiceDelegate>
 
@@ -52,11 +54,17 @@
 
  
     // Initialize and load the MRAIDView
+    WKUserScript * script = [[WKUserScript alloc] initWithSource:@"console.log('Hello from JS!')"
+                                                   injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
+                                                forMainFrameOnly:NO];
+    NSArray * scripts = [NSArray arrayWithObject:script];
+    
     self.adView = [[SKMRAIDView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)
-                                  supportedFeatures:@[MRAIDSupportsSMS, MRAIDSupportsTel, MRAIDSupportsCalendar, MRAIDSupportsStorePicture, MRAIDSupportsInlineVideo]
-                                           delegate:self
-                                   serviceDelegate:self
-                                 rootViewController:self];
+                                   supportedFeatures:@[MRAIDSupportsSMS, MRAIDSupportsTel, MRAIDSupportsCalendar, MRAIDSupportsStorePicture, MRAIDSupportsInlineVideo]
+                                            delegate:self
+                                     serviceDelegate:self
+                                       customScripts:scripts
+                                  rootViewController:self];
     
 //    NSString *htmlPath = [[NSBundle mainBundle] pathForResource:self.htmlFile ofType:@"html"];
 //    NSString* htmlData = [[NSString alloc] initWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];

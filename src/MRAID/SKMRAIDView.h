@@ -61,7 +61,8 @@ typedef enum {
 - (id)initWithFrame:(CGRect)frame
   supportedFeatures:(NSArray *)features
            delegate:(id<SKMRAIDViewDelegate>)delegate
-   serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+    serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+      customScripts:(NSArray *)customScripts
  rootViewController:(UIViewController *)rootViewController;
 
 - (void)preloadAdFromURL:(NSURL *)url;
@@ -77,10 +78,11 @@ typedef enum {
 @interface SKMRAIDView (Private)
 
 - (id)initWithFrame:(CGRect)frame
-     asInterstitial:(BOOL)isInter
-  supportedFeatures:(NSArray *)currentFeatures
+     asInterstitial:(BOOL)asInterstitial
+  supportedFeatures:(NSArray *)features
            delegate:(id<SKMRAIDViewDelegate>)delegate
     serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+      customScripts:(NSArray *)customScripts
  rootViewController:(UIViewController *)rootViewController;
 
 - (void)showAsInterstitial;

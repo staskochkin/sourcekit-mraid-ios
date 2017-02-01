@@ -75,7 +75,9 @@ typedef enum {
 @property (nonatomic, strong) UIButton *resizeCloseRegion;
 @property (nonatomic, assign) CGSize previousMaxSize;
 @property (nonatomic, assign) CGSize previousScreenSize;
-    
+
+@property (nonatomic, strong) NSArray * customScripts;
+
 @property (nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic, assign) BOOL bonafideTapObserved;
 
@@ -112,13 +114,18 @@ typedef enum {
 
 #pragma mark - Public
 
-- (id)initWithFrame:(CGRect)frame supportedFeatures:(NSArray *)features delegate:(id<SKMRAIDViewDelegate>)delegate serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate rootViewController:(UIViewController *)rootViewController
-{
+- (id)initWithFrame:(CGRect)frame
+  supportedFeatures:(NSArray *)features
+           delegate:(id<SKMRAIDViewDelegate>)delegate
+    serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+      customScripts:(NSArray *)customScripts
+ rootViewController:(UIViewController *)rootViewController {
     return [self initWithFrame:frame
                 asInterstitial:NO
              supportedFeatures:features
                       delegate:delegate
-              serviceDelegate:serviceDelegate
+               serviceDelegate:serviceDelegate
+                 customScripts:customScripts
             rootViewController:rootViewController];
 }
 
@@ -215,8 +222,9 @@ typedef enum {
   supportedFeatures:(NSArray *)currentFeatures
            delegate:(id<SKMRAIDViewDelegate>)delegate
    serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
- rootViewController:(UIViewController *)rootViewController
-{
+      customScripts:(NSArray *)customScripts
+ rootViewController:(UIViewController *)rootViewController {
+    
     self = [super initWithFrame:frame];
     if (self) {
         [self setUpTapGestureRecognizer];
@@ -225,6 +233,7 @@ typedef enum {
         _serviceDelegate = serviceDelegate;
         _rootViewController = rootViewController;
         
+        self.customScripts = customScripts;
         self.state = MRAIDStateDefault;
         self.isViewable = NO;
         
@@ -1042,8 +1051,7 @@ typedef enum {
 
 #pragma mark - internal helper methods
 
-- (WKWebView *)defaultWebViewWithFrame:(CGRect)frame
-{
+- (WKWebView *)defaultWebViewWithFrame:(CGRect)frame {
     WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
     if ([self.supportedFeatures containsObject:MRAIDSupportsInlineVideo]) {
         configuration.allowsInlineMediaPlayback = YES;
@@ -1065,6 +1073,11 @@ typedef enum {
     
     WKUserContentController *controller = [[WKUserContentController alloc] init];
     configuration.userContentController = controller;
+    
+    [self.customScripts enumerateObjectsUsingBlock:^(WKUserScript * _Nonnull script, NSUInteger idx, BOOL * _Nonnull stop) {
+        [controller addUserScript:script];
+    }];
+    
     [self addScriptMessageHandlerToController:controller];
     WKWebView * wv = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     

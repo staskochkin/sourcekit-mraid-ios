@@ -41,6 +41,7 @@
 - (id)initWithSupportedFeatures:(NSArray *)features
                        delegate:(id<SKMRAIDInterstitialDelegate>)delegate
                 serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+                  customScripts:(NSArray *)customScripts
              rootViewController:(UIViewController *)rootViewController;
 
 - (void)preloadAdFromURL:(NSURL *)url;

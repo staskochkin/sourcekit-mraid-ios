@@ -66,6 +66,7 @@
     interstitial = [[SKMRAIDInterstitial alloc] initWithSupportedFeatures:supportedFeatures
                                                                  delegate:self
                                                           serviceDelegate:self
+                                                            customScripts:nil
                                                        rootViewController:self];
     
 //    NSURL * url = [NSURL URLWithString:@"http://iab.net/ad.html"];

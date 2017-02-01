@@ -42,6 +42,7 @@
 - (id)initWithSupportedFeatures:(NSArray *)features
                        delegate:(id<SKMRAIDInterstitialDelegate>)delegate
                 serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+                  customScripts:(NSArray *)customScripts
              rootViewController:(UIViewController *)rootViewController;
 {
     self = [super init];
@@ -57,6 +58,7 @@
                                           supportedFeatures:features
                                                    delegate:self
                                             serviceDelegate:serviceDelegate
+                                              customScripts:customScripts
                                          rootViewController:rootViewController];
         _isReady = NO;
     }
