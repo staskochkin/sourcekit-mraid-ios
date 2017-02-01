@@ -77,6 +77,8 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self centerBannerView];
+    [self.adView injectJavaScript:@"console.log('Rotate')"];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {

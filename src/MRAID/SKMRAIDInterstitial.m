@@ -84,6 +84,10 @@
     [self.mraidView showAsInterstitial];
 }
 
+- (void)injectJavaScript:(NSString *)js {
+    [self.mraidView injectJavaScript:js];
+}
+
 - (void)setRootViewController:(UIViewController *)newRootViewController
 {
     self.mraidView.rootViewController = newRootViewController;

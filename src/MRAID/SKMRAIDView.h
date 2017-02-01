@@ -73,6 +73,8 @@ typedef enum {
 
 - (void)close;
 
+- (void)injectJavaScript:(NSString *)js;
+
 @end
 
 @interface SKMRAIDView (Private)

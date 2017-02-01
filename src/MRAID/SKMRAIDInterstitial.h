@@ -54,6 +54,8 @@
 
 - (void)show;
 
+- (void)injectJavaScript:(NSString *)js;
+
 - (void)close;
 
 @end
