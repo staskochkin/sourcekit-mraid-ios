@@ -38,11 +38,16 @@
 @property (nonatomic, copy) UIColor *backgroundColor;
 
 // IMPORTANT: This is the only valid initializer for an MRAIDInterstitial; -init will throw an exception
-- (id)initWithSupportedFeatures:(NSArray *)features
-                       delegate:(id<SKMRAIDInterstitialDelegate>)delegate
-                serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
-                  customScripts:(NSArray *)customScripts
-             rootViewController:(UIViewController *)rootViewController;
+- (instancetype)initWithSupportedFeatures:(NSArray *)features
+                                 delegate:(id<SKMRAIDInterstitialDelegate>)delegate
+                          serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+                            customScripts:(NSArray *)customScripts
+                       rootViewController:(UIViewController *)rootViewController;
+
+- (instancetype)initWithSupportedFeatures:(NSArray *)features
+                                 delegate:(id<SKMRAIDInterstitialDelegate>)delegate
+                          serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+                       rootViewController:(UIViewController *)rootViewController;
 
 - (void)preloadAdFromURL:(NSURL *)url;
 

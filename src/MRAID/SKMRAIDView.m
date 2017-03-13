@@ -114,12 +114,26 @@ typedef enum {
 
 #pragma mark - Public
 
-- (id)initWithFrame:(CGRect)frame
-  supportedFeatures:(NSArray *)features
-           delegate:(id<SKMRAIDViewDelegate>)delegate
-    serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
-      customScripts:(NSArray *)customScripts
- rootViewController:(UIViewController *)rootViewController {
+- (instancetype)initWithFrame:(CGRect)frame
+            supportedFeatures:(NSArray *)features
+                     delegate:(id<SKMRAIDViewDelegate>)delegate
+              serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+           rootViewController:(UIViewController *)rootViewController {
+    return [self initWithFrame:frame
+             supportedFeatures:features
+                      delegate:delegate
+               serviceDelegate:serviceDelegate
+                 customScripts:nil
+            rootViewController:rootViewController];
+}
+
+
+- (instancetype)initWithFrame:(CGRect)frame
+            supportedFeatures:(NSArray *)features
+                     delegate:(id<SKMRAIDViewDelegate>)delegate
+              serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+                customScripts:(NSArray *)customScripts
+           rootViewController:(UIViewController *)rootViewController {
     return [self initWithFrame:frame
                 asInterstitial:NO
              supportedFeatures:features
@@ -214,16 +228,15 @@ typedef enum {
 }
 
 
-#pragma mark - Private
+#pragma mark - Designated initializer
 
-// designated initializer
-- (id)initWithFrame:(CGRect)frame
-     asInterstitial:(BOOL)isInter
-  supportedFeatures:(NSArray *)currentFeatures
-           delegate:(id<SKMRAIDViewDelegate>)delegate
-   serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
-      customScripts:(NSArray *)customScripts
- rootViewController:(UIViewController *)rootViewController {
+- (instancetype)initWithFrame:(CGRect)frame
+               asInterstitial:(BOOL)isInter
+            supportedFeatures:(NSArray *)currentFeatures
+                     delegate:(id<SKMRAIDViewDelegate>)delegate
+              serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+                customScripts:(NSArray *)customScripts
+           rootViewController:(UIViewController *)rootViewController {
     
     self = [super initWithFrame:frame];
     if (self) {
@@ -262,6 +275,8 @@ typedef enum {
     }
     return self;
 }
+
+#pragma mark - Private
 
 
 - (void)dealloc

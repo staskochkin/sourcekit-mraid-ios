@@ -58,12 +58,18 @@ typedef enum {
 //@property (nonatomic, assign, getter = isViewable, setter = setIsViewable:) BOOL isViewable;
 
 // IMPORTANT: This is the only valid initializer for an MRAIDView; -init and -initWithFrame: will throw exceptions
-- (id)initWithFrame:(CGRect)frame
-  supportedFeatures:(NSArray *)features
-           delegate:(id<SKMRAIDViewDelegate>)delegate
-    serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
-      customScripts:(NSArray *)customScripts
- rootViewController:(UIViewController *)rootViewController;
+- (instancetype)initWithFrame:(CGRect)frame
+            supportedFeatures:(NSArray *)features
+                     delegate:(id<SKMRAIDViewDelegate>)delegate
+              serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+                customScripts:(NSArray *)customScripts
+           rootViewController:(UIViewController *)rootViewController;
+
+- (instancetype)initWithFrame:(CGRect)frame
+            supportedFeatures:(NSArray *)features
+                     delegate:(id<SKMRAIDViewDelegate>)delegate
+              serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+           rootViewController:(UIViewController *)rootViewController;
 
 - (void)preloadAdFromURL:(NSURL *)url;
 

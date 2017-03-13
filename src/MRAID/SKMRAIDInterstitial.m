@@ -38,13 +38,24 @@
     [self.mraidView preloadAdFromURL:url];
 }
 
-// designated initializer
-- (id)initWithSupportedFeatures:(NSArray *)features
-                       delegate:(id<SKMRAIDInterstitialDelegate>)delegate
-                serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
-                  customScripts:(NSArray *)customScripts
-             rootViewController:(UIViewController *)rootViewController;
-{
+#pragma mark - Designated initializers
+
+- (instancetype)initWithSupportedFeatures:(NSArray *)features
+                                 delegate:(id<SKMRAIDInterstitialDelegate>)delegate
+                          serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+                       rootViewController:(UIViewController *)rootViewController {
+    return [[SKMRAIDInterstitial alloc] initWithSupportedFeatures:features
+                                                         delegate:delegate
+                                                  serviceDelegate:serviceDelegate
+                                                    customScripts:nil
+                                               rootViewController:rootViewController];
+}
+
+- (instancetype)initWithSupportedFeatures:(NSArray *)features
+                                 delegate:(id<SKMRAIDInterstitialDelegate>)delegate
+                          serviceDelegate:(id<SKMRAIDServiceDelegate>)serviceDelegate
+                            customScripts:(NSArray *)customScripts
+                       rootViewController:(UIViewController *)rootViewController {
     self = [super init];
     if (self) {
         self.supportedFeatures = features;
