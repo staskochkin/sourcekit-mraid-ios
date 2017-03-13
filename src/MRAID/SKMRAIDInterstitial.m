@@ -20,7 +20,6 @@
 
 @implementation SKMRAIDInterstitial
 
-
 - (id)init {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"-init is not a valid initializer for the class MRAIDInterstitial"
@@ -78,6 +77,10 @@
 
 - (void)loadAdHTML:(NSString *)html {
     [self.mraidView loadAdHTML:html];
+}
+
+- (void)loadAdHTML:(NSString *)html estimatedAdSize:(CGSize)estimatedAdSize {
+    [self.mraidView loadAdHTML:html estimatedAdSize:estimatedAdSize];
 }
 
 - (void)cancel {

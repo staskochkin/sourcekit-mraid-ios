@@ -69,6 +69,7 @@ typedef void (^tapBlock)();
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor blackColor];
 	// Do any additional setup after loading the view.
 }
 
@@ -214,13 +215,9 @@ typedef void (^tapBlock)();
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    
     // willRotateToInterfaceOrientation code goes here
-   
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         // willAnimateRotationToInterfaceOrientation code goes here
-        [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-        
     } completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         // didRotateFromInterfaceOrientation goes here
         if (hasViewAppeared) {
@@ -228,6 +225,7 @@ typedef void (^tapBlock)();
             hasRotated = NO;
         }
     }];
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation

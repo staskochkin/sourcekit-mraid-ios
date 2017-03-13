@@ -73,6 +73,8 @@ typedef enum {
     
 @property (nonatomic, strong) UIView *resizeView;
 @property (nonatomic, strong) UIButton *resizeCloseRegion;
+
+@property (nonatomic, assign) CGSize estimatedAdSize;
 @property (nonatomic, assign) CGSize previousMaxSize;
 @property (nonatomic, assign) CGSize previousScreenSize;
 
@@ -178,6 +180,11 @@ typedef enum {
     }] resume];
 }
 
+- (void)loadAdHTML:(NSString *)html estimatedAdSize:(CGSize)estimatedAdSize {
+    self.estimatedAdSize = estimatedAdSize;
+    [self loadAdHTML:html];
+}
+
 - (void)loadAdHTML:(NSString *)html {
     if (!html) {
         if ([self.delegate respondsToSelector:@selector(mraidView:failToLoadAdThrowError:)]) {
@@ -245,6 +252,7 @@ typedef enum {
         _delegate = delegate;
         _serviceDelegate = serviceDelegate;
         _rootViewController = rootViewController;
+        _estimatedAdSize = CGSizeZero;
         
         self.customScripts = customScripts;
         self.state = MRAIDStateDefault;
@@ -541,6 +549,7 @@ typedef enum {
     }
     
     [self.modalVC.view addSubview:self.currentWebView];
+    [self layoutWebView:self.currentWebView inView:self.modalVC.view];
     
     if (SK_SUPPRESS_BANNER_AUTO_REDIRECT) {
         [self.modalVC setTapObserver];
@@ -564,6 +573,16 @@ typedef enum {
         [self fireSizeChangeEvent];
         self.isViewable = YES;
     }];
+}
+
+- (void)layoutWebView:(UIView *)webView inView:(UIView *)view {
+    if (CGSizeEqualToSize(self.estimatedAdSize, CGSizeZero)) {
+        return;
+    }
+    webView.hidden = YES;
+    webView.frame = CGRectMake(.0f, 0.0f, self.estimatedAdSize.width, self.estimatedAdSize.height);
+    webView.center = view.center;
+    webView.hidden = NO;
 }
 
 - (void)open:(NSString *)urlString
@@ -1055,6 +1074,7 @@ typedef enum {
 #pragma mark - MRAIDModalViewControllerDelegate
 
 - (void)mraidModalViewControllerDidRotate:(SKMRAIDModalViewController *)modalViewController {
+    [self layoutWebView:self.currentWebView inView:modalViewController.view];
     [self setScreenSize];
     [self fireSizeChangeEvent];
 }

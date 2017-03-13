@@ -75,6 +75,8 @@ typedef enum {
 
 - (void)loadAdHTML:(NSString *)html;
 
+- (void)loadAdHTML:(NSString *)html estimatedAdSize:(CGSize)estimatedAdSize;
+
 - (void)cancel;
 
 - (void)close;
