@@ -70,7 +70,7 @@
                                                        rootViewController:self];
     
 //    NSURL * url = [NSURL URLWithString:@"http://iab.net/ad.html"];
-    [interstitial loadAdHTML:htmlData estimatedAdSize:CGSizeMake(300, 250)];
+    [interstitial loadAdHTML:htmlData]; //estimatedAdSize:CGSizeMake(300, 250)];
                     
 }
 

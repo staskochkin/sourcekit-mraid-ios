@@ -603,17 +603,19 @@ var fireEvent = function(event) {
     var args = Array.prototype.slice.call(arguments);
     args.shift();
     log.i("fireEvent " + event + " [" + args.toString() + "]");
-    var eventListeners = listeners[event];
-    if (eventListeners) {
+ 
+    var tempEventListeners = listeners[event];
+    if (tempEventListeners) {
+        var eventListeners = tempEventListeners.slice();
         var len = eventListeners.length;
         log.i(len + " listener(s) found");
         for (var i = 0; i < len; i++) {
             eventListeners[i].apply(null, args);
         }
     } else {
-        log.i("no listeners found");
+        log.i("no listeners found for " + event);
     }
-};
+ };
 
 var contains = function(value, array) {
     for (var i in array) {

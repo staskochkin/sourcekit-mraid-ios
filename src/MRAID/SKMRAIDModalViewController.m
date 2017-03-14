@@ -216,10 +216,12 @@ typedef void (^tapBlock)();
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     // willRotateToInterfaceOrientation code goes here
+    [UIView setAnimationsEnabled:NO];
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         // willAnimateRotationToInterfaceOrientation code goes here
     } completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         // didRotateFromInterfaceOrientation goes here
+        [UIView setAnimationsEnabled:YES];
         if (hasViewAppeared) {
             [self.delegate mraidModalViewControllerDidRotate:self];
             hasRotated = NO;
