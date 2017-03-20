@@ -1,8 +1,69 @@
-<html>
-    <head>
-        <script src="mraid.js"></script>
-    </head>
-    <body align='center'>
-        <h2>Interstitial Demo</h2>
-    </body>
-</html>
+<script src='mraid.js'></script>
+<script>
+    var impressionTrackers = ["http://bidder.mdspinc.com/imp?media_cost=19.51&bid_id=glk9s2kmdRXUwTDq"];
+    var clickTrackers = ["http://bidder.mdspinc.com/click?media_cost=19.51&bid_id=glk9s2kmdRXUwTDq&t=https%3A%2F%2Ftrack.rocket10.com%2Faff_c%3Foffer_id%3D455%26aff_id%3D14678%26aff_sub%3Dglk9s2kmdRXUwTDq%26source%3Dcom.appodeal.sandbox%26aff_sub2%3D1.1.902", "https://track.rocket10.com/aff_c?offer_id=455&aff_id=14678&aff_sub=glk9s2kmdRXUwTDq&source=com.appodeal.sandbox&aff_sub2=1.1.902"];
+    var targetLink = "https://track.rocket10.com/aff_c?offer_id=455&aff_id=14678&aff_sub=glk9s2kmdRXUwTDq&source=com.appodeal.sandbox&aff_sub2=1.1.902";
+    var impressionTracked = false;
+    var clickTracked = false;
+    
+    
+    var trackClick = function() {
+        sendClicks();
+        mraid.open(targetLink);
+    };
+
+var showAd = function(){
+    mraid.removeEventListener('ready', showAd);
+    if (mraid.isViewable()) {
+        sendImpression();
+    }
+    else {
+        mraid.addEventListener('viewableChange', trackViewableChange);
+    }
+};
+
+var trackViewableChange = function(viewable) {
+    if (viewable) {
+        mraid.removeEventListener('viewableChange', trackViewableChange);
+        sendImpression();
+    }
+};
+
+var sendClicks = function() {
+    if (!impressionTracked) {
+        sendImpression();
+    }
+    if (!clickTracked) {
+        var hiddenSpan = document.createElement('span');
+        hiddenSpan.style.display = 'none';
+        clickTrackers.forEach(function (tracker) {
+                              var img = document.createElement('img');
+                              img.src = tracker;
+                              hiddenSpan.appendChild(img);
+                              document.body.appendChild(hiddenSpan);
+                              });
+                              clickTracked = true;
+    }
+};
+
+var sendImpression = function() {
+    if (!impressionTracked) {
+        var hiddenSpan = document.createElement('span');
+        hiddenSpan.style.display = 'none';
+        impressionTrackers.forEach(function (tracker) {
+                                   var img = document.createElement('img');
+                                   img.src = tracker;
+                                   hiddenSpan.appendChild(img);
+                                   document.body.appendChild(hiddenSpan);
+                                   });
+                                   impressionTracked = true;
+    }
+};
+
+if (mraid.getState() === 'loading') {
+    mraid.addEventListener('ready', showAd);
+} else {
+    showAd();
+}
+</script>
+<img style="height: 100%; width: auto;" src="https://mdsp-creative-y2htehx67uduimyg5ie.stackpathdns.com/media/2017/01/587398ef-58ba-4758-a3b3-76f92c9f884b.jpg" onclick="trackClick()">

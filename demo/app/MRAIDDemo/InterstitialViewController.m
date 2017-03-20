@@ -142,7 +142,7 @@
     NSLog(@"%@ MRAIDServiceDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), urlString);
 }
 
-- (UIImage *)customCloseButtonImageForMraidInterstitial:(SKMRAIDInterstitial *)mraidInterstitial {
+- (void)mraidInterstitial:(SKMRAIDInterstitial *)mraidView requierToUseCustomCloseInView:(UIView *)view {
     CGSize imageSize = CGSizeMake(64, 64);
     UIColor *fillColor = [UIColor redColor];
     UIGraphicsBeginImageContextWithOptions(imageSize, YES, 0);
@@ -151,10 +151,18 @@
     CGContextFillRect(context, CGRectMake(0, 0, imageSize.width, imageSize.height));
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    return image;
+    UIButton * closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [closeButton setImage:image forState:UIControlStateNormal];
+    [closeButton setFrame:CGRectMake(5, 65, 64, 64)];
+    [view addSubview:closeButton];
+    [closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark - handle isViewable events
+
+- (void)close {
+    [interstitial close];
+}
 
 -(void)viewWillDisappear:(BOOL)animated
 {
