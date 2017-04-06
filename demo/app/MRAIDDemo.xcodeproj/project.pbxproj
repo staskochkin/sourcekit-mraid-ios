@@ -107,6 +107,7 @@
 		27B95786183437820076286F /* interstitial.useCustomClose.html in Resources */ = {isa = PBXBuildFile; fileRef = 27B9573A183437820076286F /* interstitial.useCustomClose.html */; };
 		27B95787183437820076286F /* interstitial.viewableChange.html in Resources */ = {isa = PBXBuildFile; fileRef = 27B9573B183437820076286F /* interstitial.viewableChange.html */; };
 		27B95788183437820076286F /* nexage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 27B9573C183437820076286F /* nexage.gif */; };
+		9C5A29331E965D13000C6379 /* interstitial.dfp.html in Resources */ = {isa = PBXBuildFile; fileRef = 9C5A29321E965D13000C6379 /* interstitial.dfp.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -249,6 +250,7 @@
 		27B9573C183437820076286F /* nexage.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = nexage.gif; sourceTree = "<group>"; };
 		95DB64DD198299FF00EF3446 /* SKBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKBrowser.h; path = "../../../../sourcekit-common-ios/src/Browser/SKBrowser.h"; sourceTree = "<group>"; };
 		95DB64DE198299FF00EF3446 /* SKLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKLogger.h; path = "../../../../sourcekit-common-ios/src/Logger/SKLogger.h"; sourceTree = "<group>"; };
+		9C5A29321E965D13000C6379 /* interstitial.dfp.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = interstitial.dfp.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -472,6 +474,7 @@
 				27B95739183437820076286F /* interstitial.telsms.html */,
 				27B9573A183437820076286F /* interstitial.useCustomClose.html */,
 				27B9573B183437820076286F /* interstitial.viewableChange.html */,
+				9C5A29321E965D13000C6379 /* interstitial.dfp.html */,
 			);
 			name = Interstitial;
 			sourceTree = "<group>";
@@ -648,6 +651,7 @@
 				27B9575E183437820076286F /* banner.setExpandProperties.html in Resources */,
 				27B95763183437820076286F /* banner.sizeChange.html in Resources */,
 				27B95761183437820076286F /* banner.setResizeProperties.html in Resources */,
+				9C5A29331E965D13000C6379 /* interstitial.dfp.html in Resources */,
 				27B955B6183436410076286F /* Default-568h.png in Resources */,
 				27B95777183437820076286F /* interstitial.noMraidJS.html in Resources */,
 				27B9576B183437820076286F /* interstitial.close.html in Resources */,

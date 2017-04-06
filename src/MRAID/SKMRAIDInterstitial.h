@@ -11,6 +11,7 @@
 
 @class SKMRAIDInterstitial;
 @protocol SKMRAIDServiceDelegate;
+@protocol SKMRAIDDoubleClickDelegate;
 
 // A delegate for MRAIDInterstitial to handle callbacks for the interstitial lifecycle.
 @protocol SKMRAIDInterstitialDelegate <NSObject>
@@ -34,6 +35,7 @@
 
 @property (nonatomic, unsafe_unretained) id<SKMRAIDInterstitialDelegate> delegate;
 @property (nonatomic, unsafe_unretained) id<SKMRAIDServiceDelegate> serviceDelegate;
+@property (nonatomic, unsafe_unretained) id<SKMRAIDDoubleClickDelegate> doubleClickDelegate;
 @property (nonatomic, unsafe_unretained, setter = setRootViewController:) UIViewController *rootViewController;
 @property (nonatomic, copy) UIColor *backgroundColor;
 

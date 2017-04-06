@@ -75,6 +75,14 @@
     return self;
 }
 
+- (void)setDoubleClickDelegate:(id<SKMRAIDDoubleClickDelegate>)doubleClickDelegate {
+    self.mraidView.doubleClickDelegate = doubleClickDelegate;
+}
+
+- (id<SKMRAIDDoubleClickDelegate>)doubleClickDelegate {
+    return self.mraidView.doubleClickDelegate;
+}
+
 - (void)loadAdHTML:(NSString *)html {
     [self.mraidView loadAdHTML:html];
 }

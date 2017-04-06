@@ -699,6 +699,14 @@ typedef enum {
     self.useCustomClose = isCustomClose;
 }
 
+- (void)loaded {
+    [self.doubleClickDelegate doubleClickAdReady];
+}
+
+- (void)noFill {
+    [self.doubleClickDelegate doubleClickNoFill];
+}
+
 #pragma mark - JavaScript --> native support helpers
 
 // These methods are helper methods for the ones above.
@@ -1211,7 +1219,7 @@ typedef enum {
 
 #pragma mark - Gesture Methods
 
--(void)setUpTapGestureRecognizer
+- (void)setUpTapGestureRecognizer
 {
     if(!SK_SUPPRESS_BANNER_AUTO_REDIRECT){
         return;  // return without adding the GestureRecognizer if the feature is not enabled

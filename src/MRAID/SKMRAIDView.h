@@ -20,6 +20,7 @@ typedef enum {
 
 @class SKMRAIDView;
 @protocol SKMRAIDServiceDelegate;
+@protocol SKMRAIDDoubleClickDelegate;
 
 // A delegate for MRAIDView to listen for notification on ad ready or expand related events.
 @protocol SKMRAIDViewDelegate <NSObject>
@@ -49,9 +50,12 @@ typedef enum {
 
 @end
 
+
+
 @interface SKMRAIDView : UIView
 
 @property (nonatomic, weak) id<SKMRAIDViewDelegate> delegate;
+@property (nonatomic, weak) id<SKMRAIDDoubleClickDelegate> doubleClickDelegate;
 @property (nonatomic, weak) id<SKMRAIDServiceDelegate> serviceDelegate;
 @property (nonatomic, weak, setter = setRootViewController:) UIViewController *rootViewController;
 @property (nonatomic, assign) BOOL isViewable;

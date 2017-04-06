@@ -12,7 +12,7 @@
 #import "SKMRAIDInterstitial.h"
 #import <AudioToolbox/AudioToolbox.h>
 
-@interface InterstitialViewController () <SKMRAIDInterstitialDelegate, SKMRAIDServiceDelegate>
+@interface InterstitialViewController () <SKMRAIDInterstitialDelegate, SKMRAIDServiceDelegate, SKMRAIDDoubleClickDelegate>
 {
     SKMRAIDInterstitial *interstitial;
 }
@@ -68,6 +68,7 @@
                                                           serviceDelegate:self
                                                             customScripts:nil
                                                        rootViewController:self];
+    interstitial.doubleClickDelegate = self;
     
 //    NSURL * url = [NSURL URLWithString:@"http://iab.net/ad.html"];
     [interstitial loadAdHTML:htmlData]; //estimatedAdSize:CGSizeMake(300, 250)];
@@ -115,6 +116,18 @@
     [self.statusLabel setText:@"Status: Not Ready"];
     self.fetchInterButton.enabled = YES;
     self.displayInterButton.enabled = NO;
+}
+
+#pragma mark - SKMRAIDDoubleClickDelegate
+
+- (void)doubleClickAdReady {
+    [self.statusLabel setText:@"Status: Double click ad ready"];
+    NSLog(@"Double click ad ready");
+}
+
+- (void)doubleClickNoFill {
+    [self.statusLabel setText:@"Status: Double click ad no fill"];
+    NSLog(@"Double click ad no fill");
 }
 
 #pragma mark - MRAIDServiceDelegate

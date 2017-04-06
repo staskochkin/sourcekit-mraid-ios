@@ -590,6 +590,25 @@ mraid.fireViewableChangeEvent = function(newIsViewable) {
         fireEvent(mraid.EVENTS.VIEWABLECHANGE, isViewable);
     }
 };
+ 
+ /***************************************************************************
+  * Appodeal methods
+  **************************************************************************/
+ 
+mraid.adLoaded = false;
+ 
+mraid.noFill = function() {
+    if (!mraid.adLoaded) {
+        log.i("mraid.noFill");
+        callNative("noFill");
+    }
+};
+ 
+mraid.loaded = function() {
+    log.i("mraid.loaded");
+    mraid.adLoaded = true;
+    callNative("loaded");
+};
 
 /***************************************************************************
  * internal helper methods

@@ -107,7 +107,9 @@
                            @"setOrientationProperties",
                            @"setResizeProperties",
                            @"storePicture",
-                           @"useCustomClose"
+                           @"useCustomClose",
+                           @"loaded",
+                           @"noFill"
                            ];
 
     return [kCommands containsObject:command];
