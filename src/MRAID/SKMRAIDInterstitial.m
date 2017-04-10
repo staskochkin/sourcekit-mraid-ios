@@ -99,6 +99,13 @@
     [self.mraidView close];
 }
 
+- (NSURL *)baseURL {
+    return self.mraidView.baseURL;
+}
+
+- (void)setBaseURL:(NSURL *)baseURL {
+    self.mraidView.baseURL = baseURL;
+}
 
 - (void)show
 {

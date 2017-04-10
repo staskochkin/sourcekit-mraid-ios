@@ -59,6 +59,7 @@ typedef enum {
 @property (nonatomic, weak) id<SKMRAIDServiceDelegate> serviceDelegate;
 @property (nonatomic, weak, setter = setRootViewController:) UIViewController *rootViewController;
 @property (nonatomic, assign) BOOL isViewable;
+@property (nonatomic, strong) NSURL *baseURL;
 //@property (nonatomic, assign, getter = isViewable, setter = setIsViewable:) BOOL isViewable;
 
 // IMPORTANT: This is the only valid initializer for an MRAIDView; -init and -initWithFrame: will throw exceptions

@@ -38,6 +38,7 @@
 @property (nonatomic, unsafe_unretained) id<SKMRAIDDoubleClickDelegate> doubleClickDelegate;
 @property (nonatomic, unsafe_unretained, setter = setRootViewController:) UIViewController *rootViewController;
 @property (nonatomic, copy) UIColor *backgroundColor;
+@property (nonatomic, strong) NSURL *baseURL;
 
 // IMPORTANT: This is the only valid initializer for an MRAIDInterstitial; -init will throw an exception
 - (instancetype)initWithSupportedFeatures:(NSArray *)features

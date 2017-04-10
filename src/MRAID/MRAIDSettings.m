@@ -8,7 +8,7 @@
 
 #import "MRAIDSettings.h"
 
-NSString* const kMRAIDKitVersion    = @"1.3.3";
+NSString* const kMRAIDKitVersion    = @"1.3.4";
 BOOL SK_ENABLE_JS_LOG                  = NO;
 BOOL SK_SUPPRESS_JS_ALERT              = YES;
 BOOL SK_SUPPRESS_BANNER_AUTO_REDIRECT  = YES;

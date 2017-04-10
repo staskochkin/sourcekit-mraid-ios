@@ -59,8 +59,6 @@ typedef enum {
     
 @property (nonatomic, strong) NSString *mraidjs;
     
-@property (nonatomic, strong) NSURL *baseURL;
-    
 @property (nonatomic, strong) NSArray *mraidFeatures;
 @property (nonatomic, strong) NSArray *supportedFeatures;
     
@@ -272,7 +270,6 @@ typedef enum {
         if([self isValidFeatureSet:currentFeatures] && serviceDelegate){
             self.supportedFeatures=currentFeatures;
         }
-        
         
         self.previousMaxSize = CGSizeZero;
         self.previousScreenSize = CGSizeZero;
@@ -1140,9 +1137,9 @@ typedef enum {
     [wv evaluateJavaScript:js completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
         //TODO:
     }];
-    
     // Alert suppression
     [self disableJsCallbackInWebViewIfNeeded:wv];
+    
     return wv;
 }
 

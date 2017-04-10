@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "NexageSourceKitMRAID"
-  s.version      = "1.3.2"
+  s.version      = "1.3.4"
   s.summary      = "Nexage Integration SourceKit for MRAID"
 
   s.description  = <<-DESC
