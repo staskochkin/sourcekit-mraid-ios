@@ -1144,7 +1144,7 @@ typedef enum {
 }
 
 - (void)intersectJsLog {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {  
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {  
         NSString *script = @"console = new Object(); \n" \
         "console.log = function(log) { \n" \
         "   window.webkit.messageHandlers.logHandler.postMessage(log); \n" \
