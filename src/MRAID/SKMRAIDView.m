@@ -1144,16 +1144,18 @@ typedef enum {
 }
 
 - (void)intersectJsLog {
-    NSString *script = @"console = new Object(); \n" \
-                        "console.log = function(log) { \n" \
-                        "   window.webkit.messageHandlers.logHandler.postMessage(log); \n" \
-                        "}; \n" \
-                        "console.debug = console.log; \n" \
-                        "console.info = console.log; \n" \
-                        "console.warn = console.log; \n" \
-                        "console.error = console.log;";
-
-    [self injectJavaScript:script];
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {  
+        NSString *script = @"console = new Object(); \n" \
+        "console.log = function(log) { \n" \
+        "   window.webkit.messageHandlers.logHandler.postMessage(log); \n" \
+        "}; \n" \
+        "console.debug = console.log; \n" \
+        "console.info = console.log; \n" \
+        "console.warn = console.log; \n" \
+        "console.error = console.log;";
+        
+        [self injectJavaScript:script];
+    }
 }
 
 - (NSArray *)scriptMessageHandlersNames {
