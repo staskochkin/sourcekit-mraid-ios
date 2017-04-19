@@ -146,8 +146,8 @@ typedef enum {
     __weak typeof(self) weakSelf = self;
     
     [[[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        
-        if (error || !data) {
+        NSInteger code = [response isKindOfClass:[NSHTTPURLResponse class]] ? [(NSHTTPURLResponse *)response statusCode] : 500;
+        if (error || !data || code >= 400) {
             NSError * mraidError = [NSError errorWithDomain:kSKMRAIDErrorDomain code:MRAIDPreloadNetworkError userInfo:error.userInfo];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if ([weakSelf.delegate respondsToSelector:@selector(mraidView:didFailToPreloadAd:)]) {
@@ -165,6 +165,7 @@ typedef enum {
                     [weakSelf.delegate mraidView:weakSelf didFailToPreloadAd:mraidError];
                 }
             });
+            return;
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
