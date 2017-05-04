@@ -228,7 +228,6 @@ typedef enum {
 {
     [self.currentWebView stopLoading];
     self.currentWebView = nil;
-    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 }
 
 
@@ -288,7 +287,6 @@ typedef enum {
     
     [self removeObserver:self forKeyPath:@"self.frame"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     
     self.webView = nil;
     self.webViewPart2 = nil;
@@ -988,7 +986,9 @@ typedef enum {
         }
         
         // Start monitoring device orientation so we can reset max Size and screenSize if needed.
-        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+        if (![[UIDevice currentDevice] isGeneratingDeviceOrientationNotifications]) {
+            [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+        }
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(deviceOrientationDidChange:)
                                                      name:UIDeviceOrientationDidChangeNotification
