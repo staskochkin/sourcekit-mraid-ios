@@ -49,7 +49,6 @@ typedef enum {
     // The only property of the MRAID expandProperties we need to keep track of
     // on the native side is the useCustomClose property.
     // The width, height, and isModal properties are not used in MRAID v2.0.
-@property (nonatomic, assign) BOOL useCustomClose;
     
 @property (nonatomic, strong) SKMRAIDOrientationProperties *orientationProperties;
 @property (nonatomic, strong) SKMRAIDResizeProperties *resizeProperties;
@@ -549,7 +548,8 @@ typedef enum {
         [self.modalVC setTapObserver];
     }
     // always include the close event region
-    [self addCloseEventRegion];
+    //TODO: USE CUSTOM CLOSE
+//    [self addCloseEventRegion];
     
    
     // used if running >= iOS 6
@@ -690,7 +690,10 @@ typedef enum {
 - (void)useCustomClose:(NSString *)isCustomCloseString
 {
     BOOL isCustomClose = [isCustomCloseString boolValue];
-    self.useCustomClose = isCustomClose;
+    
+    if ([self.delegate respondsToSelector:@selector(mraidView:useCustomClose:)]) {
+        [self.delegate mraidView:self useCustomClose:isCustomClose];
+    }
 }
 
 - (void)loaded {
@@ -713,33 +716,33 @@ typedef enum {
     return closeButtonImage;
 }
 
-- (void)addCloseEventRegion
-{
-    if ([self.delegate respondsToSelector:@selector(mraidView:requierToUseCustomCloseInView:)]) {
-        [self.delegate mraidView:self requierToUseCustomCloseInView:self.modalVC.view];
-        return;
-    }
-    
-    self.closeEventRegion = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.closeEventRegion.backgroundColor = [UIColor clearColor];
-    [self.closeEventRegion addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
-    
-    [self.closeEventRegion setBackgroundImage: [self defaultCloseButtonImage] forState:UIControlStateNormal];
-    
-    self.closeEventRegion.frame = CGRectMake(0, 0, kCloseEventRegionSize, kCloseEventRegionSize);
-    
-    CGRect frame = self.closeEventRegion.frame;
-    self.closeEventRegion.sk_hitTestEdgeInsets = UIEdgeInsetsMake(kCloseEventRegionInset, kCloseEventRegionInset, kCloseEventRegionInset, kCloseEventRegionInset);
-    
-    // align on top right
-    int x = CGRectGetWidth(self.modalVC.view.frame) - CGRectGetWidth(frame);
-    frame.origin = CGPointMake(x, kStatusBarOffset);
-    self.closeEventRegion.frame = frame;
-    // autoresizing so it stays at top right (flexible left and flexible bottom margin)
-    self.closeEventRegion.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
-    
-    [self.modalVC.view addSubview:self.closeEventRegion];
-}
+//- (void)addCloseEventRegion
+//{
+//    if ([self.delegate respondsToSelector:@selector(mraidView:requierToUseCustomCloseInView:)]) {
+//        [self.delegate mraidView:self requierToUseCustomCloseInView:self.modalVC.view];
+//        return;
+//    }
+//    
+//    self.closeEventRegion = [UIButton buttonWithType:UIButtonTypeCustom];
+//    self.closeEventRegion.backgroundColor = [UIColor clearColor];
+//    [self.closeEventRegion addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
+//    
+//    [self.closeEventRegion setBackgroundImage: [self defaultCloseButtonImage] forState:UIControlStateNormal];
+//    
+//    self.closeEventRegion.frame = CGRectMake(0, 0, kCloseEventRegionSize, kCloseEventRegionSize);
+//    
+//    CGRect frame = self.closeEventRegion.frame;
+//    self.closeEventRegion.sk_hitTestEdgeInsets = UIEdgeInsetsMake(kCloseEventRegionInset, kCloseEventRegionInset, kCloseEventRegionInset, kCloseEventRegionInset);
+//    
+//    // align on top right
+//    int x = CGRectGetWidth(self.modalVC.view.frame) - CGRectGetWidth(frame);
+//    frame.origin = CGPointMake(x, kStatusBarOffset);
+//    self.closeEventRegion.frame = frame;
+//    // autoresizing so it stays at top right (flexible left and flexible bottom margin)
+//    self.closeEventRegion.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
+//    
+//    [self.modalVC.view addSubview:self.closeEventRegion];
+//}
 
 - (void)showResizeCloseRegion
 {

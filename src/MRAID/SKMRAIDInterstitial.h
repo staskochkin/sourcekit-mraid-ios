@@ -25,7 +25,7 @@
 - (void)mraidInterstitialWillShow:(SKMRAIDInterstitial *)mraidInterstitial;
 - (void)mraidInterstitialDidHide:(SKMRAIDInterstitial *)mraidInterstitial;
 - (void)mraidInterstitialNavigate:(SKMRAIDInterstitial *)mraidInterstitial withURL:(NSURL *)url;
-- (void)mraidInterstitial:(SKMRAIDInterstitial *)mraidView requierToUseCustomCloseInView:(UIView *)view;
+- (void)mraidInterstitial:(SKMRAIDInterstitial *)mraidView useCustomClose:(BOOL)customClose;
 - (void)mraidInterstitial:(SKMRAIDInterstitial *)mraidView intersectJsLogMessage:(NSString *)logMessage;
 
 @end

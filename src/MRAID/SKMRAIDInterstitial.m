@@ -182,9 +182,9 @@
     }
 }
 
-- (void)mraidView:(SKMRAIDView *)mraidView requierToUseCustomCloseInView:(UIView *)view {
-    if ([self.delegate respondsToSelector:@selector(mraidInterstitial:requierToUseCustomCloseInView:)]) {
-        [self.delegate mraidInterstitial:self requierToUseCustomCloseInView:view];
+- (void)mraidView:(SKMRAIDView *)mraidView useCustomClose:(BOOL)customClose {
+    if ([self.delegate respondsToSelector:@selector(mraidInterstitial:useCustomClose:)]) {
+        [self.delegate mraidInterstitial:self useCustomClose:customClose];
     }
 }
 

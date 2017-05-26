@@ -155,20 +155,24 @@
     NSLog(@"%@ MRAIDServiceDelegate %@%@", [[self class] description], NSStringFromSelector(_cmd), urlString);
 }
 
-- (void)mraidInterstitial:(SKMRAIDInterstitial *)mraidView requierToUseCustomCloseInView:(UIView *)view {
-    CGSize imageSize = CGSizeMake(64, 64);
-    UIColor *fillColor = [UIColor redColor];
-    UIGraphicsBeginImageContextWithOptions(imageSize, YES, 0);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    [fillColor setFill];
-    CGContextFillRect(context, CGRectMake(0, 0, imageSize.width, imageSize.height));
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    UIButton * closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [closeButton setImage:image forState:UIControlStateNormal];
-    [closeButton setFrame:CGRectMake(5, 65, 64, 64)];
-    [view addSubview:closeButton];
-    [closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
+- (void)mraidInterstitial:(SKMRAIDInterstitial *)mraidView useCustomClose:(BOOL)customClose {
+    if (!customClose) {
+        CGSize imageSize = CGSizeMake(64, 64);
+        UIColor *fillColor = [UIColor redColor];
+        UIGraphicsBeginImageContextWithOptions(imageSize, YES, 0);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        [fillColor setFill];
+        CGContextFillRect(context, CGRectMake(0, 0, imageSize.width, imageSize.height));
+        UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        UIButton * closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [closeButton setImage:image forState:UIControlStateNormal];
+        [closeButton setFrame:CGRectMake(5, 65, 64, 64)];
+        
+        UIView * containerView = [mraidView valueForKey:@"mraidView"];
+        [containerView addSubview:closeButton];
+        [closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
+    }
 }
 
 #pragma mark - handle isViewable events
