@@ -20,7 +20,7 @@
 
 @interface SKMRAIDModalViewController : UIViewController
 
-@property (nonatomic, unsafe_unretained) id<SKMRAIDModalViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<SKMRAIDModalViewControllerDelegate> delegate;
 
 - (void)setTapObserver;
 - (void)removeTapObserver;

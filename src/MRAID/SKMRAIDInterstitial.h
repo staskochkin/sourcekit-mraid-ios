@@ -33,10 +33,10 @@
 // A class which handles interstitials and offers optional callbacks for its states and services (sms, tel, calendar, etc.)
 @interface SKMRAIDInterstitial : NSObject
 
-@property (nonatomic, unsafe_unretained) id<SKMRAIDInterstitialDelegate> delegate;
-@property (nonatomic, unsafe_unretained) id<SKMRAIDServiceDelegate> serviceDelegate;
-@property (nonatomic, unsafe_unretained) id<SKMRAIDDoubleClickDelegate> doubleClickDelegate;
-@property (nonatomic, unsafe_unretained, setter = setRootViewController:) UIViewController *rootViewController;
+@property (nonatomic, weak) id<SKMRAIDInterstitialDelegate> delegate;
+@property (nonatomic, weak) id<SKMRAIDServiceDelegate> serviceDelegate;
+@property (nonatomic, weak) id<SKMRAIDDoubleClickDelegate> doubleClickDelegate;
+@property (nonatomic, weak, setter = setRootViewController:) UIViewController *rootViewController;
 @property (nonatomic, copy) UIColor *backgroundColor;
 @property (nonatomic, strong) NSURL *baseURL;
 

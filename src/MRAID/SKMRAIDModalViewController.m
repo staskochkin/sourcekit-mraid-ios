@@ -73,6 +73,11 @@ typedef void (^tapBlock)();
 	// Do any additional setup after loading the view.
 }
 
+- (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion {
+    [self removeTapObserver];
+    [super dismissViewControllerAnimated:flag completion:completion];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
