@@ -17,6 +17,7 @@
 #import "SKMRAIDUtil.h"
 #import "MRAIDSettings.h"
 #import "UIButton+SKExtension.h"
+#import "UIView+SKExtension.h"
 
 #import "mraidjs.h"
 #import "CloseButton.h"
@@ -542,7 +543,7 @@ typedef enum {
     }
     
     [self.modalVC.view addSubview:self.currentWebView];
-    [self layoutWebView:self.currentWebView inView:self.modalVC.view];
+    [self.currentWebView sk_makeEdgesEqualToView:self.modalVC.view];
     
     if (SK_SUPPRESS_BANNER_AUTO_REDIRECT) {
         [self.modalVC setTapObserver];
@@ -567,16 +568,6 @@ typedef enum {
         [self fireSizeChangeEvent];
         self.isViewable = YES;
     }];
-}
-
-- (void)layoutWebView:(UIView *)webView inView:(UIView *)view {
-    if (CGSizeEqualToSize(self.estimatedAdSize, CGSizeZero)) {
-        return;
-    }
-    webView.hidden = YES;
-    webView.frame = CGRectMake(.0f, 0.0f, self.estimatedAdSize.width, self.estimatedAdSize.height);
-    webView.center = view.center;
-    webView.hidden = NO;
 }
 
 - (void)open:(NSString *)urlString
@@ -1081,7 +1072,6 @@ typedef enum {
 #pragma mark - MRAIDModalViewControllerDelegate
 
 - (void)mraidModalViewControllerDidRotate:(SKMRAIDModalViewController *)modalViewController {
-    [self layoutWebView:self.currentWebView inView:modalViewController.view];
     [self setScreenSize];
     [self fireSizeChangeEvent];
 }

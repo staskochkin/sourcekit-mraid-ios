@@ -44,6 +44,7 @@
 		27BBC16E1833E99900074066 /* MRAID_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BBC16D1833E99900074066 /* MRAID_Tests.m */; };
 		27BBC17B1833EA0500074066 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BBC17A1833EA0500074066 /* XCTest.framework */; };
 		27EBFE7517F2837900FCB7DD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27EBFE7417F2837900FCB7DD /* UIKit.framework */; };
+		9C3555831F18EE1800484D1E /* UIView+SKExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C3555821F18EE1800484D1E /* UIView+SKExtension.m */; };
 		9C7D4FBB1D9276F0003FE6E2 /* UIButton+SKExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C7D4FBA1D9276F0003FE6E2 /* UIButton+SKExtension.m */; };
 /* End PBXBuildFile section */
 
@@ -106,6 +107,8 @@
 		27BBC16F1833E99900074066 /* MRAID Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MRAID Tests-Prefix.pch"; sourceTree = "<group>"; };
 		27BBC17A1833EA0500074066 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		27EBFE7417F2837900FCB7DD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		9C3555811F18EE1800484D1E /* UIView+SKExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+SKExtension.h"; sourceTree = "<group>"; };
+		9C3555821F18EE1800484D1E /* UIView+SKExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SKExtension.m"; sourceTree = "<group>"; };
 		9C7D4FB91D9276F0003FE6E2 /* UIButton+SKExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+SKExtension.h"; sourceTree = "<group>"; };
 		9C7D4FBA1D9276F0003FE6E2 /* UIButton+SKExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+SKExtension.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -156,6 +159,8 @@
 				2738BDE719815D9100A968BF /* SKMRAIDView.m */,
 				9C7D4FB91D9276F0003FE6E2 /* UIButton+SKExtension.h */,
 				9C7D4FBA1D9276F0003FE6E2 /* UIButton+SKExtension.m */,
+				9C3555811F18EE1800484D1E /* UIView+SKExtension.h */,
+				9C3555821F18EE1800484D1E /* UIView+SKExtension.m */,
 			);
 			path = MRAID;
 			sourceTree = "<group>";
@@ -318,6 +323,7 @@
 				2738BDED19815D9100A968BF /* SKMRAIDOrientationProperties.m in Sources */,
 				2738BDF519815D9100A968BF /* SKMRAIDParser.m in Sources */,
 				2738BDEB19815D9100A968BF /* MRAIDSettings.m in Sources */,
+				9C3555831F18EE1800484D1E /* UIView+SKExtension.m in Sources */,
 				2738BDEF19815D9100A968BF /* SKMRAIDResizeProperties.m in Sources */,
 				2738BDF919815D9100A968BF /* SKMRAIDView.m in Sources */,
 				2738BDF119815D9100A968BF /* SKMRAIDInterstitial.m in Sources */,
