@@ -50,8 +50,8 @@ typedef enum {
     // The only property of the MRAID expandProperties we need to keep track of
     // on the native side is the useCustomClose property.
     // The width, height, and isModal properties are not used in MRAID v2.0.
-    
-@property (nonatomic, strong) SKMRAIDOrientationProperties *orientationProperties;
+
+@property (nonatomic, strong) SKMRAIDOrientationProperties *skOrientationProperties;
 @property (nonatomic, strong) SKMRAIDResizeProperties *resizeProperties;
     
 @property (nonatomic, strong) SKMRAIDParser *mraidParser;
@@ -254,7 +254,7 @@ typedef enum {
         self.state = MRAIDStateDefault;
         self.isViewable = NO;
         
-        self.orientationProperties = [[SKMRAIDOrientationProperties alloc] init];
+        self.skOrientationProperties = [[SKMRAIDOrientationProperties alloc] init];
         self.resizeProperties = [[SKMRAIDResizeProperties alloc] init];
         
         self.mraidParser = [[SKMRAIDParser alloc] init];
@@ -295,7 +295,7 @@ typedef enum {
     self.mraidParser = nil;
     self.modalVC = nil;
     
-    self.orientationProperties = nil;
+    self.skOrientationProperties = nil;
     self.resizeProperties = nil;
     
     self.mraidFeatures = nil;
@@ -494,7 +494,7 @@ typedef enum {
         return;
     }
     
-    self.modalVC = [[SKMRAIDModalViewController alloc] initWithOrientationProperties:self.orientationProperties];
+    self.modalVC = [[SKMRAIDModalViewController alloc] initWithOrientationProperties:self.skOrientationProperties];
     CGRect frame = [[UIScreen mainScreen] bounds];
     self.modalVC.view.frame = frame;
     self.modalVC.delegate = self;
@@ -642,9 +642,9 @@ typedef enum {
 {
     BOOL allowOrientationChange = [[properties valueForKey:@"allowOrientationChange"] boolValue];
     NSString *forceOrientation = [properties valueForKey:@"forceOrientation"];
-    self.orientationProperties.allowOrientationChange = allowOrientationChange;
-    self.orientationProperties.forceOrientation = [SKMRAIDOrientationProperties MRAIDForceOrientationFromString:forceOrientation];
-    [self.modalVC forceToOrientation:self.orientationProperties];
+    self.skOrientationProperties.allowOrientationChange = allowOrientationChange;
+    self.skOrientationProperties.forceOrientation = [SKMRAIDOrientationProperties MRAIDForceOrientationFromString:forceOrientation];
+    [self.modalVC forceToOrientation:self.skOrientationProperties];
 }
 
 - (void)setResizeProperties:(NSDictionary *)properties;
@@ -713,25 +713,25 @@ typedef enum {
 //        [self.delegate mraidView:self requierToUseCustomCloseInView:self.modalVC.view];
 //        return;
 //    }
-//    
+//
 //    self.closeEventRegion = [UIButton buttonWithType:UIButtonTypeCustom];
 //    self.closeEventRegion.backgroundColor = [UIColor clearColor];
 //    [self.closeEventRegion addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
-//    
+//
 //    [self.closeEventRegion setBackgroundImage: [self defaultCloseButtonImage] forState:UIControlStateNormal];
-//    
+//
 //    self.closeEventRegion.frame = CGRectMake(0, 0, kCloseEventRegionSize, kCloseEventRegionSize);
-//    
+//
 //    CGRect frame = self.closeEventRegion.frame;
 //    self.closeEventRegion.sk_hitTestEdgeInsets = UIEdgeInsetsMake(kCloseEventRegionInset, kCloseEventRegionInset, kCloseEventRegionInset, kCloseEventRegionInset);
-//    
+//
 //    // align on top right
 //    int x = CGRectGetWidth(self.modalVC.view.frame) - CGRectGetWidth(frame);
 //    frame.origin = CGPointMake(x, kStatusBarOffset);
 //    self.closeEventRegion.frame = frame;
 //    // autoresizing so it stays at top right (flexible left and flexible bottom margin)
 //    self.closeEventRegion.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
-//    
+//
 //    [self.modalVC.view addSubview:self.closeEventRegion];
 //}
 
@@ -953,7 +953,7 @@ typedef enum {
 -(void)setSupports:(NSArray *)currentFeatures
 {
     for (id aFeature in self.mraidFeatures) {
-            [self injectJavaScript:[NSString stringWithFormat:@"mraid.setSupports('%@',%@);", aFeature,[currentFeatures containsObject:aFeature]?@"true":@"false"]];
+        [self injectJavaScript:[NSString stringWithFormat:@"mraid.setSupports('%@',%@);", aFeature,[currentFeatures containsObject:aFeature]?@"true":@"false"]];
     }
 }
 
@@ -1055,11 +1055,11 @@ typedef enum {
     if (self.state == MRAIDStateDefault) {
         NSString * scheme = navigationAction.request.URL.scheme;
         BOOL isHttpLink = [scheme isEqualToString:@"https"] ||
-                          [scheme isEqualToString:@"http"];
+        [scheme isEqualToString:@"http"];
         
         BOOL safeToAutoload = navigationAction.navigationType == WKNavigationTypeLinkActivated ||
-                              navigationAction.navigationType == WKNavigationTypeOther;
-
+        navigationAction.navigationType == WKNavigationTypeOther;
+        
         if (_bonafideTapObserved && isHttpLink && safeToAutoload) {
             if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
                 [self.delegate mraidViewNavigate:self withURL:navigationAction.request.URL];
@@ -1138,7 +1138,7 @@ typedef enum {
 }
 
 - (void)intersectJsLog {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {  
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
         NSString *script = @"console = new Object(); \n" \
         "console.log = function(log) { \n" \
         "   window.webkit.messageHandlers.logHandler.postMessage(log); \n" \
