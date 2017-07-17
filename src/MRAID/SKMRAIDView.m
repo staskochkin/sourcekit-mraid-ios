@@ -884,6 +884,12 @@ typedef enum {
 
 - (void)fireViewableChangeEvent
 {
+    if (self.isInterstitial && self.isViewable) {
+        [self startVideoIfNeeded:self.currentWebView];
+    } else {
+        [self disableFullscreenVideoInWebView:self.currentWebView];
+    }
+    
     [self injectJavaScript:[NSString stringWithFormat:@"mraid.fireViewableChangeEvent(%@);", (self.isViewable ? @"true" : @"false")]];
 }
 
@@ -965,6 +971,9 @@ typedef enum {
     
     if (self.state == MRAIDStateLoading) {
         self.state = MRAIDStateDefault;
+        
+        [self disableFullscreenVideoInWebView:webView];
+        
         [self injectJavaScript:[NSString stringWithFormat:@"mraid.setPlacementType('%@');", (self.isInterstitial ? @"interstitial" : @"inline")]];
         [self setSupports:self.supportedFeatures];
         [self setDefaultPosition];
@@ -973,10 +982,6 @@ typedef enum {
         [self fireStateChangeEvent];
         [self fireSizeChangeEvent];
         [self fireReadyEvent];
-        
-        if (!self.isInterstitial) {
-             [self disableFullscreenVideoInWebView:webView];
-        }
         
         if ([self.delegate respondsToSelector:@selector(mraidViewAdReady:)]) {
             [self.delegate mraidViewAdReady:self];
@@ -1178,6 +1183,14 @@ typedef enum {
             //TODO:
         }];
     }
+}
+
+- (void)startVideoIfNeeded:(WKWebView *)webView {
+    NSString * startDisabledVideoSript = @"var video = document.querySelector('video');\
+    video.setAttribute('muted', false);\
+    video.removeEventListener('playing', mraid.playVideo)";
+    
+    [webView evaluateJavaScript:startDisabledVideoSript completionHandler:nil];
 }
 
 - (void)disableFullscreenVideoInWebView:(WKWebView *)webView {
