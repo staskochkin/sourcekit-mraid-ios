@@ -973,7 +973,10 @@ typedef enum {
         [self fireStateChangeEvent];
         [self fireSizeChangeEvent];
         [self fireReadyEvent];
-        [self disableFullscreenVideoInWebView:webView];
+        
+        if (!self.isInterstitial) {
+             [self disableFullscreenVideoInWebView:webView];
+        }
         
         if ([self.delegate respondsToSelector:@selector(mraidViewAdReady:)]) {
             [self.delegate mraidViewAdReady:self];
