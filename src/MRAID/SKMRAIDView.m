@@ -18,6 +18,7 @@
 #import "MRAIDSettings.h"
 #import "UIButton+SKExtension.h"
 #import "UIView+SKExtension.h"
+#import "WKWebView+SKExtension.h"
 
 #import "mraidjs.h"
 #import "CloseButton.h"
@@ -589,7 +590,7 @@ typedef enum {
     if(!self.bonafideTapObserved && SK_SUPPRESS_BANNER_AUTO_REDIRECT){
         NSString * pauseVideoScript = @"var video = document.querySelector('video');\
                                         video.pause();";
-        [self.currentWebView evaluateJavaScript:pauseVideoScript completionHandler:nil];
+        [self.currentWebView skEvaluateJavaScript:pauseVideoScript completionHandler:nil];
         return;  // ignore programmatic touches (taps)
     }
     
@@ -817,8 +818,8 @@ typedef enum {
 
 - (void)injectJavaScript:(NSString *)js
 {
-    [self.currentWebView evaluateJavaScript:js completionHandler:nil];
-//    [self.currentWebView evaluateJavaScript:js completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
+    [self.currentWebView skEvaluateJavaScript:js completionHandler:nil];
+//    [self.currentWebView skEvaluateJavaScript:js completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
 //        NSLog(@"Callback %@ \n Error: %@", callback, error);
 //    }];
 }
@@ -1136,7 +1137,7 @@ typedef enum {
     
     // disable selection
     NSString *js = @"window.getSelection().removeAllRanges();";
-    [wv evaluateJavaScript:js completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
+    [wv skEvaluateJavaScript:js completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
         //TODO:
     }];
     // Alert suppression
@@ -1179,7 +1180,7 @@ typedef enum {
 - (void)disableJsCallbackInWebViewIfNeeded:(WKWebView *)webView {
     if (SK_SUPPRESS_JS_ALERT) {
         NSString * disableJSAlertScript = @"function alert(){}; function prompt(){}; function confirm(){}";
-        [webView evaluateJavaScript:disableJSAlertScript completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
+        [webView skEvaluateJavaScript:disableJSAlertScript completionHandler:^(id _Nullable callback, NSError * _Nullable error) {
             //TODO:
         }];
     }
@@ -1190,7 +1191,7 @@ typedef enum {
     video.setAttribute('muted', false);\
     video.removeEventListener('playing', mraid.playVideo)";
     
-    [webView evaluateJavaScript:startDisabledVideoSript completionHandler:nil];
+    [webView skEvaluateJavaScript:startDisabledVideoSript completionHandler:nil];
 }
 
 - (void)disableFullscreenVideoInWebView:(WKWebView *)webView {
@@ -1200,7 +1201,7 @@ typedef enum {
     video.setAttribute('muted', true);\
     video.addEventListener('playing', mraid.playVideo)";
     
-    [webView evaluateJavaScript:disableFullScreenAutoplaySript completionHandler:nil];
+    [webView skEvaluateJavaScript:disableFullScreenAutoplaySript completionHandler:nil];
 }
 
 - (void)parseCommandUrl:(NSString *)commandUrlString
