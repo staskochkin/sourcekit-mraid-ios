@@ -578,7 +578,7 @@ typedef enum {
     }
     
     urlString = [urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
+    _bonafideTapObserved = NO;
     // Notify the callers
     if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
         [self.delegate mraidViewNavigate:self withURL:[NSURL URLWithString:urlString]];
@@ -1022,6 +1022,7 @@ typedef enum {
     if (self.state == MRAIDStateDefault) {
         if (_bonafideTapObserved && (navigationAction.navigationType == WKNavigationTypeLinkActivated ||
                                      navigationAction.navigationType == WKNavigationTypeOther)) {
+            _bonafideTapObserved = NO;
             if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
                 [self.delegate mraidViewNavigate:self withURL:navigationAction.request.URL];
             }
@@ -1070,6 +1071,7 @@ typedef enum {
         navigationAction.navigationType == WKNavigationTypeOther;
         
         if (_bonafideTapObserved && isHttpLink && safeToAutoload) {
+            _bonafideTapObserved = NO;
             if ([self.delegate respondsToSelector:@selector(mraidViewNavigate:withURL:)]) {
                 [self.delegate mraidViewNavigate:self withURL:navigationAction.request.URL];
             }
@@ -1251,8 +1253,8 @@ typedef enum {
 -(void)oneFingerOneTap
 {
     self.bonafideTapObserved=YES;
-    self.tapGestureRecognizer.delegate=nil;
-    self.tapGestureRecognizer=nil;
+//    self.tapGestureRecognizer.delegate=nil;
+//    self.tapGestureRecognizer=nil;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
