@@ -1089,7 +1089,6 @@ typedef enum {
 
 - (void)mraidModalViewControllerDidRecieveTap:(SKMRAIDModalViewController *)modalViewController {
     [self oneFingerOneTap];
-    [modalViewController removeTapObserver];
 }
 
 #pragma mark - internal helper methods
@@ -1250,11 +1249,8 @@ typedef enum {
     return YES;   // required to allow UIWebview to work correctly, see  http://stackoverflow.com/questions/2909807/does-uigesturerecognizer-work-on-a-uiwebview
 }
 
--(void)oneFingerOneTap
-{
-    self.bonafideTapObserved=YES;
-//    self.tapGestureRecognizer.delegate=nil;
-//    self.tapGestureRecognizer=nil;
+- (void)oneFingerOneTap {
+    self.bonafideTapObserved = YES;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
