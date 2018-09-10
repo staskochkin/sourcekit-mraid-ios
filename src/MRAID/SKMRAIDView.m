@@ -915,7 +915,7 @@ typedef enum {
         // For interstitials, we define maxSize to be the same as screen size, so set the value there.
         return;
     }
-    CGSize maxSize = self.rootViewController.view.bounds.size;
+    CGSize maxSize = [self boundsForMainFrame].size;
     if (!CGSizeEqualToSize(maxSize, self.previousMaxSize)) {
         [self injectJavaScript:[NSString stringWithFormat:@"mraid.setMaxSize(%d,%d);",
                                 (int)maxSize.width,
@@ -926,21 +926,8 @@ typedef enum {
 
 -(void)setScreenSize
 {
-    CGSize screenSize = [[UIScreen mainScreen] bounds].size;
-    // screenSize is ALWAYS for portrait orientation, so we need to figure out the
-    // actual interface orientation to get the correct current screenRect.
-    UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    BOOL isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation);
-    // [SKLogger debug:[NSString stringWithFormat:@"orientation is %@", (isLandscape ?  @"landscape" : @"portrait")]];
-   
-    CGFloat scale = [UIScreen mainScreen].scale;
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
-        screenSize = CGSizeMake(screenSize.width * scale, screenSize.height * scale);
-    } else {
-        if (isLandscape) {
-            screenSize = CGSizeMake(screenSize.height * scale, screenSize.width * scale);
-        }
-    }
+    CGSize screenSize = [self boundsForMainFrame].size;
+    
     if (!CGSizeEqualToSize(screenSize, self.previousScreenSize)) {
         [self injectJavaScript:[NSString stringWithFormat:@"mraid.setScreenSize(%d,%d);",
                                 (int)screenSize.width,
@@ -1259,6 +1246,22 @@ typedef enum {
         return NO;
     }
     return YES;
+}
+
+- (CGRect) boundsForMainFrame {
+    CGRect bounds = [UIScreen mainScreen].bounds;
+    if ([[UIScreen mainScreen] respondsToSelector:@selector(fixedCoordinateSpace)]) {
+        bounds = [UIScreen mainScreen].fixedCoordinateSpace.bounds;
+    }
+    
+    // Rotate the portrait-up bounds if the orientation of the device is in landscape.
+    if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        CGFloat width = bounds.size.width;
+        bounds.size.width = bounds.size.height;
+        bounds.size.height = width;
+    }
+    
+    return bounds;
 }
 
 @end

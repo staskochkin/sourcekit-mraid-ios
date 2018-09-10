@@ -42,7 +42,7 @@
     // basic sanity checks
     if ((!hasHtmlTag && (hasHeadTag || hasBodyTag)) ||
         (hasHtmlTag && !hasBodyTag)) {
-        return nil;
+        return rawHtml;
     }
     
     if (!hasHtmlTag) {
