@@ -70,14 +70,16 @@
         [command isEqualToString:@"setOrientationProperties"] ||
         [command isEqualToString:@"setResizeProperties"] ||
         [command isEqualToString:@"storePicture"] ||
-        [command isEqualToString:@"useCustomClose"]
+        [command isEqualToString:@"useCustomClose"] ||
+        [command isEqualToString:@"preloadStore"]
         ) {
         if ([command isEqualToString:@"createCalendarEvent"]) {
             paramObj = [params valueForKey:@"eventJSON"];
         } else if ([command isEqualToString:@"expand"] ||
                    [command isEqualToString:@"open"] ||
                    [command isEqualToString:@"playVideo"] ||
-                   [command isEqualToString:@"storePicture"]) {
+                   [command isEqualToString:@"storePicture"] ||
+                   [command isEqualToString:@"preloadStore"]) {
             paramObj = [params valueForKey:@"url"];
         } else if ([command isEqualToString:@"setOrientationProperties"] ||
                    [command isEqualToString:@"setResizeProperties"]) {
@@ -109,7 +111,8 @@
                            @"storePicture",
                            @"useCustomClose",
                            @"loaded",
-                           @"noFill"
+                           @"noFill",
+                           @"preloadStore"
                            ];
 
     return [kCommands containsObject:command];

@@ -137,6 +137,10 @@
     NSLog(@"%@ MRAIDViewDelegate %@ with URL %@", [[self class] description], NSStringFromSelector(_cmd), [url absoluteString]);
 }
 
+- (void)mraidView:(SKMRAIDView *)mraidView wasPreloadUrl:(NSURL *)url {
+     NSLog(@"%@ MRAIDViewDelegate %@ preload URL %@", [[self class] description], NSStringFromSelector(_cmd), [url absoluteString]);
+}
+
 #pragma mark - MRAIDServiceDelegate
 
 - (void)mraidServiceCreateCalendarEventWithEventJSON:(NSString *)eventJSON

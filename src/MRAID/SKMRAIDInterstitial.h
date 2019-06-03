@@ -27,6 +27,7 @@
 - (void)mraidInterstitialNavigate:(SKMRAIDInterstitial *)mraidInterstitial withURL:(NSURL *)url;
 - (void)mraidInterstitial:(SKMRAIDInterstitial *)mraidView useCustomClose:(BOOL)customClose;
 - (void)mraidInterstitial:(SKMRAIDInterstitial *)mraidView intersectJsLogMessage:(NSString *)logMessage;
+- (void)mraidInterstitial:(SKMRAIDInterstitial *)mraidInterstitial wasPreloadUrl:(NSURL *)url;
 
 @end
 

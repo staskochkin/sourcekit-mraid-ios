@@ -48,6 +48,8 @@ typedef enum {
 
 - (void)mraidView:(SKMRAIDView *)mraidView intersectJsLogMessage:(NSString *)logMessage;
 
+- (void)mraidView:(SKMRAIDView *)mraidView wasPreloadUrl:(NSURL *)url;
+
 @end
 
 

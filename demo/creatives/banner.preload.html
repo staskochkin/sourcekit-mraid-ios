@@ -1,0 +1,71 @@
+<script src='mraid.js'></script>
+<script>
+    var impressionTrackers = ["http://mytrack.com/?event=imression&ref=${AUCTION_ID}", "http://partnertrack.com/?event=imression&ref=Appodeal"];
+    var clickTrackers = ["http://mytrack.com/?event=click&ref=${AUCTION_ID}", "http://partnertrack.com/?event=click&ref=Appodeal"];
+    var targetLink = 'https://itunes.apple.com/ru/app/id1326517659?mt=8';
+    var impressionTracked = false;
+    var clickTracked = false;
+    
+    var trackClick = function() {
+        sendClicks();
+        mraid.open(targetLink);
+    };
+
+var preloadStore = function() {
+    window.webkit.messageHandlers.observe.postMessage('preloadStore?url='+targetLink);
+};
+
+var showAd = function(){
+    preloadStore();
+    if (mraid.isViewable()) {
+        sendImpression();
+    }
+    else {
+        mraid.addEventListener('viewableChange', trackViewableChange);
+    }
+};
+
+var trackViewableChange = function(viewable) {
+    if (viewable) {
+        sendImpression();
+    }
+};
+
+var sendClicks = function() {
+    if (!impressionTracked) {
+        sendImpression();
+    }
+    if (!clickTracked) {
+        var hiddenSpan = document.createElement('span');
+        hiddenSpan.style.display = 'none';
+        clickTrackers.forEach(function(tracker) {
+                              var img = document.createElement('img');
+                              img.src = tracker;
+                              hiddenSpan.appendChild(img);
+                              document.body.appendChild(hiddenSpan);
+                              });
+                              clickTracked = true;
+    }
+};
+
+var sendImpression = function() {
+    if (!impressionTracked) {
+        var hiddenSpan = document.createElement('span');
+        hiddenSpan.style.display = 'none';
+        impressionTrackers.forEach(function(tracker) {
+                                   var img = document.createElement('img');
+                                   img.src = tracker;
+                                   hiddenSpan.appendChild(img);
+                                   document.body.appendChild(hiddenSpan);
+                                   });
+                                   impressionTracked = true;
+    }
+};
+
+if (mraid.getState() === 'loading') {
+    mraid.addEventListener('ready', showAd);
+} else {
+    showAd();
+}
+</script>
+<img style="height: 100%; width: auto;" src="http://gcdn.minimob.com/creatives/JB47PSX3FJA7CCMIK52QTF7OPJLENJHW.gif" onclick="trackClick()">
