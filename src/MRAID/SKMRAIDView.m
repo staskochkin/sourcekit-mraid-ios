@@ -396,6 +396,12 @@ typedef enum {
 // These methods are (indirectly) called by JavaScript code.
 // They provide the means for JavaScript code to talk to native code
 
+- (void)preloadStore:(NSString *)url {
+    if ([self.delegate respondsToSelector:@selector(mraidView:wasPreloadUrl:)]) {
+        [self.delegate mraidView:self wasPreloadUrl:url ? [NSURL URLWithString:url] : nil];
+    }
+}
+
 - (void)close
 {
     if (self.state == MRAIDStateLoading ||

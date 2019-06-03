@@ -194,4 +194,10 @@
     }
 }
 
+- (void)mraidView:(SKMRAIDView *)mraidView wasPreloadUrl:(NSURL *)url {
+    if ([self.delegate respondsToSelector:@selector(mraidInterstitial:wasPreloadUrl:)]) {
+        [self.delegate mraidInterstitial:self wasPreloadUrl:url];
+    }
+}
+
 @end
