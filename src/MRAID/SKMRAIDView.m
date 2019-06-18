@@ -268,7 +268,7 @@ typedef enum {
                           MRAIDSupportsInlineVideo,
                           ];
         
-        if([self isValidFeatureSet:currentFeatures] && serviceDelegate){
+        if ([self isValidFeatureSet:currentFeatures] && serviceDelegate) {
             self.supportedFeatures=currentFeatures;
         }
         
@@ -276,6 +276,8 @@ typedef enum {
         self.previousScreenSize = CGSizeZero;
         
         [self addObserver:self forKeyPath:@"self.frame" options:NSKeyValueObservingOptionOld context:NULL];
+        
+        [self subscribeApplicationNotification];
     }
     return self;
 }
@@ -306,6 +308,7 @@ typedef enum {
     self.resizeView = nil;
     self.resizeCloseRegion = nil;
     
+    [self unsubscribeApplicationNotification];
 }
 
 - (BOOL)isValidFeatureSet:(NSArray *)features
@@ -818,6 +821,40 @@ typedef enum {
     if (!CGRectEqualToRect(oldResizeFrame, newResizeFrame)) {
         self.resizeView.frame = newResizeFrame;
     }
+}
+
+#pragma mark - Application Lifecycle
+
+- (void)subscribeApplicationNotification {
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(applicationDidEnterBackground)
+                                               name:UIApplicationDidEnterBackgroundNotification
+                                             object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(applicationWillEnterForeground)
+                                               name:UIApplicationWillEnterForegroundNotification
+                                             object:nil];
+}
+
+- (void)unsubscribeApplicationNotification {
+    @try {
+        [NSNotificationCenter.defaultCenter removeObserver:self];
+    } @catch (NSException *exception) {}
+}
+
+- (void)applicationDidEnterBackground {
+    if (self.superview || (self.isInterstitial && self.state == MRAIDStateDefault)) {
+        [self setIsViewable:NO];
+    }
+}
+
+- (void)applicationWillEnterForeground {
+    __weak typeof(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (self.superview || (self.isInterstitial && self.state == MRAIDStateDefault)) {
+            [weakSelf setIsViewable:YES];
+        }
+    });
 }
 
 #pragma mark - native -->  JavaScript support

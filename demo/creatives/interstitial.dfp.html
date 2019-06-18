@@ -1,46 +1,92 @@
-<script type='application/javascript' src='mraid.js'></script>
-
+<!DOCTYPE html>
 <html>
-    <html lang='en-us'>
-        <head>
-            <meta http-equiv='Content-type' content='text/html; charset=utf-8'>
-                <title>Widgets Magazine</title>
-                <style type='text/css' media='screen'>
-                </style>
-                <script async='async' src='https://www.googletagservices.com/tag/js/gpt.js'>
-                </script>
-                    <script>
-                    var googletag = googletag || {};
-                    googletag.cmd = googletag.cmd || [];
-                    </script>
-                    
-                    <script>
-                    googletag.cmd.push(function () {
-                    googletag.defineSlot('/91759738/appodeal_320_480', [320, 480], 'div-gpt-ad-1485855404689-0').addService(googletag.pubads());
-                    googletag.pubads().enableSingleRequest();
-                    googletag.enableServices();
-                    googletag.pubads().enableSyncRendering();
-                    googletag.pubads().addEventListener('slotOnload', function (event) {
-                    console.log('Slot has been loaded');
-                    mraid.loaded();
-                    });
-                    });
-                    </script>
-                    </head>
-                    
-                    <body>
-                    <!-- /91759738/appodeal_320_480 -->
-                    <div id='div-gpt-ad-1485855404689-0' style='height:480px; width:320px;'>
-                    <script>
-                    googletag.cmd.push(function () {
-                    googletag.display('div-gpt-ad-1485855404689-0');
-                    });
-                    </script>
-                    </div>
-                    </body>
-                    </html>
-                    
-                    <!-- Timeout check-->
-                    <script type='application/javascript'>
-                    setTimeout(mraid.noFill, 5000);
-                    </script>
+    <head>
+        <title>appgrowth.com</title>
+        <meta charset=UTF-8>
+            <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0"/>
+            <meta name=apple-mobile-web-app-capable content=yes>
+    </head>
+    <body>
+        <script src="mraid.js"></script>
+        <script>
+            var storeURL = 'https://itunes.apple.com/US/app/id1357131935?mt=8';
+            var storeURL_Android = 'https://play.google.com/store/apps/details?id=com.fiogonia.hearts';
+            var lImage = 'https://creative-cdn.appgrowth.com/media/2019/5/hearts_l_01.jpg';
+            var pImage = 'https://creative-cdn.appgrowth.com/media/2019/5/hearts_p_01.jpg';
+            var videoURL = 'https://creative-cdn.appgrowth.com/media/2019/5/a409b107-0b82-4d5c-a860-72429710247f.mp4';
+            var gameLink = 'https://creative-cdn.appgrowth.com/creatives/games/hearts_3105191519.min.js?2';
+            var settings = {
+                type: 'vp',
+                id: '1357131935',
+                link: 'https://itunes.apple.com/us/app/id1357131935',
+                lang: 'us',
+                subtitle: 'Play #1 Hearts card game',
+                btn: 'Install Now',
+                artwork: 'https://is2-ssl.mzstatic.com/image/thumb/Purple113/v4/52/f3/16/52f316d5-37e2-5528-f88e-3a41357bb3b2/source/512x512bb.jpg',
+                phone: ["https://is2-ssl.mzstatic.com/image/thumb/Purple128/v4/31/a0/51/31a051da-9d8a-402f-06df-05910ac4bdda/source/392x696bb.jpg", "https://is5-ssl.mzstatic.com/image/thumb/Purple128/v4/a6/f2/27/a6f227c9-f6b8-d053-8d55-cdc898fc5237/source/392x696bb.jpg", "https://is5-ssl.mzstatic.com/image/thumb/Purple118/v4/d6/21/bc/d621bc9f-2200-474f-5c9c-b466b18ea582/source/392x696bb.jpg", "https://is3-ssl.mzstatic.com/image/thumb/Purple118/v4/63/ec/1d/63ec1d76-0a1e-a93d-a9bb-f836d19925cd/source/392x696bb.jpg", "https://is3-ssl.mzstatic.com/image/thumb/Purple118/v4/f5/9e/21/f59e21c8-3213-76da-c3bc-980ea1ca1491/source/392x696bb.jpg"],
+                title: 'Hearts - Card Game Classic',
+                rate: '4.5',
+                rating: '4.5, 31.3K Ratings',
+                developer: 'Fiogonia Games',
+                price: 'Free'
+            };
+        var gameSettings = {
+            ageRate: '+4',
+            musicNum: 1, /*1-2*/
+            musicVol: 0.5,
+            soundsVol: 1,
+            cardBack: 1, /*1-7*/
+            effects: true, /*particles true/false*/
+            installButtonFinal: 'CONTINUE', /*text for popup's button*/
+            installButtonBottom: 'PLAY FREE', /*text for bottom button*/
+            closeButtonScale: 1,
+            invertButtonColors: true, /*true/false change button's color*/
+            gameName: 'Hearts - Card Game Classic',
+            brandName: 'Belisama Games',
+            continueButton: 'CONTINUE',
+            finalTextTitle: 'WIN!',
+            hints: [
+                    'Stick your opponents with as many hearts as possible and try to avoid the hearts suit. Beware of the Queen of Spades.\n\nNow choose 3 cards and give them to another player...',
+                    'If you have a card in the same suit as the first card then you must play that..\n\nNow put the card to the table.',
+                    'Other players have made their move.\n\nYou have to avoid taking any tricks that have hearts or the queen of spades.'
+                    ],
+                    gameCloseButton: false,
+                    sounds: 1,
+                    music: 1,
+                    disableVisibilityChange: 0,
+                    fonts: ['SF Display']
+        };
+        var sdkVersion = "{%SdkVersion%}";
+        var IsRewarded = "{%IsRewarded%}";
+        var impressionTrackers = ["{% ImpTracker %}"];
+        var clickTrackers = ["{% ClickUrlAdx %}", "{% Click %}"];
+        var IsDOInstl = "{%IsDOInstl%}";
+        var ssp = "{%SSP%}";
+        var analyticsID = 'deb716e51b4c1608607fa37af9541ea1';
+        var analytics = {
+            Country: "{%Country%}",
+            DeviceID: "{%DeviceID%}",
+            AdUnit: "{%AdUnit%}",
+            Os: "{%Os%}",
+            BidID: "{%BidID%}",
+            CampaignID: "{%CampaignID%}",
+            CreativeID: "{%CreativeID%}",
+            App: "{%App%}",
+            SSP: "{%SSP%}",
+            AppName: "{%AppName%}",
+            IsRewarded: "{%IsRewarded%}",
+            Connection: "{%Connection%}",
+            IP: "{%IP%}",
+            IDFA: "{%IDFA%}",
+            AndroidID: "{%AndroidID%}"
+        };
+        function csb(){var i=!0,s=-1!==ssp.indexOf("mopub"),d=-1!==ssp.indexOf("appodealx"),e=(ssp.indexOf("adx"),mraid&&"1.0"===mraid.mraidVersion),a="1"===IsDOInstl,r="1"===IsRewarded;return s&&r&&(i=!1),e&&(i=!1),d&&"1"===sdkVersion&&(i=!1),!d&&a&&(i=!1),i}function pa(){mraid&&("iOS"!==getMobileOperatingSystem()&&-1===ssp.indexOf("mopub")&&mraid.useCustomClose(csb()),mraid&&"1.0"!==mraid.mraidVersion&&csb()&&mraid.useCustomClose(!0))}mraid&&"loading"===mraid.getState()&&mraid.addEventListener("ready",pa);
+            </script>
+        <div id="appgrowth"></div>
+        <script>
+            var script = document.createElement('script');
+            script.src = "https://creative-cdn.appgrowth.com/creatives/appgrowth_debug.min.js?" + new Date().getTime();
+            document.body.appendChild(script);
+            </script>
+    </body>
+</html>
