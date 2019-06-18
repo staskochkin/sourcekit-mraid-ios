@@ -211,8 +211,6 @@ typedef enum {
         [self injectJavaScript:self.mraidjs];
     }
     
-    [self intersectJsLog];
-    
     html = [SKMRAIDUtil processRawHtml:html];
     if (html) {
         self.state = MRAIDStateLoading;
@@ -1175,21 +1173,6 @@ typedef enum {
     [self disableJsCallbackInWebViewIfNeeded:wv];
     
     return wv;
-}
-
-- (void)intersectJsLog {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
-        NSString *script = @"console = new Object(); \n" \
-        "console.log = function(log) { \n" \
-        "   window.webkit.messageHandlers.logHandler.postMessage(log); \n" \
-        "}; \n" \
-        "console.debug = console.log; \n" \
-        "console.info = console.log; \n" \
-        "console.warn = console.log; \n" \
-        "console.error = console.log;";
-        
-        [self injectJavaScript:script];
-    }
 }
 
 - (NSArray *)scriptMessageHandlersNames {
