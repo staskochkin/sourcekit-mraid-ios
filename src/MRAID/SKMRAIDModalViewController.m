@@ -11,7 +11,7 @@
 #import "SKMRAIDUtil.h"
 #import "SKMRAIDOrientationProperties.h"
 
-typedef void (^tapBlock)();
+typedef void (^tapBlock)(void);
 
 @interface SKMRAIDModalViewController () <UIGestureRecognizerDelegate>
 {
@@ -222,20 +222,23 @@ typedef void (^tapBlock)();
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     // willRotateToInterfaceOrientation code goes here
     [UIView setAnimationsEnabled:NO];
+    __weak typeof(self) weakSelf = self;
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         // willAnimateRotationToInterfaceOrientation code goes here
     } completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        __strong typeof(self) strongSelf = weakSelf;
         // didRotateFromInterfaceOrientation goes here
         [UIView setAnimationsEnabled:YES];
-        if (hasViewAppeared) {
+        if (strongSelf->hasViewAppeared) {
             [self.delegate mraidModalViewControllerDidRotate:self];
-            hasRotated = NO;
+            strongSelf->hasRotated = NO;
         }
     }];
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientationmpleme
 {
     if (hasViewAppeared) {
         [self.delegate mraidModalViewControllerDidRotate:self];
